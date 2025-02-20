@@ -1,0 +1,6 @@
+.page-break {
+    page-break-before: always; /* สำหรับพิมพ์ */
+    height: 20px; /* ปรับขนาดช่องว่าง */
+    background: #c92020; /* เพิ่มเส้นสี */
+    margin: 20px 0;
+}

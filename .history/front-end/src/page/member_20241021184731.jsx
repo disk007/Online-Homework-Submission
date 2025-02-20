@@ -1,0 +1,120 @@
+import React,{useState,useEffect} from "react";
+import SidebarClassroom from "../components/sidebar-classroom";
+import { RxCross2 } from "react-icons/rx";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { MdDelete,MdSortByAlpha } from "react-icons/md";
+import {Navigate,useParams } from "react-router-dom";
+import {FaUserFriends,FaUser} from "react-icons/fa";
+import axios from "axios";
+const Member = ({isLogin}) => {
+    const { classroomId } = useParams()
+    const [sidebar,setSidebar] = useState(false)
+    const [teacher,setTeacher] = useState([])
+    const [member,setMember] = useState([])
+    const [selected, setSelected] = useState([])
+    const [selectedIds, setSelectedIds] = useState([])
+    const [open, setOpen] = useState(false) 
+
+    const fetchTeacher = async () => {
+        const response = await axios.get(`/teacher/${classroomId}`)
+        const responseData = response.data 
+        setTeacher(responseData)
+    }
+    const fetchMembers = async () => {
+        const response = await axios.get(`/members/${classroomId}`)
+        const responseData = response.data 
+        setMember(responseData)
+        setSelected(Array(responseData.length).fill(false))
+        setSelectedIds([])
+    }
+
+    const handleCheckboxChange = (index, id_classroom, id_user) => {
+        const newSelected = [...selected]
+        newSelected[index] = !newSelected[index] // Toggle the selected state
+        setSelected(newSelected)
+        
+        const newSelectedIds = selectedIds.filter(item => item.id_classroom !== id_classroom || item.id_user !== id_user)
+
+        // หาก checkbox ถูกเลือก ให้เพิ่ม id ลงใน selectedIds
+        if (newSelected[index]) {
+            newSelectedIds.push({ id_classroom, id_user })
+        }
+
+        setSelectedIds(newSelectedIds)
+    }
+
+    useEffect(()=>{
+        fetchTeacher()
+    },[])
+    useEffect(()=>{
+        fetchMembers()
+    },[])
+
+    const toggleAllCheckboxes = () => {
+        // If not all are selected, select all; otherwise, deselect all
+        const allSelected = selected.every(item => item)
+        setSelected(Array(member.length).fill(!allSelected))
+    }
+    const handleDelete = async () => {
+        try {
+            await axios.delete('/delete-member',{ data: { members: selectedIds } })
+            // fetchMembers()
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    if(!isLogin){
+        return <Navigate to="/login" />;
+    }
+    return(
+        <>
+            <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar} data={isLogin} />
+            <div className={`ml-[6rem] md:ml-[8rem] lg:ml-[26rem] mb-4 ${sidebar ? 'opacity-10 pointer-events-none' : ''}` }>
+                <div className={`flex pl-5 md:text-lg md:font-medium bg-gray-100 border-b-2  py-3 sticky md:top-[67px] top-[59px] items-center `}>
+                    <div className="lg:mx-1 mx-0 block lg:hidden" onClick={()=>setSidebar(!sidebar)} ><div className="p-1"><GiHamburgerMenu className="h-5 w-5 text-black cursor-pointer" /></div></div>
+                    <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><FaUserFriends className="h-5 w-5 text-white"/></div></div>
+                    <div className="px-1">Member</div>
+                </div>
+                <div className="my-5 flex flex-col lg:mx-24 md:mx-16 mx-10 ">
+                    <div className="text-xl font-semibold mb-2">Teacher</div>
+                    <hr className="mb-2" />
+                    <div className="my-2 flex items-center"><div className="border-2 p-2 rounded-full mx-3"><FaUser className="h-5 w-5" /></div><div>{teacher.name}</div></div>
+                    <div className="mt-8 text-xl font-semibold mb-2 flex justify-between items-center"><div >Student</div><div className="text-sm font-normal">{member.length} student</div></div>
+                    <hr className="mb-2" />
+                    <div className="my-3 flex items-center">
+                        <div className="mx-3"><input type="checkbox" checked={selected.every(item => item)} onChange={toggleAllCheckboxes} name="" id="" className="transform scale-150" /></div>
+                        <div className="mx-3 grow"><button onClick={handleDelete} className="bg-red-600 text-white px-4 py-1 rounded-md">Delete</button></div>
+                        <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full"><MdSortByAlpha className="h-7 w-7" /></div>
+                    </div>
+                    {member.map((data,index)=>(
+                        <div className="my-2 flex items-center cursor-pointer" key={index} onClick={()=>handleCheckboxChange(index,data.id_classroom,data.id_user)}>
+                            <div className="mx-3">
+                                <input 
+                                    type="checkbox" 
+                                    checked={selected[index]} 
+                                    className="transform scale-150" 
+                                />
+                                
+                            </div>
+                            <div className="border-2 p-2 rounded-full ml-1 mr-2"><FaUser className="h-5 w-5" /></div>
+                            <div className="grow">{data.fname+" "+data.lname}</div>
+                            <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full" onClick={()=>{handleCheckboxChange(index,data.id_classroom,data.id_user);setOpen(!open)}}><MdDelete className="h-5 w-5" /></div>
+                        </div>
+                    ))}
+                    
+                </div>
+            </div>
+            { open && 
+                <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
+                    <div className="bg-white rounded-md p-4">
+                    <div className="flex justify-end"><button onClick={()=>setOpen(!open)} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button></div>
+                    <div>Are you sure you want to delete this member?</div>
+                    </div>
+                </div>
+            }
+            
+        </>
+    )
+}
+
+export default Member
