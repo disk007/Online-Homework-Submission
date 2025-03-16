@@ -15,6 +15,9 @@ const Login = ({isLogin}) => {
     const handleChange = (e) => {
         setFormData({...formData,[e.target.name]:e.target.value})
     }
+    const linkForgotPass = () => {
+        navigate('/forgot-password');
+    }
     const handleSubmit = async (e) => {
         e.preventDefault()
         let isValid = true
@@ -68,10 +71,11 @@ const Login = ({isLogin}) => {
                             <div className={`h-2 ${errors.email && "text-red-500 text-xs"} `}>{errors.email}</div>
                         </div>
                         <div >Password</div>
-                        <div className="w-full mb-3">
+                        <div className="w-full ">
                             <input type="password" name="password" id="password" className="px-2 py-2 border-2 w-full" value={formData.password} onChange={handleChange} />
                             <div className={`h-2 ${errors.password && "text-red-500 text-xs"} `}>{errors.password}</div>
                         </div>
+                        <div className="flex justify-end  text-sm mb-2 hover:font-medium hover:underline hover:underline-offset-2 cursor-pointer" onClick={linkForgotPass}>Forgot password ?</div>
                         <div className="w-full mb-3"><button className="py-2 bg-sky-500 w-full text-white hover:bg-sky-600 text-lg transition ease-in-out delay-150">Login</button></div>
                         <div className="w-full text-center">Don't have an account? <Link to={'/register'} className="font-semibold hover:text-sky-600 transition ease-in-out delay-150">Register</Link></div>
                     </form>
