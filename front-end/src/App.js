@@ -26,6 +26,8 @@ import Sidebar from './components/sidebar';
 import useAuth from './components/use-auth';
 import PageNotFound from './page/not-found';
 import {RoomProvider} from "./components/fetchRoom";
+import ForgotPassword from './page/forgot-password';
+import ResetPassword from './page/reset-password';
 
 function Layout({ children, isLogin }) {
   return (
@@ -69,6 +71,8 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/register-teacher" element={<RegisterTeacher />} />
           <Route path='/not-found' element={<PageNotFound />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/detail-classroom/member/:classroomId" element={<Layout isLogin={isLogin}><Member isLogin={isLogin} /></Layout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
