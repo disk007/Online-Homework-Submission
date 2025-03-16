@@ -7,6 +7,10 @@ router.post('/register-student', authcontroller.register_student)
 router.post('/login', authcontroller.login)
 router.get('/profile',token, authcontroller.profile)
 router.post('/edit-profile',authcontroller.edit_profile)
+router.post('/change-password',authcontroller.change_password)
+router.post('/forgot-password',authcontroller.forgot_password)
+router.post('/verifyTokenPass',authcontroller.verifyTokenPass)
+router.post('/reset-password',authcontroller.reset_password)
 router.post('/logout', authcontroller.logout)
 
 
