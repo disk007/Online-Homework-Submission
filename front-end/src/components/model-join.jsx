@@ -28,6 +28,7 @@ const ModelJoin = ({OnClose,isLogin}) => {
             if(responseData.status === 'success'){
                 await fetchRoom()
                 toast.success(responseData.text, {
+                    containerId:"navbar",
                     position: "bottom-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -46,6 +47,7 @@ const ModelJoin = ({OnClose,isLogin}) => {
             }
             else if(responseData.status === 'error'){
                 toast.warning(responseData.message, {
+                    containerId:"navbar",
                     position: "bottom-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -72,7 +74,7 @@ const ModelJoin = ({OnClose,isLogin}) => {
     <>
     
         <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
             <div className="bg-white rounded-md p-4">
                     <div className="">
                     <form onSubmit={handleJoinRoom}>
