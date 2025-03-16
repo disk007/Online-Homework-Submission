@@ -342,6 +342,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                 const responseData = response.data;
                 if (responseData.status === 'success') {
                     toast.success(responseData.message, {
+                        containerId:"addassignment",
                         position: "bottom-right",
                         autoClose: 2000,
                         hideProgressBar: false,
@@ -358,6 +359,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
             } catch (error) {
                 console.error('Error submitting assignment:', error);
                 toast.error("An error occurred while submitting the assignment. Please try again.", {
+                    containerId:"addassignment",
                     position: "bottom-right",
                     autoClose: 3000,
                     hideProgressBar: false,
@@ -385,7 +387,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
     }
     return(
         <>
-            <ToastContainer />
+            <ToastContainer containerId="addassignment" />
             <GroupStudents open={groupStudent} OnClose={() => setGroupStudent(false)} setDataGroup={setDataGroup} state={stateGroup} setOpen={setGroupStudent} />
             <IndividualStudent 
                 individual = {propIndividual} 

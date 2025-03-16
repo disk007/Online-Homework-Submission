@@ -28,6 +28,7 @@ const ModelCreat = ({OnClose,isLogin}) => {
             const responseData = response.data;
             if(responseData.status === 'success'){
                 toast.success(responseData.text, {
+                    containerId:"navbar",
                     position: "bottom-right",
                     autoClose: 2000,
                     hideProgressBar: false,
@@ -47,6 +48,7 @@ const ModelCreat = ({OnClose,isLogin}) => {
             }
             else if(responseData.status === 'error'){
                 toast.warning(responseData.message, {
+                    containerId:"navbar",
                     position: "bottom-right",
                     autoClose: false,
                     hideProgressBar: false,
@@ -72,7 +74,7 @@ const ModelCreat = ({OnClose,isLogin}) => {
     return(
     <>
         <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
             <div className="bg-white rounded-md p-4 w-[24rem]">
                 <div className="">
                     <div className="flex justify-end"><button onClick={handleClear} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button></div>
