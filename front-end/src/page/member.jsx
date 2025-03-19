@@ -117,7 +117,7 @@ const Member = ({isLogin}) => {
                     <div className="my-2 flex items-center"><div className="border-2 p-2 rounded-full mx-3"><FaUser className="h-5 w-5" /></div><div>{teacher.name}</div></div>
                     <div className="mt-8 text-xl font-semibold mb-2 flex justify-between items-center"><div >Student</div><div className="text-sm font-normal">{member.length} student</div></div>
                     <hr className="mb-2" />
-                    {isLogin?.role === 'teacher' && member.length > 0 &&(
+                    {isLogin?.role !== 'teacher' && member.length > 0 &&(
 
                         <div className="my-3 flex items-center">
                             <div className="mx-3"><input type="checkbox" checked={selected.every(item => item)} onChange={toggleAllCheckboxes} name="" id="" className="transform scale-150" /></div>
