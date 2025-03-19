@@ -253,7 +253,7 @@ const DetailClassroom = ({isLogin}) =>{
     const listAssignments = async() => {
         try {
             let response
-            if(isLogin.role === 'teacher'){
+            if(isLogin.role !== 'student'){
                 response = await axios.get(`/page-post-assignments/${classroomId}`)
                 
             }
@@ -344,7 +344,7 @@ const DetailClassroom = ({isLogin}) =>{
         return dateB - dateA;
     });
     const assignmentLink = (id) => {
-        if(isLogin.role === 'teacher'){
+        if(isLogin.role !== 'student'){
             navigate(`/detail-classroom/detail-assignment/${classroomId}/${id}`);
         }
         else if(isLogin.role === 'student'){
@@ -459,7 +459,7 @@ const DetailClassroom = ({isLogin}) =>{
                 <div key={index}>
                     {"title" in data ? ( // ถ้าเป็น assignment
                     <>
-                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4 cursor-pointer hover:bg-gray-100" onClick={()=>assignmentLink((isLogin.role === 'teacher' && data.id_assignment) || (isLogin.role === 'student' && data.work_id))}>
+                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4 cursor-pointer hover:bg-gray-100" onClick={()=>assignmentLink((isLogin.role !== 'student' && data.id_assignment) || (isLogin.role === 'student' && data.work_id))}>
                             <div className="mx-4 flex items-center">
                                 <MdAssignment className="lg:h-10 lg:w-10 w-7 h-7 text-sky-500" />
                                 <div className="ml-2">
