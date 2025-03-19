@@ -28,6 +28,7 @@ import PageNotFound from './page/not-found';
 import {RoomProvider} from "./components/fetchRoom";
 import ForgotPassword from './page/forgot-password';
 import ResetPassword from './page/reset-password';
+import All_members from './page/all-members';
 
 function Layout({ children, isLogin }) {
   return (
@@ -54,6 +55,7 @@ function App() {
         <RoomProvider userId={isLogin?.id} role={isLogin?.role}>
         <Routes>
           <Route path="/" element={<Layout isLogin={isLogin}><Classroom isLogin={isLogin} /></Layout>} />
+          <Route path="/all-members" element={<Layout isLogin={isLogin}><All_members isLogin={isLogin} /></Layout>} />
           <Route path="/activity" element={<Layout isLogin={isLogin}><Activity isLogin={isLogin} /></Layout>} />
           <Route path="/assignments/all-upcomming" element={<Layout isLogin={isLogin}><All_upComming isLogin={isLogin} /></Layout>} />
           <Route path="/assignments/send-work/:workId" element={<Layout isLogin={isLogin}><Full_send_work isLogin={isLogin} /></Layout>} />
