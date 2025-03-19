@@ -98,7 +98,7 @@ const SidebarClassroom = ({sidebar,setSidebar}) =>{
                             <div className={`${sideClass.includes('post') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                         </div><br />
                         <div className="inline-block">
-                                {data && data.role === 'teacher' &&(
+                                {data && data.role !== 'student'  &&(
                                     <>
                                         <li ><Link to={`/detail-classroom/list-assignments/${classroomId}`} className={`flex items-center mt-2 hover:text-sky-500 text-lg transition ease-in-out delay-150 ${sideClass.includes('list') || sideClass.includes('detail-assignment') ? "font-bold" : ''}`}><GoChecklist /><span className={`ml-2`}>Assignment</span></Link></li>
                                         <div className={`${sideClass.includes('list') || sideClass.includes('detail-assignment') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
@@ -117,7 +117,7 @@ const SidebarClassroom = ({sidebar,setSidebar}) =>{
                             <div className={`${sideClass.includes('member') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                         </div>
                     </ul>
-                    {data && data.role === 'teacher' && (
+                    {data && data.role !== 'student' && (
                         <div className="border-2 mx-2 rounded mt-1">
                             <div className="flex items-center justify-between  mt-1 ">
                                 <div className="text-lg ml-1">Class code</div>
