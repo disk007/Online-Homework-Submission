@@ -18,6 +18,7 @@ const checkDetailAssignment = (WrappedComponent) => {
               const response = await axios.post('/check-detail-assignment', {
                 classroomId: classroomId,
                 assignmentId: assignmentId,
+                userId: isLogin.id,
               });
               setIsAuthorized(response.data.isAuthorized);
             } catch (error) {
