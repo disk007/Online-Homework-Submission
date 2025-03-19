@@ -15,7 +15,11 @@ export const RoomProvider = ({ userId, role, children }) => {
         } else if (role === "teacher") {
             response = await axios.get(`/add-classroom/${userId}`);
             setDataRoom(response.data);
+        } else if (role === "admin"){
+            response = await axios.get(`/all-classroom`);
+            setDataRoom(response.data);
         }
+        
         
     };
 
