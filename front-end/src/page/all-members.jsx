@@ -50,8 +50,8 @@ const All_members = () => {
                     </div>
                 :
                 <div className="w-4/5 py-2 px-3 overflow-x-auto">
-                    <div className="flex justify-between mb-4">
-                        <div className="flex items-center">{users.length} users</div>
+                    <div className="flex flex-wrap justify-between mb-4">
+                        <div className="flex items-center">{users.length+' users'}</div>
                         <input
                             type="text"
                             name="search"

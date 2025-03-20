@@ -49,23 +49,23 @@ const Model_data_number = ({open,OnClose}) => {
                 <div className="bg-white rounded-md p-4 w-[35rem]">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
-                            <span className="px-2">Data number teacher</span>
+                            <span className="">Data number teacher</span>
                         </div>
                         <div className="cursor-pointer hover:bg-gray-200" onClick={handleCancel}>
                             <RxCross2 className="w-6 h-6"/>
                         </div>
                     </div>
-                    <div className={`mt-3 mb-1 flex justify-between items-center `}>
-                        <div className="hover:text-sky-500">
+                    <div className={`mt-3 mb-1 flex flex-wrap justify-between items-center `}>
+                        <div className="flex hover:text-sky-500 mb-1 md:mb-0">
                             <button  className={`flex items-center border-2 py-1 px-7 w-full bg-sky-500 text-white border-sky-500 cursor-pointer  hover:border-sky-600 hover:bg-sky-600 transition ease-in-out delay-150`} onClick={()=>setOpenAdd(!openAdd)}><MdAddCall className="w-6 h-6" /><span className="ml-1">Add</span></button>
                         </div>
-                        <div>
+                        <div className="">
                             <input
                                 type="text"
                                 name="search"
                                 id="search"
                                 placeholder="Search ..."
-                                className="border-2 px-2 py-2 text-sm rounded-sm w-full md:w-60"
+                                className="border-2 px-2 py-2 text-sm rounded-sm md:w-60"
                                 onChange={(e) => {
                                     setSearch(e.target.value); 
                                 }}
