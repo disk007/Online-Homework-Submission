@@ -148,13 +148,13 @@ const Room = ({data}) =>{
                 <div className="flex flex-wrap overflow-y-auto pb-5">
                     {
                         data.role !== 'admin' && dataRoom.map((d)=>(
-                        <div className="border-2 w-80 h-60 rounded-md shadow-md m-5 hover:bg-gray-100 transition ease-in-out delay-150 relative cursor-pointer" onClick={() => handleLinkClick(d.id)} key={d.id}>
+                        <div className="border-2 md:w-80 w-64 h-48 md:h-60 rounded-md shadow-md m-5 hover:bg-gray-100 transition ease-in-out delay-150 relative cursor-pointer" onClick={() => handleLinkClick(d.id)} key={d.id}>
                                 <div className="px-4 pt-5 pb-2 h-full flex flex-col relative">
                                     <div className="flex justify-center w-full">
-                                        <div className="bg-fuchsia-500 text-white p-2 flex items-center justify-center w-24 h-24 rounded-md text-4xl ">{extractFirstChars(d.name)}</div>
+                                        <div className="bg-fuchsia-500 text-white p-2 flex items-center justify-center md:w-24 md:h-24 w-20 h-20  rounded-md text-xl md:text-4xl">{extractFirstChars(d.name)}</div>
                                     </div>
                                     <div className="mt-5 ">
-                                        <div className="flex justify-center">
+                                        <div className="flex justify-center text-sm md:text-base">
                                             <div className="text-center line-clamp-2">{d.name}</div>
                                         </div>
                                     </div>
@@ -185,13 +185,13 @@ const Room = ({data}) =>{
                     {
                         data.role == 'admin' && currentRooms.map((d)=>(
                         
-                        <div className="border-2 w-80 h-60 rounded-md shadow-md mt-1 mx-5 mb-5 hover:bg-gray-100 transition ease-in-out delay-150 relative cursor-pointer" onClick={() => handleLinkClick(d.id)} key={d.id}>
+                        <div className="border-2 md:w-80 w-64 h-48 md:h-60 rounded-md shadow-md mt-1 mx-5 mb-5 hover:bg-gray-100 transition ease-in-out delay-150 relative cursor-pointer" onClick={() => handleLinkClick(d.id)} key={d.id}>
                             <div className="px-4 pt-5 pb-2 h-full flex flex-col relative">
                                 <div className="flex justify-center w-full">
-                                    <div className="bg-fuchsia-500 text-white p-2 flex items-center justify-center w-24 h-24 rounded-md text-4xl ">{extractFirstChars(d.name)}</div>
+                                    <div className="bg-fuchsia-500 text-white p-2 flex items-center justify-center md:w-24 md:h-24 w-20 h-20  rounded-md text-xl md:text-4xl ">{extractFirstChars(d.name)}</div>
                                 </div>
                                 <div className="mt-5 ">
-                                    <div className="flex justify-center">
+                                    <div className="flex justify-center text-sm md:text-base">
                                         <div className="text-center line-clamp-2">{d.name}</div>
                                     </div>
                                 </div>
