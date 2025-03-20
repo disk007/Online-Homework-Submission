@@ -40,7 +40,7 @@ const withAuthorization = (WrappedComponent) => {
         }
         if(isLogin === null){
           return(
-            <div className='flex justify-center items-center fixed inset-0'>
+            <div className='ml-[5.5rem] md:ml-[10.5rem] ml-[8.5rem] flex justify-center items-center fixed inset-0'>
               <ClipLoader color="#1D7AE5"  size={50} />
             </div>
           )

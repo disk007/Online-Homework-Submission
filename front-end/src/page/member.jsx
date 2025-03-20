@@ -111,24 +111,24 @@ const Member = ({isLogin}) => {
                     <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><FaUserFriends className="h-5 w-5 text-white"/></div></div>
                     <div className="px-1">Member</div>
                 </div>
-                <div className="my-5 flex flex-col lg:mx-24 md:mx-16 mx-10 ">
-                    <div className="text-xl font-semibold mb-2">Teacher</div>
+                <div className="my-5 flex flex-col lg:mx-24 md:mx-16 mx-4">
+                    <div className="md:text-xl text-base font-semibold mb-2">Teacher</div>
                     <hr className="mb-2" />
-                    <div className="my-2 flex items-center"><div className="border-2 p-2 rounded-full mx-3"><FaUser className="h-5 w-5" /></div><div>{teacher.name}</div></div>
-                    <div className="mt-8 text-xl font-semibold mb-2 flex justify-between items-center"><div >Student</div><div className="text-sm font-normal">{member.length} student</div></div>
+                    <div className="my-2 flex items-center"><div className="border-2 p-2 rounded-full mx-1 md:mx-3"><FaUser className="h-5 w-5" /></div><div className="md:text-base text-sm">{teacher.name}</div></div>
+                    <div className="mt-8 md:text-xl text-base font-semibold mb-2 flex justify-between items-center"><div >Student</div><div className="text-sm font-normal">{member.length} student</div></div>
                     <hr className="mb-2" />
-                    {isLogin?.role !== 'teacher' && member.length > 0 &&(
+                    {isLogin?.role !== 'student' && member.length > 0 &&(
 
                         <div className="my-3 flex items-center">
-                            <div className="mx-3"><input type="checkbox" checked={selected.every(item => item)} onChange={toggleAllCheckboxes} name="" id="" className="transform scale-150" /></div>
+                            <div className="mx-1 md:mx-3"><input type="checkbox" checked={selected.every(item => item)} onChange={toggleAllCheckboxes} name="" id="" className="transform scale-150" /></div>
                             <div className="mx-3 grow"><button onClick={()=>setOpen(!open)} className={` ${selectedIds.length==0 ?'pointer-events-none bg-gray-200' : 'bg-red-600'} text-white px-4 py-1 rounded-md`}>Delete</button></div>
-                            <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full"><MdSortByAlpha className="h-7 w-7" /></div>
+                            {/* <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full"><MdSortByAlpha className="h-7 w-7" /></div> */}
                         </div>
                     )}
                     {member.map((data,index)=>(
                         <div className="my-2 flex items-center cursor-pointer" key={index} onClick={()=>handleCheckboxChange(index,data.id_classroom,data.id_user)}>
-                            {isLogin?.role == 'teacher' && (
-                                <div className="mx-3">
+                            {isLogin?.role != 'student' && (
+                                <div className="mx-1 md:mx-3">
                                     
                                     <input 
                                         type="checkbox" 
@@ -138,8 +138,8 @@ const Member = ({isLogin}) => {
                                     
                                 </div>
                             )}
-                            <div className="border-2 p-2 rounded-full ml-1 mr-2"><FaUser className="h-5 w-5" /></div>
-                            <div className="grow">{data.fname+" "+data.lname}</div>
+                            <div className="border-2 p-2 rounded-full mx-1 md:mx-3"><FaUser className="h-5 w-5" /></div>
+                            <div className="grow md:text-base text-sm">{data.fname+" "+data.lname}</div>
                         </div>
                     ))}
                     

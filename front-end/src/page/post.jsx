@@ -392,7 +392,7 @@ const DetailClassroom = ({isLogin}) =>{
 
                 {
                     post ? (
-                        <div className="my-4 flex  flex-col lg:mx-24 md:mx-16 mx-10 border-2 p-2 rounded-lg">
+                        <div className="my-4 flex flex-col lg:mx-24 md:mx-16 mx-10 border-2 p-2 rounded-lg ">
                             <div className="flex justify-end w-full mb-2"><div className="cursor-pointer" onClick={handleCancle}><RxCross2 className="w-6 h-6 hover:bg-gray-200" /></div></div>
                             <div className="w-full">
                                 <ReactQuill 
@@ -400,8 +400,6 @@ const DetailClassroom = ({isLogin}) =>{
                                     value={valuePost} 
                                     onChange={setValuePost} 
                                     modules={modules} 
-                                    placeholder="Add a personal opinion"
-                                    
                                 />
                             </div>
 
@@ -446,7 +444,7 @@ const DetailClassroom = ({isLogin}) =>{
                         ) : (
                             <div className="flex border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-2 items-center cursor-pointer hover:bg-gray-100" onClick={()=>setPost(!post)}>
                                 <div className="p-1 px-3"><FaRegCommentAlt className="lg:h-10 lg:w-10 w-7 h-7 text-sky-500"/></div>
-                                <div className="text-base md:text-lg text-gray-500 px-1">Express your opinions in class</div>
+                                <div className="text-base text-sm md:text-lg text-gray-500 px-1">Express your opinions in class</div>
                             </div>
                         )
                 }
@@ -473,16 +471,16 @@ const DetailClassroom = ({isLogin}) =>{
                     </>
                     ) : ( // ถ้าเป็น post
                     <>
-                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4">
-                            <div className="flex ">
-                                <div className="mx-4"><div className="rounded-full border-2 p-3"><FaUser className="md:h-8 md:w-8 h-7 w-7" /></div></div>
-                                <div className="mx-2 grow">
-                                    <div >{data.name}<span className="text-red-500">{` (${data.role})`}</span></div>
-                                    <div className="text-sm text-gray-500">{data.update_create ? formattedDate(data.update_create) : formattedDate(data.create_at)}</div>
+                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4 ">
+                            <div className="flex">
+                                <div className="md:mx-3 mx-1"><div className="rounded-full border-2 md:p-3 p-2"><FaUser className="md:h-8 md:w-8 h-5 w-5" /></div></div>
+                                <div className="md:mx-2 mx-1 grow">
+                                    <div className="text-sm md:text-base">{data.name}<span className="text-red-500 md:text-sm text-xs text-gray-500">{` (${data.role})`}</span></div>
+                                    <div className="md:text-sm text-xs text-gray-500">{data.update_create ? formattedDate(data.update_create) : formattedDate(data.create_at)}</div>
                                 </div>
                                 {isLogin.id === data.id_user &&
-                                <div className="mx-2 relative ">
-                                    <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full " onClick={()=>toggleEditDel(data.id)}>
+                                <div className="relative">
+                                    <div className=" cursor-pointer hover:bg-gray-200 p-1 rounded-full " onClick={()=>toggleEditDel(data.id)}>
                                         <BsThreeDotsVertical className="w-5 h-5  " />
                                     </div>
                                     {
@@ -525,9 +523,9 @@ const DetailClassroom = ({isLogin}) =>{
                             )}
                             <div className="border-t-2 mt-2">
                                 <div className="flex justify-between mx-4 my-3 flex-wrap items-center text-gray-500">
-                                    <div className=" ">{dataComment.filter((d) => d.id_post == data.id).length} comments</div>
+                                    <div className="text-xs md:text-base">{dataComment.filter((d) => d.id_post == data.id).length} comments</div>
                                     <div 
-                                        className="cursor-pointer"
+                                        className="cursor-pointer text-xs md:text-base"
                                         onClick={() => toggleShowAll(data.id)}
                                     >
                                         {showAllComments[data.id] ? "Hide comments" : "All comments"}
@@ -538,13 +536,13 @@ const DetailClassroom = ({isLogin}) =>{
                                     
                                     <div key={i} className={`border-t-2`}>
                                         <div className="flex mt-5">
-                                            <div className="mx-2"><div className="rounded-full border-2 p-2"><FaUser className="w-6 h-6" /></div></div>
+                                            <div className="md:mx-2 mx-1"><div className="rounded-full border-2 p-2"><FaUser className="w-4 h-4 md:w-6 md:h-6" /></div></div>
                                             <div className="mx-1 grow  text-sm">
                                                 <div >{c.name}</div>
                                                 <div className="text-xs text-gray-500">{c.update_create ? formattedDate(c.update_create) : formattedDate(c.create_at)}</div>
                                             </div>
                                             {isLogin.id === c.id_user &&
-                                            <div className="mx-2 relative">
+                                            <div className="relative">
                                                 <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full " onClick={()=>toggleEditDelComment(c.id)}>
                                                     <BsThreeDotsVertical className="w-5 h-5  " />
                                                 </div>
@@ -565,7 +563,7 @@ const DetailClassroom = ({isLogin}) =>{
                                     </div>
                                 ))}
                                 <div className="border-t-2"></div>
-                                <div className={`flex md:mx-7 mt-5 justify-center ${comment[data.id] ? "items-end" : "items-center"}`}>
+                                <div className={`flex md:mx-7 mx-2 mt-5 justify-center ${comment[data.id] ? "items-end" : "items-center"}`}>
                                     
                                     {
                                         comment[data.id] ? (
@@ -599,137 +597,6 @@ const DetailClassroom = ({isLogin}) =>{
                 </div>
                 )
                 })}
-
-
-                {/* {dataPost.length > 0 && dataPost.map((data,index) =>{
-                 const filteredComments = dataComment.filter((d) => d.id_post === data.id);
-                 const displayedComments = showAllComments[data.id]
-                     ? filteredComments
-                     : filteredComments.slice(0, 2); 
-                return(  
-                <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4">
-                    <div className="flex ">
-                        <div className="mx-4"><div className="rounded-full border-2 p-3"><FaUser className="md:h-8 md:w-8 h-7 w-7" /></div></div>
-                        <div className="mx-2 grow">
-                            <div >{data.name}<span className="text-red-500">{` (${data.role})`}</span></div>
-                            <div className="text-sm text-gray-500">{data.update_create ? formattedDate(data.update_create) : formattedDate(data.create_at)}</div>
-                        </div>
-                        {isLogin.id === data.id_user &&
-                        <div className="mx-2 relative ">
-                            <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full " onClick={()=>toggleEditDel(data.id)}>
-                                <BsThreeDotsVertical className="w-5 h-5  " />
-                            </div>
-                            {
-                                editDel[data.id] && (
-                                    <div className="absolute left-2 bg-white cursor-pointer post-editDel">
-                                        <div className="text-xs border-t-2 border-x-2 p-1 hover:bg-gray-200" onClick={()=>{chooseDataEdit(data.id);setOpenEdit(!openEdit)}}>Edit</div>
-                                        <div className="text-xs border-2 p-1 hover:bg-gray-200" onClick={()=>{chooseDataEdit(data.id);setOpenDelPost(!openDelPost)}}>Delete</div>
-                                    </div>
-                                )
-                            }
-                            
-                            
-
-                        </div>
-                        }
-                    </div>
-                    <div className="mx-4 mt-4 text-sm mb-5">
-                        <div className={`list-inside ${data.message.includes("<ol>") || data.message.includes("<ul>") ? "pl-4" : "pl-1"}`} dangerouslySetInnerHTML={{ __html: data.message }} />
-                    </div>
-                    {data.file && (
-                        <div className="mx-4 flex flex-wrap text-xs">
-                            {JSON.parse(data.file).map((f, index) => (
-                                <div key={index} className="flex items-center mb-2 border-2 w-60 mr-2" title={f}>
-                                    <button
-                                        className="px-2 py-2 flex flex-1"
-                                        onClick={() => {setOpenFile(!openFile); selectFileName(f,data.id)}}
-                                    >
-                                        <div>
-                                            <FaFileAlt className="w-4 h-4" />
-                                        </div>
-                                        <div>
-                                            <span className="pl-1">
-                                            {f.length > 20  ? f.substring(0, 20) + '...' : f}
-                                            </span>
-                                        </div>
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                    <div className="border-t-2 mt-2">
-                        <div className="flex justify-between mx-4 my-3 flex-wrap items-center text-gray-500">
-                            <div className=" ">{dataComment.filter((d) => d.id_post == data.id).length} comments</div>
-                            <div 
-                                className="cursor-pointer"
-                                onClick={() => toggleShowAll(data.id)}
-                            >
-                                {showAllComments[data.id] ? "Hide comments" : "All comments"}
-                            </div>
-                        </div>
-                        
-                        {displayedComments.length > 0 && displayedComments.map((c,i) =>(
-                            
-                            <div key={i} className={`border-t-2`}>
-                                <div className="flex mt-5">
-                                    <div className="mx-2"><div className="rounded-full border-2 p-2"><FaUser className="w-6 h-6" /></div></div>
-                                    <div className="mx-1 grow  text-sm">
-                                        <div >{c.name}</div>
-                                        <div className="text-xs text-gray-500">{c.update_create ? formattedDate(c.update_create) : formattedDate(c.create_at)}</div>
-                                    </div>
-                                    {isLogin.id === c.id_user &&
-                                    <div className="mx-2 relative">
-                                        <div className="cursor-pointer hover:bg-gray-200 p-1 rounded-full " onClick={()=>toggleEditDelComment(c.id)}>
-                                            <BsThreeDotsVertical className="w-5 h-5  " />
-                                        </div>
-                                            {
-                                                editDelComment[c.id] && (
-                                                    <div className="absolute left-2 bg-white cursor-pointer comment-editDel">
-                                                        <div className="text-xs border-t-2 border-x-2 p-1 hover:bg-gray-200" onClick={()=>{chooseDataEdit(c.id);setOpenEditComment(!openEditComment)}}>Edit</div>
-                                                        <div className="text-xs border-2 p-1 hover:bg-gray-200" onClick={()=>{handleDelComment(c.id)}}>Delete</div>
-                                                    </div>
-                                                )
-                                            }
-                                    </div>
-                                    }
-                                </div>
-                                <div className="my-4 text-sm mx-4">
-                                <div className={`list-inside ${c.message.includes("<ol>") || c.message.includes("<ul>") ? "pl-4" : "pl-1"}`} dangerouslySetInnerHTML={{ __html: c.message }} />
-                                </div>
-                            </div>
-                        ))}
-                        <div className="border-t-2"></div>
-                        <div className={`flex md:mx-7 mt-5 justify-center ${comment[data.id] ? "items-end" : "items-center"}`}>
-                            
-                            {
-                                comment[data.id] ? (
-                                    <>
-                                        <div className="flex w-full">
-                                            <div className="comment w-full">
-                                                <ReactQuill 
-                                                    theme="snow" 
-                                                    value={valueComment[data.id] || ''} 
-                                                    onChange={(value) => handleCommentChange(data.id, value)} 
-                                                    modules={modules}
-                                                />
-                                                 
-                                            </div>
-                                            
-                                        </div>
-                                        <div className={` ml-2 top-2 ${!isContentValid(String(valueComment[data.id] || '')) ? 'text-gray-400': 'text-sky-500 cursor-pointer'}`} onClick={()=>addComment(data.id)}><LuSendHorizonal className="w-5 md:w-7 md:h-7 h-5  comment" /></div>
-                                        
-                                    </>
-                                )
-                                :(
-                                    <div className="flex items-center w-full cursor-pointer hover:text-sky-500 md:text-base text-sm" onClick={() => toggleComment(data.id)}><FaRegCommentAlt className="w-5 md:w-7 md:h-7 h-5" /><span className="ml-2">Comment</span></div>
-                                )
-                            }
-                        
-                        </div>
-                    </div>
-                </div>
-                )
-                })} */}
                 
             </div>
             {
