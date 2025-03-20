@@ -17,5 +17,11 @@ router.get('/members/:id',classroom.members)
 router.delete('/delete-member',classroom.delete_member)
 router.post('/leave-classroom',classroom.leave_classroom)
 router.post('/update-classroom',classroom.update_classroom)
+router.get('/all-members',classroom.all_members)
+router.get('/all-classroom',classroom.all_classroom)
+router.post('/delete-classroom',classroom.delete_classroom)
+router.post('/add-number-teacher',classroom.add_teacher)
+router.get('/data-number-teacher',classroom.data_number_teacher)
+router.post('/delete-number-teacher',classroom.delete_number_teacher)
 
 module.exports = router;
