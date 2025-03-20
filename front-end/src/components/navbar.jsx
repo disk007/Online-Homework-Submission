@@ -5,9 +5,11 @@ import { FaUser } from "react-icons/fa6";
 import { FaPlus,FaUserFriends,FaUserEdit,FaLock} from "react-icons/fa";
 import ModelJoin from "./model-join";
 import ModelCreat from "./model-creat";
+import Model_data_number from "./model-data-number";
 import axios from "axios";
 import { useLocation} from "react-router-dom";
 import {Navigate } from "react-router-dom";
+import { MdAddCall } from "react-icons/md";
 import { RxCross2 } from "react-icons/rx";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 
@@ -19,6 +21,7 @@ const Navbar = ({isLogin}) =>{
     const [openProfile,setOpenProfile] = useState(false)
     const [openLogout,setOpenLogout] = useState(false)
     const [openPassword,setOpenPassword] = useState(false)
+    const [openTeacher,setOpenTeacher] = useState(false)
     const [errors,setErrors] = useState({})
     const [profileData,setProfileData] = useState({
         fname:isLogin?.fname,
@@ -203,9 +206,10 @@ const Navbar = ({isLogin}) =>{
             <div className="sticky top-0 bg-white z-[27]">
                 <div className="flex justify-between border-2 text-xl font-light leading-loose md:text-2xl md:leading-loose md:font-normal bg-white">
                     <div className="p-2 px-4"><Link>DP classroom</Link></div>
-
                     <div className="p-2 px-4 flex items-center justify-center">
-                        <button className={`${btnPlus == true ? "text-sky-500 border-sky-500":""} py-[10px] hover:text-sky-500 transition ease-in-out delay-150 mx-1 toggle-plus`} onClick={()=> {setBtnPlus(!btnPlus);  }} ><FaPlus className="w-10 w-10" /></button>
+                        {isLogin?.role !== 'admin' &&(
+                            <button className={`${btnPlus == true ? "text-sky-500 border-sky-500":""} py-[10px] hover:text-sky-500 transition ease-in-out delay-150 mx-1 toggle-plus`} onClick={()=> {setBtnPlus(!btnPlus);  }} ><FaPlus className="w-10 w-10" /></button>
+                        )}
                         <button className={`${open == true ? "text-sky-500 border-sky-500":""}  py-[10px] hover:text-sky-500 transition ease-in-out delay-150 mx-1 toggle-button`}  onClick={() => {setOpen(!open); }}><FaUser className="w-10 w-10" /></button>
                     </div>
                 </div>
@@ -226,6 +230,14 @@ const Navbar = ({isLogin}) =>{
                                 <span className="px-2">Password</span>
                             </div>
                         </div>
+                        {isLogin?.role === 'admin' && 
+                        <div className="py-4 px-4 border-b-2">
+                            <div className="cursor-pointer flex items-center hover:text-sky-500 hover:border-sky-500 transition ease-in-out delay-150" onClick={()=>setOpenTeacher(!openTeacher)}>
+                                <MdAddCall />
+                                <span className="px-2">Number teacher</span>
+                            </div>
+                        </div>
+                        }
                         <div className="py-4 px-4 ">
                             <div className="cursor-pointer flex items-center hover:text-sky-500 hover:border-sky-500 transition ease-in-out delay-150" onClick={()=>{setOpenLogout(!openLogout)}} >
                                 <MdOutlineLogout/>
@@ -268,12 +280,12 @@ const Navbar = ({isLogin}) =>{
                                 <FaUserEdit className="w-5 h-5" />
                             </div>
                         </div>
-                        <div className={`flex mt-2 ${disableProfile ? 'text-gray-300' : 'text-black'}`}>
-                            <div className="w-full mr-2">
+                        <div className={`flex mt-2 flex-wrap md:flex-nowrap ${disableProfile ? 'text-gray-300' : 'text-black'}`}>
+                            <div className="w-full mx-1">
                                 <input className="w-full border-2 py-2 px-2" type="text" name="fname" id="fname" value={profileData.fname} onChange={(e)=>setProfileData({...profileData,fname:e.target.value})} disabled={disableProfile} />
                                 <div className={`h-2 ${errors.fname && "text-red-500 text-xs"} `}>{errors.fname}</div>
                             </div>
-                            <div className="w-full ml-2">
+                            <div className="w-full mx-1">
                                 <input className="w-full border-2 py-2 px-2" type="text" name="lname" id="lname" value={profileData.lname} onChange={(e)=>setProfileData({...profileData,lname:e.target.value})} disabled={disableProfile} />
                                 <div className={`h-2 ${errors.lname && "text-red-500 text-xs"} `}>{errors.lname}</div>
                             </div>
@@ -336,7 +348,9 @@ const Navbar = ({isLogin}) =>{
             {openCreat &&(
                 <ModelCreat open={openCreat} OnClose={()=>setOpenCreat(false)} isLogin={isLogin} /> 
             )}
-            
+            {openTeacher &&(
+                <Model_data_number open={openTeacher} OnClose={()=>setOpenTeacher(false)} isLogin={isLogin} /> 
+            )}
 
         </>
         
