@@ -71,6 +71,17 @@ exports.check_classroom_access = async (req, res) => {
                 return res.json({ isAuthorized: false }); 
             }
         }
+        else if (check_user.rows[0].role === 'admin'){
+            const isTeacher = await db.query(
+                'SELECT * FROM classroom WHERE id = $1',
+                [classroomId]
+            );
+            if (isTeacher.rows.length > 0) {
+                return res.json({ isAuthorized: true }); 
+            } else {
+                return res.json({ isAuthorized: false }); 
+            }
+        }
     } catch (error) {
         console.error('Error checking classroom access:', error);
         res.status(500).send('Server error');
@@ -79,7 +90,11 @@ exports.check_classroom_access = async (req, res) => {
 
 exports.check_detail_assignment = async(req, res) => {
     try {
-        const {classroomId,assignmentId} = req.body
+        const {classroomId,assignmentId,userId} = req.body
+        const role = await db.query('SELECT role FROM users WHERE id = $1',[userId])
+        if(role.rows[0].role === 'student'){
+            return res.json({ isAuthorized: false });
+        }
         const querySql = `SELECT w.id FROM assignment AS a
         INNER JOIN work AS w ON w.id_assignment = a.id
         WHERE a.id = $1 and a.id_classroom = $2`
@@ -323,3 +338,126 @@ exports.update_classroom = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 }
+
+exports.all_members = async (req,res) => {
+    try {
+        const user = await db.query(`SELECT fname,lname,role,email FROM users 
+        ORDER BY 
+        CASE 
+            WHEN role = 'admin' THEN 1
+            WHEN role = 'teacher' THEN 2
+            WHEN role = 'student' THEN 3
+            ELSE 4 
+        END`)
+        return res.json(user.rows)
+    } catch (error) {
+        
+    }
+}
+
+exports.all_classroom = async(req,res) => {
+    try {
+        const result = await db.query('SELECT * FROM classroom ORDER BY id')
+        return res.json(result.rows)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+exports.delete_classroom  = async(req,res) => {
+    try {
+        const {classroomId} = req.body
+        console.log(classroomId)
+        const queryGAW = `SELECT g.id AS gId,w.id AS wId,a.id AS aId FROM assignment AS a
+        INNER JOIN work AS w ON w.id_assignment = a.id
+        LEFT JOIN groups AS g ON g.id = w.id_group
+        WHERE a.id_classroom = $1`
+        const queryP = `SELECT id FROM post WHERE id_classroom = $1`
+        const idGAW = await db.query(queryGAW,[classroomId])
+        const idP = await db.query(queryP,[classroomId])
+        const uniqueGids = [...new Set(idGAW.rows.filter(item => item.gid !== null).map(item => item.gid))]
+        const uniqueWids = [...new Set(idGAW.rows.filter(item => item.wid !== null).map(item => item.wid))]
+        const uniqueAids = [...new Set(idGAW.rows.filter(item => item.aid !== null).map(item => item.aid))]
+        const uniquePids = [...new Set(idP.rows.filter(item => item.id !== null).map(item => item.id))]
+
+        for (const d of uniqueGids) {
+            await db.query('DELETE FROM groups_member WHERE id_group = $1', [d]);
+        }
+        
+        // ✅ ลบ work ก่อน groups
+        for (const d of uniqueWids) {
+            await db.query('DELETE FROM work WHERE id = $1', [d]);
+        }
+        
+        // ✅ ลบ comment
+        for (const d of uniquePids) {
+            await db.query('DELETE FROM comment WHERE id = $1', [d]);
+        }
+        
+        // ✅ ลบ groups สุดท้าย
+        for (const d of uniqueGids) {
+            await db.query('DELETE FROM groups WHERE id = $1', [d]);
+        }
+        await db.query('DELETE FROM assignment WHERE id_classroom = $1',[classroomId])
+        await db.query('DELETE FROM post WHERE id_classroom = $1',[classroomId])
+        await db.query('DELETE FROM members WHERE id_classroom = $1',[classroomId])
+        await db.query('DELETE FROM groups_remember WHERE id_classroom = $1',[classroomId])
+        await db.query('DELETE FROM classroom WHERE id = $1',[classroomId])
+
+        uniqueAids.forEach((d) =>{
+            const folderPath = path.join(__dirname,'../assignments',d.toString());
+            fs.rmSync(folderPath, { recursive: true, force: true });
+        })
+        uniquePids.forEach((d) => { 
+            const folderPath = path.join(__dirname, '../post', d.toString());
+            fs.rmSync(folderPath, { recursive: true, force: true });
+        });
+
+        // console.log(uniqueGids)
+        // console.log(uniqueWids)
+        return res.json({status:'success'})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+exports.data_number_teacher = async(req,res) => {
+    try {
+        const result = await db.query('SELECT * FROM number_teacher')
+        const checkIdNum = await db.query('SELECT id_number_teacher FROM users WHERE id_number_teacher IS NOT NULL')
+        const takenNumbers = checkIdNum.rows.map(row => row.id_number_teacher);
+        const statusList = result.rows.map((data,i)=>({
+            id:data.id,
+            number:data.number,
+            status:takenNumbers.includes(Number(data.id)) ? "Unavailable" : "Available"
+        }))
+        return res.json(statusList)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+exports.add_teacher = async(req , res) => {
+    try {
+        const {number} = req.body
+        await db.query('INSERT INTO number_teacher (number) VALUES ($1)',[number])
+        return res.json({status:'success',message:'Added success'})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+exports.delete_number_teacher = async(req,res) => {
+    try {
+        const {id} = req.body
+        await db.query('DELETE FROM number_teacher WHERE id = $1',[id])
+        return res.json({status:'success'})
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: error.message });
+    }
+}   
