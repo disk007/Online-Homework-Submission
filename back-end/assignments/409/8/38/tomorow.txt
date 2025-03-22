@@ -1,2 +1,0 @@
-http://localhost:3000/detail-classroom/detail-assignment/10/403 ---> เช็ค assignment ว่ามีจริงไหม
-ทำ checkbox การบ้าน, หาตารางใหม่ให้ที่ตรวจงาน
