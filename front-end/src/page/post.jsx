@@ -10,8 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MdOutlineFileUpload , MdAssignment } from "react-icons/md";
 import { LuSendHorizonal } from "react-icons/lu";
-import ModelImg from "../components/model-img";
-import {useNavigate,useParams } from "react-router-dom";
+import {useNavigate,useParams,Navigate } from "react-router-dom";
 import withAuthorization from "../components/with-authorization";
 import ModelFile from "../components/model-file";
 import ModelEditPost from "../components/model-edit-post";
@@ -360,6 +359,9 @@ const DetailClassroom = ({isLogin}) =>{
             };
             socket.on("get-comment", handleActivityUpdate);
     },[selecteId])
+    if (isLogin === null) {
+        return <Navigate to="/login" />;
+    }
     return(
         <>
             <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar} />
@@ -392,7 +394,7 @@ const DetailClassroom = ({isLogin}) =>{
 
                 {
                     post ? (
-                        <div className="my-4 flex flex-col lg:mx-24 md:mx-16 mx-10 border-2 p-2 rounded-lg ">
+                        <div className="my-4 flex flex-col lg:mx-24 md:mx-16 mx-4 border-2 p-2 rounded-lg ">
                             <div className="flex justify-end w-full mb-2"><div className="cursor-pointer" onClick={handleCancle}><RxCross2 className="w-6 h-6 hover:bg-gray-200" /></div></div>
                             <div className="w-full">
                                 <ReactQuill 
@@ -442,7 +444,7 @@ const DetailClassroom = ({isLogin}) =>{
                             {errorPost && <div className="mt-1 text-sm text-red-500">{errorPost}</div>}
                         </div>
                         ) : (
-                            <div className="flex border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-2 items-center cursor-pointer hover:bg-gray-100" onClick={()=>setPost(!post)}>
+                            <div className="flex border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-4 shadow py-2 items-center cursor-pointer hover:bg-gray-100" onClick={()=>setPost(!post)}>
                                 <div className="p-1 px-3"><FaRegCommentAlt className="lg:h-10 lg:w-10 w-7 h-7 text-sky-500"/></div>
                                 <div className="text-base text-sm md:text-lg text-gray-500 px-1">Express your opinions in class</div>
                             </div>
@@ -457,21 +459,21 @@ const DetailClassroom = ({isLogin}) =>{
                 <div key={index}>
                     {"title" in data ? ( // ถ้าเป็น assignment
                     <>
-                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4 cursor-pointer hover:bg-gray-100" onClick={()=>assignmentLink((isLogin.role !== 'student' && data.id_assignment) || (isLogin.role === 'student' && data.work_id))}>
-                            <div className="mx-4 flex items-center">
+                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-4 shadow py-4 cursor-pointer hover:bg-gray-100" onClick={()=>assignmentLink((isLogin.role !== 'student' && data.id_assignment) || (isLogin.role === 'student' && data.work_id))}>
+                            <div className="mx-4 flex items-start md:items-center">
                                 <MdAssignment className="lg:h-10 lg:w-10 w-7 h-7 text-sky-500" />
                                 <div className="ml-2">
                                     <div>
                                         {data.title}
                                     </div>
-                                    <div className="text-sm text-gray-500">Due: {formattedDate(data.create_at)}</div>
+                                    <div className="md:text-sm text-xs flex flex-wrap text-gray-500">Due: {formattedDate(data.create_at)}</div>
                                 </div>
                             </div>
                         </div>
                     </>
                     ) : ( // ถ้าเป็น post
                     <>
-                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-10 shadow py-4 ">
+                        <div className="border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-4 shadow py-4 ">
                             <div className="flex">
                                 <div className="md:mx-3 mx-1"><div className="rounded-full border-2 md:p-3 p-2"><FaUser className="md:h-8 md:w-8 h-5 w-5" /></div></div>
                                 <div className="md:mx-2 mx-1 grow">

@@ -91,8 +91,8 @@ const All_upComming = ({isLogin}) => {
                         <div className="bg-fuchsia-500 text-white p-2 flex items-center justify-center w-8 h-8 rounded-md text-sm mr-3">{extractFirstChars(data.name)}</div>
                         <div className="flex flex-col grow">
                             <div>{data.title}</div>
-                            <div className="text-gray-500 text-sm">Due at {formattedTime(data.due_time)}</div>
-                            <div className="text-gray-500 text-sm">{data.name}</div>
+                            <div className="text-gray-500 md:text-sm text-xs">Due at {formattedTime(data.due_time)}</div>
+                            <div className="text-gray-500 md:text-sm text-xs">{data.name}</div>
                         </div>
                     </div>
                 </div>

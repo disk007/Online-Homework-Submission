@@ -224,7 +224,7 @@ const Detali_assignment = ({isLogin}) => {
     }
     const handleExport = () => {
         // สร้าง Worksheet จากข้อมูล
-        const header = [["Name", `Score = ${dataExcel[0].ascore}`]];
+        const header = [["Name", `Score = ${dataExcel[0].ascore!== '' ? dataExcel[0].ascore : 'N/A'}`]];
 
     // แปลงข้อมูลเป็นรูปแบบ Array of Arrays (AOA)
     const dataWithHeader = dataExcel.map(item => [
@@ -275,18 +275,18 @@ const Detali_assignment = ({isLogin}) => {
                     <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><GoChecklist  className="h-5 w-5 text-white"/></div></div>
                     <div className="px-1">Detail assignment</div>
                 </div>
-                <div className="py-3 px-5 mt-2 flex flex-wrap items-center justify-center">
-                    <div className="flex items-center md:grow">
+                <div className="py-3 px-5 mt-2 flex flex-wrap items-center justify-center lg:justify-between md:text-base text-xs">
+                    <div className="flex items-center flex-wrap justify-center space-x-4 mr-2">
                         <div className="flex items-center  hover:text-sky-600 text-gray-500 cursor-pointer transition ease-in-out delay-150" onClick={() => navigate(`/detail-classroom/list-assignments/${classroomId}`)}><IoChevronBackOutline className="h-7 w-7"/>Back</div>
-                        <div className=" mx-5 hover:text-sky-600 text-gray-500 cursor-pointer transition ease-in-out delay-150" onClick={()=>setOpenEdit(!false)}>Edit assignment </div>
+                        <div className=" hover:text-sky-600 text-gray-500 cursor-pointer transition ease-in-out delay-150" onClick={()=>setOpenEdit(!false)}>Edit assignment </div>
                         <div className=" hover:text-sky-600 text-gray-500 cursor-pointer transition ease-in-out delay-150" onClick={()=>{setOpenDelete(!Opendelete)}}>Delete assignment </div>
                     </div>
-                    <div className="flex items-center md:mt-0 mt-1">
+                    <div className="flex items-center flex-wrap justify-center ml-2 md:mt-0 mt-2 space-x-4">
                         <div className="flex items-center hover:text-green-600 text-green-500 cursor-pointer transition ease-in-out delay-150" onClick={handleExport}><PiMicrosoftExcelLogoFill className="h-7 w-7 text-green-800"/>Export to Excel</div>
                     </div>
                 </div>
-                <div className="text-2xl  pt-2 px-6 mt-3">{detailAssignments[0]?.title}</div>
-                <div className="text-gray-500 flex px-6 mb-5">
+                <div className="md:text-2xl text-base text-center md:text-left pt-2 px-6 mt-3">{detailAssignments[0]?.title}</div>
+                <div className="text-gray-500 flex flex-wrap md:justify-start justify-center px-6 mb-5 md:text-base text-sm">
                     <div className="mr-2">{formattedDate(detailAssignments[0]?.due_time)}</div>
                     <div className="ml-2">{detailAssignments[0]?.colses_time ? 'Close : '+formattedDate(detailAssignments[0]?.colses_time):''}</div>
                 </div>

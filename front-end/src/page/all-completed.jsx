@@ -84,8 +84,8 @@ const All_completed = ({isLogin}) => {
                                 </div>
                                 <div className="flex flex-col grow">
                                     <div>{data.title}</div>
-                                    <div className="text-gray-500 text-sm">Submitted {formattedTime(data.sent_date)}</div>
-                                    <div className="text-gray-500 text-sm">{data.name}</div>
+                                    <div className="text-gray-500 md:text-sm text-xs">Submitted {formattedTime(data.sent_date)}</div>
+                                    <div className="text-gray-500 md:text-sm text-xs">{data.name}</div>
                                 </div>
                                 <div className="flex justify-center bg-green-100 md:p-2 p-1 items-center">
                                     <FaCheck className="md:h-4 md:w-4 text-green-500 hidden md:block" />
