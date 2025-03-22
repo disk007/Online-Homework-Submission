@@ -48,7 +48,7 @@ function NotFound() {
 }
 function App() {
   
-  const isLogin = useAuth();
+  const {isLogin} = useAuth();
   return (
     <>
       <BrowserRouter>
