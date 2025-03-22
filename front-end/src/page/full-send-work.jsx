@@ -249,6 +249,19 @@ const Full_send_work = ({isLogin}) => {
                     await fetchSizesFile()
                     // await fetchwork()
                 }
+                else if(responseData.status === 'deadline'){
+                    toast.warning(responseData.message, {
+                        position: "bottom-right",
+                        autoClose: false,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Slide,
+                    })
+                }
             } catch (error) {
                 console.error('Error submitting assignment:', error);
                 toast.error("An error occurred while submitting the assignment. Please try again.", {
