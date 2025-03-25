@@ -263,6 +263,8 @@ exports.send_work = async(req, res) => {
             GROUP BY a.id,w.id_group`
         const resultCheckType = await db.query(queryCheckType,[id_work])
         const date_closes = new Date(resultCheckType.rows[0].colses_time)
+        console.log("date1 ",sendDate.getTime()," date2 ",date_closes.getTime())
+        if(date_closes.getTime() !== 0){
         if(sendDate.getTime() > date_closes.getTime()){
             if (req.files) {
                 req.files.forEach((file) => {
@@ -275,6 +277,7 @@ exports.send_work = async(req, res) => {
                 });
             }
             return res.json({status:'deadline', message:'Submission deadline has passed.'});
+        }
         }
         let sqlFileName
         if(resultCheckType.rows[0].assignment_type === 'group'){
