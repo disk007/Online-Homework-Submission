@@ -1,0 +1,13 @@
+.ql-toolbar.ql-snow {
+    border: none; /* ลบ border */
+    text-align: center; 
+}
+
+.ql-container.ql-snow {
+    /* ลบ border */ 
+}
+.ql-container .ql-editor {
+     /* กำหนด border สำหรับช่องกรอกข้อความ */
+     /* กำหนด border-radius ตามต้องการ */
+    padding: 10px; /* เพิ่ม padding ให้กับช่องกรอกข้อความ */
+}

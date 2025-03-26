@@ -1,0 +1,11 @@
+const router = require('express').Router()
+const post = require('../Controllers/post')
+const path = require('path');
+const upload = require('../Middleware/uploadFile')
+
+router.post('/add-post',upload.any(),post.add_post)
+router.get('/get-post/:id_classroom',post.get_post)
+router.post('/add-comment',post.add_comment)
+router.post('/get-comment/:id_classroom',post.get_comment)
+
+module.exports = router

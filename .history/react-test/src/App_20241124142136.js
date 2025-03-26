@@ -1,0 +1,53 @@
+import logo from './logo.svg';
+import './App.css';
+import WebViewer from '@pdftron/webviewer';
+import React,{useRef,useEffect} from 'react';
+import DocViewer from "react-doc-viewer";
+
+function App() {
+  const viewer = useRef(null);
+  const docs = [
+    { uri: require("./example-files/pdf.pdf") }, // Local File
+  ];
+  useEffect(() => {
+    // If you prefer to use the Iframe implementation, you can replace this line with: WebViewer.Iframe(...)
+    WebViewer.WebComponent(
+      {
+        path: '/lib',
+        initialDoc: 'https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf',
+        licenseKey: 'demo:1732087848460:7ef2e39503000000007d6961b49b470276001b210dfb236dd3c37e7e41',  // sign up to get a free trial key at https://dev.apryse.com
+      },
+      viewer.current,
+    ).then((instance) => {
+      const { documentViewer, annotationManager, Annotations } = instance.Core;
+
+      documentViewer.addEventListener('documentLoaded', () => {
+        const rectangleAnnot = new Annotations.RectangleAnnotation({
+          PageNumber: 1,
+          // values are in page coordinates with (0, 0) in the top left
+          X: 100,
+          Y: 150,
+          Width: 200,
+          Height: 50,
+          Author: annotationManager.getCurrentUser()
+        });
+
+        annotationManager.addAnnotation(rectangleAnnot);
+        // need to draw the annotation otherwise it won't show up until the page is refreshed
+        annotationManager.redrawAnnotation(rectangleAnnot);
+      });
+    });
+  }, []);
+  return (
+    <>
+    <DocViewer documents={docs} />
+    {/* <div className="MyComponent">
+      <div className="header">React sample</div>
+      <div className="webviewer" ref={viewer} style={{height: "100vh"}}></div>
+    </div> */}
+    </>
+    
+  );
+}
+
+export default App;

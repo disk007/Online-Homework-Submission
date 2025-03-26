@@ -1,0 +1,26 @@
+import React,{useState} from "react";
+import Assignments from "../components/assignments";
+import SidebarClassroom from "../components/sidebar-classroom";
+import supplies from '../picture/Supplies.jpg'
+import {Navigate,useParams } from "react-router-dom";
+import withAuthorization from "../components/with-authorization";
+const UpComming = ({isLogin}) => {
+    const [sidebar,setSidebar] = useState(false)
+    const { classroomId } = useParams()
+    if(isLogin === null){
+        return <Navigate to="/login" />;
+    }
+    return(
+        <>
+        <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar}/>
+        <Assignments sidebar={sidebar} setSidebar={setSidebar} />
+        <div className={`flex justify-center ml-[6rem] md:ml-[8rem] lg:ml-[26rem] md:py-5 py-2 bg-white items-center flex-col ${sidebar ? 'opacity-10 pointer-events-none' : ''}`}>
+            <div className="w-32 md:w-48"><img src={supplies} alt="" /></div>
+            <div className="mt-1 text-xs md:text-base">No Upcomming assignments right now.</div>
+        </div>
+            
+        </>
+    )
+}
+
+export default withAuthorization(UpComming)

@@ -1,0 +1,18 @@
+const router = require('express').Router()
+const works = require('../Controllers/works')
+const upload = require('../Middleware/uploadFile')
+
+router.get('/detail-work/:user_id',works.detail_work)
+router.get('/page-post-work/:id/:id_user',works.page_post_works)
+router.get('/assignments/:id_assignment/:workId/:id_user/:fileName',works.open_file_work)
+router.get('/size-files-work/:id_assignment/:workId/:id',works.get_file_size)
+router.get('/my-work/:user_id',works.my_work)
+router.post('/send-work',upload.any(),works.send_work)
+router.post('/cancel-work',works.cancel_work)
+router.post('/delete-work',works.delete_work)
+router.get('/get-comment-work/:id_work/:id_user',works.get_comment_work)
+router.post('/add-comment-work',works.add_comment_work)
+router.post('/update-feedback',works.update_feedback)
+router.get('/get-scores/:id_assignment',works.get_score)
+
+module.exports = router

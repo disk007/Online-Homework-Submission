@@ -1,0 +1,22 @@
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './files/')
+    },
+    filename: function (req, file, cb) {
+        req.files.forEach((file, index) => {
+            console.log(`Fieldname: ${file.fieldname}`);
+            console.log(`Filename: ${file.filename}`); // ชื่อไฟล์ที่บันทึก
+            console.log(`Path: ${file.path}`); // พาธของไฟล์
+        });
+      const fileName = `${Date.now()}-${file.originalname}`
+      cb(null, fileName)
+    }
+  })
+const upload = multer({
+    storage: storage
+})
+
+module.exports = upload
