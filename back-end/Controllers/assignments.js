@@ -2,7 +2,6 @@ const db = require('../Model/database')
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('../Middleware/cloudinary')
-const { CloudinaryStorage } = require('multer-storage-cloudinary')
 exports.add_assignments = async (req,res) => {
     try{
         const {title,instructions,points,dueDate,dueTime,idClassroom,typeWork,members,dateClose,timeClose,fileName,create_at} = req.body
@@ -210,54 +209,38 @@ exports.add_assignments = async (req,res) => {
                 })
             ) 
         }
-        const IdsAssignments = idAssignmentWork.flatMap(sub => sub);
-        for (const obj of IdsAssignments) {
-            try {
-                // 🗂️ สร้างโฟลเดอร์สำหรับงาน
-                const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
-                    typeWork === "groups" ? obj.id_group : obj.id_user
-                }`;
+        // const IdsAssignments = idAssignmentWork.flatMap(sub => sub);
+        // for (const obj of IdsAssignments) {
+        //     try {
+        //         // 🗂️ สร้างโฟลเดอร์สำหรับงาน
+        //         const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
+        //             typeWork === "groups" ? obj.id_group : obj.id_user
+        //         }`;
     
-                if (req.files && req.body) {
-                    for (let i = 0; i < req.files.length; i++) {
-                        const file = req.files[i];
-                        const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
-                        const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
-                        const storage = new CloudinaryStorage({
-                            cloudinary: cloudinary, // ใช้ Cloudinary ที่ได้ตั้งค่าไว้
-                            params: {
-                                folder: `${folderPath}/file`, // ระบุโฟลเดอร์ใน Cloudinary
-                                allowed_formats: ["jpg", "png", "txt", "pdf", "docx", "xlsx"], // กำหนดรูปแบบไฟล์ที่อนุญาต
-                                public_id: fileName, // ตั้งชื่อไฟล์ให้ตรงกับชื่อจริง
-                            },
-                        });
-        
-                        // สร้าง instance ของ multer ที่ใช้ CloudinaryStorage
-                        const upload = multer({ storage: storage }).any();
-        
-                        // ใช้ multer เพื่ออัปโหลดไฟล์
-                        await new Promise((resolve, reject) => {
-                            upload(req, res, (err) => {
-                                if (err) {
-                                    reject(`เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ${err.message}`);
-                                } else {
-                                    resolve();
-                                }
-                            });
-                        });
-                        // const result = await cloudinary.uploader.upload(filePath, {
-                        //     resource_type: "auto",
-                        //     folder: `${folderPath}/file`,
-                        //     public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
-                        // });
+        //         await cloudinary.api.create_folder(folderPath);
+        //         console.log(`สร้างโฟลเดอร์: ${folderPath}`);
     
-                        // console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
-                    }
-                }
-            } catch (error) {
-                console.error(`เกิดข้อผิดพลาดในการอัปโหลดงาน ${obj.id_assignment}`, error.message);
-            }
-        }
+        //         // 📤 อัปโหลดไฟล์ (ถ้ามีไฟล์)
+        //         if (req.files && req.body) {
+        //             for (let i = 0; i < req.files.length; i++) {
+        //                 const file = req.files[i];
+        //                 const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
+        //                 const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
+    
+        //                 console.log(`กำลังอัปโหลดไฟล์: ${filePath}`);
+        //                 const result = await cloudinary.uploader.upload(filePath, {
+        //                     resource_type: "auto",
+        //                     folder: `${folderPath}/file`,
+        //                     public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+        //                 });
+    
+        //                 console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.error(`เกิดข้อผิดพลาดในการอัปโหลดงาน ${obj.id_assignment}`, error.message);
+        //     }
+        // }
         // IdsAssignments.flatMap((sub) => {
         //     sub.map(async(obj) => {
         //         // const Path = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),typeWork === "groups"?obj.id_group.toString():obj.id_user.toString())
@@ -312,16 +295,16 @@ exports.add_assignments = async (req,res) => {
                 
         //     }) 
         // })
-        if (req.files) {
-            req.files.forEach((file) => {
-                try {
-                    fs.unlinkSync(file.path)
-                    console.log(`File deleted successfully ${file.path}`);
-                } catch (err) {
-                    console.error(`Error deleting original file: ${file.path}`, err);
-                }
-            });
-        }
+        // if (req.files) {
+        //     req.files.forEach((file) => {
+        //         try {
+        //             fs.unlinkSync(file.path)
+        //             console.log(`File deleted successfully ${file.path}`);
+        //         } catch (err) {
+        //             console.error(`Error deleting original file: ${file.path}`, err);
+        //         }
+        //     });
+        // }
         const io = req.app.get("io");
         if (io && Array.isArray(idRoomArray)) {
             io.sockets.sockets.forEach((socket) => {
