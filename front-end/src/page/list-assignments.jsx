@@ -5,9 +5,11 @@ import withAuthorization from "../components/with-authorization";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
 import { useParams,useNavigate } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
 const List_assignments = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)
+    const [loadPage,setLoadPage] = useState(false)
     const { classroomId } = useParams()
     const navigate = useNavigate()
     const [assignment,setAssignment] = useState([])
@@ -16,9 +18,11 @@ const List_assignments = ({isLogin}) => {
     }
     const listAssignments = async() => {
         try {
+            setLoadPage(true)
             const response = await axios.get(`/list-assignments/${classroomId}`)
             const responseData = response.data
             setAssignment(responseData)
+            setLoadPage(false)
         } catch (error) {
             console.log("Error "+error.message)
         }
@@ -48,7 +52,13 @@ const List_assignments = ({isLogin}) => {
                 <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><GoChecklist  className="h-5 w-5 text-white"/></div></div>
                 <div className="px-1">List assignments</div>
             </div>
-            {assignment.map((data,i)=>(
+            {loadPage ? (
+                <div className="flex items-center justify-center pt-5">
+                    <ClipLoader size={20} />
+                </div>
+                    
+            ): 
+            assignment.map((data,i)=>(
                 <div key={i} className="flex flex-wrap border-2 rounded mt-5 lg:mx-18 md:mx-10 mx-8 shadow py-2 items-center cursor-pointer hover:bg-gray-100 text-sm" onClick={()=>handleLinkClick(classroomId,data.id_assignment)}>
                     <div className="flex-col mx-4 my-1 grow">
                         <div>{data.title} </div>

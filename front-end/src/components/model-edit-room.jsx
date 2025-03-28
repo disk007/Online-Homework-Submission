@@ -3,9 +3,11 @@ import { RxCross2 } from "react-icons/rx";
 import {RoomContext } from "./fetchRoom";
 import { SiGoogleclassroom } from "react-icons/si";
 import { ToastContainer, toast,Slide } from 'react-toastify';
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
 const ModelEditRoom = ({open,onClose,dataEdit}) => {
     const {fetchRoom} = useContext(RoomContext);
+    const [loadEdit,setLoadEdit] = useState(false)
     const [name,setname] = useState({
         name: dataEdit?.name || '',
         id: dataEdit?.id ||''
@@ -19,12 +21,14 @@ const ModelEditRoom = ({open,onClose,dataEdit}) => {
                 setError('name is required.')
             }
             if(isValid){
+                setLoadEdit(true)
                 const response = await axios.post('/update-classroom',name,{
                     headers: {'Content-Type': 'application/json'}
                 })
                 const responseData = response.data
                 if (responseData.status ==='success') {
                     await fetchRoom()
+                    setLoadEdit(false)
                     handleCancle()
                 }
                 else if(responseData.status === 'duplicate'){
@@ -56,6 +60,11 @@ const ModelEditRoom = ({open,onClose,dataEdit}) => {
             
             <div className={`fixed inset-0 flex justify-center items-center  ${open ? "visible bg-black/20 z-40" : "invisible"}`}>
             <ToastContainer />
+                {loadEdit ? 
+                    <div className="bg-white rounded-md flex justify-center items-center w-[500px] py-5">
+                        <ClipLoader color="#1D7AE5" size={50} />
+                    </div>
+                :
                 <div className="bg-white rounded-md w-[500px] overflow-y-auto">
                     <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
                         <div className="flex items-center"><SiGoogleclassroom /><div className="ml-1">Edit Room </div></div>
@@ -73,6 +82,7 @@ const ModelEditRoom = ({open,onClose,dataEdit}) => {
                         
                     </div>
                 </div>
+                }
             </div>
         </>
     )

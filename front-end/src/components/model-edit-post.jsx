@@ -7,10 +7,7 @@ import ModelFile from "../components/model-file";
 import { MdOutlineFileUpload } from "react-icons/md";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
-const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
-    const handleFetchData = async() => {
-        fetchAllPost(); // เรียก fetchPost จาก props
-    };
+const ModelEditPost = ({open,onClose,id}) => {
     const [loading, setLoading] = useState(false)
     const modules = {
         toolbar: [
@@ -85,6 +82,7 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
             setErrorpost('File size is too large. Maximum 10MB.')
         }
         if(isValid){
+            setLoading(true)
             data.append('message',dataPost.message)
             data.append('id',dataPost.id)
             data.append('date',new Date())
@@ -93,6 +91,7 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
             });
             const responseData = response.data;
             if (responseData.status ==='success') {
+                setLoading(false)
                 // handleFetchData()
                 handleCancle()
             }
@@ -163,6 +162,7 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
     const deleteFile = async (name,id) => {
         try {
             const data = new FormData()
+            setLoading(true)
             data.append('id',id)
             data.append('fileName',name)
             const response = await axios.post('/delete-file-post',data,{
@@ -170,8 +170,10 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
             });
             const responseData = response.data;
             if (responseData.status ==='success') {
+                setLoading(false)
                 await fetchPost()
                 await fetchSizesFile()
+
                 // handleFetchData()
             }
         } catch (error) {
@@ -191,18 +193,17 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
                 )
             }
             <div className={`fixed inset-0 flex justify-center items-center  ${open ? "visible bg-black/20 z-40" : "invisible"}`}>
+            {loading  ? 
+                <div className="flex justify-center bg-white rounded-md w-[600px] py-5">
+                    <ClipLoader color="#1D7AE5"  size={40} />
+                </div>
+                    
+            : 
             <div className="bg-white rounded-md w-[600px] overflow-y-auto">
                 <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
                     <div className="flex items-center"><FaRegCommentAlt /><div className="ml-1">Edit post </div></div>
                     <div onClick={handleCancle} className="w-6 h-6 hover:bg-gray-200 cursor-pointer"><RxCross2 className="w-6 h-6"/></div>
                 </div>
-                {loading  ? 
-                        <div className="flex justify-center">
-                            <ClipLoader color="#1D7AE5"  size={40} />
-                        </div>
-                        
-                : 
-                <>
                 <div className="flex mx-4 my-5 ">
                     <div className="w-full">
                         <ReactQuill 
@@ -270,8 +271,6 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
                             </div>
                         )}
                     </div>
-                </>
-                }
                     <div className="pb-4 px-4 mt-2 flex justify-between items-center">
                         <div className="border-2 inline-block p-1 rounded-full hover:bg-gray-300">
                             <input type="file" className="hidden" id="file" multiple onChange={handleFileChange}  accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,image/png,image/jpeg"/>
@@ -282,6 +281,7 @@ const ModelEditPost = ({open,onClose,id,fetchAllPost}) => {
                     {errorPost && <div className="mt-1 px-4 pb-3 text-sm text-red-500">{errorPost}</div>}
                 
             </div>
+            }
             </div>
         </>
     )

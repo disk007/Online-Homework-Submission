@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import {RoomContext } from "./fetchRoom";
+import ClipLoader from "react-spinners/ClipLoader";
 const ModelCreat = ({OnClose,isLogin}) => {
     const {fetchRoom } = useContext(RoomContext);
     const navigate = useNavigate();
@@ -11,6 +12,7 @@ const ModelCreat = ({OnClose,isLogin}) => {
         name: '',
         id: isLogin ? isLogin.id :''  
     })
+    const [loadCreate,setLoadCreate] = useState(false)
     const [errors,setErrors] = useState({})
     const handleChange = (e) => {
         setFormData({...formData,[e.target.name]:e.target.value})
@@ -24,6 +26,7 @@ const ModelCreat = ({OnClose,isLogin}) => {
             validation.name = 'Name is required.'
         }
         if(isValid){
+            setLoadCreate(true)
             const response = await axios.post('/add-classroom', formData)
             const responseData = response.data;
             if(responseData.status === 'success'){
@@ -38,13 +41,12 @@ const ModelCreat = ({OnClose,isLogin}) => {
                     progress: undefined,
                     theme: "light",
                     transition: Slide,
-                    onClose: () => {
-                        OnClose()
-                    }
                 })
                 await fetchRoom()
                 setFormData(prevData => ({ ...prevData, name: '' }));
                 setErrors({})
+                setLoadCreate(false)
+                OnClose()
             }
             else if(responseData.status === 'error'){
                 toast.warning(responseData.message, {
@@ -75,6 +77,9 @@ const ModelCreat = ({OnClose,isLogin}) => {
     <>
         <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
         {/* <ToastContainer /> */}
+            {loadCreate ?
+                <ClipLoader size={50} color={"#fff"} />
+            :
             <div className="bg-white rounded-md p-4 w-[24rem]">
                 <div className="">
                     <div className="flex justify-end"><button onClick={handleClear} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button></div>
@@ -86,7 +91,7 @@ const ModelCreat = ({OnClose,isLogin}) => {
                     </form>
                 </div>
             </div>
-            
+            }
         </div>
     </>
     

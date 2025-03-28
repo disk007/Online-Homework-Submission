@@ -25,6 +25,8 @@ const Navbar = ({isLogin}) =>{
     const [openTeacher,setOpenTeacher] = useState(false)
     const [loadOut,setLoadOut] = useState(false)
     const [errors,setErrors] = useState({})
+    const [loadPass,setLoadPass] = useState(false)
+    const [loadProfile,setLoadProfile] = useState(false)
     const [profileData,setProfileData] = useState({
         fname:isLogin?.fname,
         lname:isLogin?.lname
@@ -72,6 +74,7 @@ const Navbar = ({isLogin}) =>{
             }
             if(isValid){
                 setErrors({})
+                setLoadPass(true)
                 const formData = new FormData()
                 formData.append('old', passwords.old)
                 formData.append('newPassword', passwords.new)
@@ -81,6 +84,8 @@ const Navbar = ({isLogin}) =>{
                 })
                 const responseData = response.data
                 if(responseData.status ==='success') {
+                    setLoadPass(false)
+                    setOpenPassword(false)
                     window.location.reload()
                 }
                 else if(responseData.status === 'invalid'){
@@ -147,6 +152,7 @@ const Navbar = ({isLogin}) =>{
             }
             if(isValid){
                 setErrors({})
+                setLoadProfile(true)
                 const formData = new FormData()
                 formData.append('fname', profileData.fname)
                 formData.append('lname', profileData.lname)
@@ -156,6 +162,8 @@ const Navbar = ({isLogin}) =>{
                 })
                 const responseData = response.data
                 if(responseData.status ==='success') {
+                    setLoadProfile(false)
+                    setOpenProfile(false)
                     window.location.reload();
                 }
                 
@@ -171,6 +179,7 @@ const Navbar = ({isLogin}) =>{
     const handleLogout = async () => {
         try {
             setLoadOut(true)
+            setOpenLogout(!openLogout)
             await axios.post('/logout', {}, { withCredentials: true });
             setLoadOut(false)
             window.location.href = '/login'; // บังคับเปลี่ยนไปหน้า login ทันที
@@ -274,6 +283,11 @@ const Navbar = ({isLogin}) =>{
             }
             {openProfile && (
                 <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
+                    {loadProfile ?
+                    <div className="flex justify-center items-center bg-white rounded-md py-4 w-[550px]">
+                        <ClipLoader size={50}  color="#1D7AE5" />
+                    </div>
+                    :
                     <div className="bg-white rounded-md p-4 w-[550px]">
                         <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
                             <div className="flex items-center"><FaUser /><div className="ml-1">Profile</div></div>
@@ -300,10 +314,16 @@ const Navbar = ({isLogin}) =>{
                             </div>
                         </div>
                     </div>
+                    }
                 </div>
             )}
             {openPassword && (
                 <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
+                    {loadPass ?
+                    <div className="flex justify-center items-center bg-white rounded-md py-4 w-[550px]">
+                        <ClipLoader size={50} color="#1D7AE5" />
+                    </div>
+                    :
                     <div className="bg-white rounded-md p-4 w-[500px]">
                         <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
                             <div className="flex items-center"><FaLock /><div className="ml-1">Change password</div></div>
@@ -326,14 +346,17 @@ const Navbar = ({isLogin}) =>{
                             </div>
                         </div>
                     </div>
+                    }
                 </div>
             )}
             {
+                loadOut ? (
+                    <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        <ClipLoader size={50} color={"#fff"} />
+                    </div>
+                ):
                 openLogout && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
-                        {loadOut ? (
-                            <ClipLoader size={20} color={"#fff"} />
-                        ):
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setOpenLogout(!openLogout)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -344,7 +367,6 @@ const Navbar = ({isLogin}) =>{
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-sky-600 text-white bg-sky-500 transition ease-in-out delay-150 ml-1" onClick={handleLogout}>Yes</button>
                             </div>
                         </div>
-                        }
                     </div>
                 )
             }

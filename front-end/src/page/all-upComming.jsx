@@ -3,8 +3,10 @@ import Assignments from "../components/assignments";
 import supplies from '../picture/Supplies.jpg'
 import {Navigate,useNavigate } from "react-router-dom";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 const All_upComming = ({isLogin}) => {
     const [assignment,setAssignment] = useState([])
+    const [loadPage,setLoadPage] = useState(false)
     const shownMonths = new Set();
     const navigate = useNavigate()
     const handleLinkClick = (workId) =>{
@@ -12,9 +14,11 @@ const All_upComming = ({isLogin}) => {
     }
     const upComming = async () => {
         try{
+            setLoadPage(true)
             const response = await axios.get(`/all-up-comming/${isLogin.id}`)
             const responseData = response.data
             setAssignment(responseData)
+            setLoadPage(false)
         }
         catch (error) {
             console.log("Error "+error.message)
@@ -23,17 +27,6 @@ const All_upComming = ({isLogin}) => {
     useEffect(()=>{
         upComming()
     },[])
-    const formattedDate = (date) => {
-        const formatted = new Date(date).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hourCycle: 'h23',
-        });
-        return formatted;
-    }
     const formattedTime = (date) => {
         const formatted = new Date(date).toLocaleString('en-US', {
             hour: '2-digit',
@@ -76,7 +69,13 @@ const All_upComming = ({isLogin}) => {
     }
     return(
         <>
-        <Assignments /> 
+        <Assignments />
+        {loadPage ?(
+            <div className="md:ml-32 ml-[6rem] flex justify-center items-center fixed inset-0">
+                <ClipLoader color="#1D7AE5"  size={50} />
+            </div>
+        )
+        :
         <div className="md:ml-32 ml-[6rem] md:py-2 py-2 bg-white">
             {assignment.map((data,index)=>{
                 const showHeader = shouldShowYearMonth(data.due_time)
@@ -106,6 +105,7 @@ const All_upComming = ({isLogin}) => {
             )}
             
         </div>
+        }
             
         </>
     )

@@ -7,6 +7,7 @@ import {Navigate,useParams } from "react-router-dom";
 import {FaUserFriends,FaUser} from "react-icons/fa";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import withAuthorization from "../components/with-authorization";
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
 const Member = ({isLogin}) => {
     const { classroomId } = useParams()
@@ -16,6 +17,7 @@ const Member = ({isLogin}) => {
     const [selected, setSelected] = useState([])
     const [selectedIds, setSelectedIds] = useState([])
     const [open, setOpen] = useState(false)
+    const [loadPage,setLoadPage] = useState(false)
 
     const fetchTeacher = async () => {
         const response = await axios.get(`/teacher/${classroomId}`)
@@ -23,11 +25,13 @@ const Member = ({isLogin}) => {
         setTeacher(responseData)
     }
     const fetchMembers = async () => {
+        setLoadPage(true)
         const response = await axios.get(`/members/${classroomId}`)
         const responseData = response.data 
         setMember(responseData)
         setSelected(Array(responseData.length).fill(false))
         setSelectedIds([])
+        setLoadPage(false)
     }
 
     const handleCheckboxChange = (index, id_classroom, id_user) => {
@@ -111,6 +115,12 @@ const Member = ({isLogin}) => {
                     <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><FaUserFriends className="h-5 w-5 text-white"/></div></div>
                     <div className="px-1">Member</div>
                 </div>
+                {loadPage ? (
+                    <div className="flex items-center justify-center pt-5">
+                        <ClipLoader size={20} />
+                    </div>
+                    
+                ): 
                 <div className="my-5 flex flex-col lg:mx-24 md:mx-16 mx-4">
                     <div className="md:text-xl text-base font-semibold mb-2">Teacher</div>
                     <hr className="mb-2" />
@@ -144,6 +154,7 @@ const Member = ({isLogin}) => {
                     ))}
                     
                 </div>
+                }
             </div>
             { open && 
                 <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>

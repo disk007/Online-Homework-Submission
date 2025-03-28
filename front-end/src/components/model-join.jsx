@@ -3,6 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import axios from 'axios';
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import {RoomContext } from "./fetchRoom";
+import ClipLoader from "react-spinners/ClipLoader";
 const ModelJoin = ({OnClose,isLogin}) => {
     
     const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ const ModelJoin = ({OnClose,isLogin}) => {
     })
     const { dataRoom, fetchRoom } = useContext(RoomContext);
     const [errors,setErrors] = useState({})
+    const [loadJoin,setLoadJoin] = useState(false)
     const handleChange = (e) => {
         setFormData({...formData,[e.target.name]:e.target.value})
     }
@@ -23,6 +25,7 @@ const ModelJoin = ({OnClose,isLogin}) => {
             validation.code = 'Code is required.'
         }
         if(isValid){
+            setLoadJoin(true)
             const response = await axios.post('/join-classroom', formData)
             const responseData = response.data;
             if(responseData.status === 'success'){
@@ -38,12 +41,11 @@ const ModelJoin = ({OnClose,isLogin}) => {
                     progress: undefined,
                     theme: "light",
                     transition: Slide,
-                    onClose: () => {
-                        OnClose()
-                    }
                 })
                 setFormData(prevData => ({ ...prevData, code: '' }));
                 setErrors({})
+                setLoadJoin(false)
+                OnClose()
             }
             else if(responseData.status === 'error'){
                 toast.warning(responseData.message, {
@@ -75,6 +77,9 @@ const ModelJoin = ({OnClose,isLogin}) => {
     
         <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
         {/* <ToastContainer /> */}
+            {loadJoin ?
+                <ClipLoader size={50} color={"#fff"} />
+            :
             <div className="bg-white rounded-md p-4">
                     <div className="">
                     <form onSubmit={handleJoinRoom}>
@@ -88,7 +93,7 @@ const ModelJoin = ({OnClose,isLogin}) => {
                     </div>
                 
             </div>
-            
+            }
         </div>
     </>
     

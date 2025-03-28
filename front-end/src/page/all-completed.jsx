@@ -2,11 +2,12 @@ import React,{useState,useEffect} from "react";
 import Assignments from "../components/assignments";
 import supplies from '../picture/Supplies.jpg'
 import { FaCheck } from "react-icons/fa6";
-import { AiOutlineStop } from "react-icons/ai";
 import {Navigate,useNavigate,useParams } from "react-router-dom";
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
 const All_completed = ({isLogin}) => {
     const [assignment,setAssignment] = useState([])
+    const [loadPage,setLoadPage] = useState(false)
     const navigate = useNavigate()
     const handleLinkClick = (workId) =>{
         navigate(`/assignments/send-work/${workId}`);
@@ -14,9 +15,11 @@ const All_completed = ({isLogin}) => {
     const shownMonths = new Set();
     const upComming = async () => {
         try{
+            setLoadPage(true)
             const response = await axios.get(`/all-completed/${isLogin.id}`)
             const responseData = response.data
             setAssignment(responseData)
+            setLoadPage(false)
         }
         catch (error) {
             console.log("Error "+error.message)
@@ -68,6 +71,12 @@ const All_completed = ({isLogin}) => {
     return(
         <>
             <Assignments />
+            {loadPage ?(
+                <div className="md:ml-32 ml-[6rem] flex justify-center items-center fixed inset-0">
+                    <ClipLoader color="#1D7AE5"  size={50} />
+                </div>
+            )
+            :
             <div className="flex justify-center md:ml-32 ml-[6rem] md:py-5 py-2 bg-white items-center flex-col">
             {assignment.map((data, index) => {
                     const showHeader = shouldShowYearMonth(data.due_time); // เช็คว่าแสดงหัวข้อเดือนและปีนี้หรือไม่
@@ -102,7 +111,7 @@ const All_completed = ({isLogin}) => {
                     </div>
                 )}
             </div>
-            
+            }
         </>
     )
 }

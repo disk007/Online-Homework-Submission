@@ -14,6 +14,7 @@ import { Link,useLocation,useParams } from "react-router-dom";
 import "../../node_modules/flatpickr/dist/themes/dark.css";
 import ReactQuill from 'react-quill';
 import '../../node_modules/react-quill/dist/quill.snow.css';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
@@ -59,7 +60,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
     const [file,setFile] = useState('')
     const [selectedStudents, setSelectedStudents] = useState([])
     const [saveSelectedStudents, setSaveSelectedStudents] = useState([])
-
+    const [loadAdd,setLoadAdd] = useState(false)
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
@@ -332,6 +333,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
 
         if (isValid) {
             try {
+                setLoadAdd(true)
                 setErrors({});
                 const response = await axios.post('/add-assignment', data, {
                     headers: {
@@ -341,6 +343,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
     
                 const responseData = response.data;
                 if (responseData.status === 'success') {
+                    setLoadAdd(false)
                     toast.success(responseData.message, {
                         containerId:"addassignment",
                         position: "bottom-right",
@@ -404,8 +407,13 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
             }
             
             <div className={`fixed inset-0 flex justify-center items-center  ${open ? "visible bg-black/20 z-40" : "invisible"}`}>
+                {loadAdd  ? 
+                    <div className="flex justify-center bg-white rounded-md w-[600px] py-5">
+                        <ClipLoader color="#1D7AE5"  size={40} />
+                    </div>
+                        
+                :
                 <div className="bg-white rounded-md w-[600px] max-h-screen overflow-y-auto ">
-                    
                     <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
                         <div className="flex items-center"><GoChecklist /><div className="ml-1">Assignment</div></div>
                         <div onClick={handleCancle} className="w-6 h-6 hover:bg-gray-200 cursor-pointer"><RxCross2 className="w-6 h-6"/></div>
@@ -663,6 +671,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                         </div>
                     </div>
                 </div>
+                }
             </div>
         </>
     )

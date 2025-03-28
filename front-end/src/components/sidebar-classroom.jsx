@@ -8,7 +8,7 @@ import { LuRefreshCw } from "react-icons/lu";
 import axios from "axios";
 import useAuth from "./use-auth";
 const SidebarClassroom = ({sidebar,setSidebar}) =>{
-    const data = useAuth()
+    const {isLogin} = useAuth()
     const path = useLocation()
     const [reCode,setReCode] = useState(false)
     const { classroomId } = useParams()
@@ -97,14 +97,14 @@ const SidebarClassroom = ({sidebar,setSidebar}) =>{
                             <div className={`${sideClass.includes('post') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                         </div><br />
                         <div className="inline-block">
-                                {data && data.role !== 'student'  &&(
+                                {isLogin && isLogin?.role !== 'student'  &&(
                                     <>
                                         <li ><Link to={`/detail-classroom/list-assignments/${classroomId}`} className={`flex items-center mt-2 hover:text-sky-500 text-lg transition ease-in-out delay-150 ${sideClass.includes('list') || sideClass.includes('detail-assignment') ? "font-bold" : ''}`}><GoChecklist /><span className={`ml-2`}>Assignment</span></Link></li>
                                         <div className={`${sideClass.includes('list') || sideClass.includes('detail-assignment') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                                     </>
                                     
                                 )}
-                                {data && data.role === 'student' &&(
+                                {isLogin && isLogin?.role === 'student' &&(
                                     <>
                                         <li ><Link to={`/detail-classroom/up-comming/${classroomId}`} className={`flex items-center mt-2 hover:text-sky-500 text-lg transition ease-in-out delay-150 ${sideClass.includes('up') || sideClass.includes('past') || sideClass.includes('compl') || sideClass.includes('send')  ? "font-bold" : ''}`}><GoChecklist /><span className="ml-2">Assignment</span></Link></li>
                                         <div className={`${sideClass.includes('up') || sideClass.includes('past') || sideClass.includes('compl') || sideClass.includes('send') ? "bg-sky-500 w-[8.7rem] h-1 rounded" : ""}`}></div>
@@ -116,7 +116,7 @@ const SidebarClassroom = ({sidebar,setSidebar}) =>{
                             <div className={`${sideClass.includes('member') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                         </div>
                     </ul>
-                    {data && data.role !== 'student' && (
+                    {isLogin && isLogin?.role !== 'student' && (
                         <div className="border-2 mx-2 rounded mt-1">
                             <div className="flex items-center justify-between  mt-1 ">
                                 <div className="text-lg ml-1">Class code</div>
@@ -143,14 +143,14 @@ const SidebarClassroom = ({sidebar,setSidebar}) =>{
                             </div>
                             <br />
                             <div className="inline-block">
-                                {data && data.role !== 'teacher' &&(
+                                {isLogin && isLogin?.role !== 'student' &&(
                                     <>
                                         <li ><Link to={`/detail-classroom/list-assignments/${classroomId}`} className={`flex items-center mt-2 hover:text-sky-500 text-lg transition ease-in-out delay-150 ${sideClass.includes('list') || sideClass.includes('detail-assignment') ? "font-bold" : ''}`}><GoChecklist /><span className={`ml-2`}>Assignment</span></Link></li>
                                         <div className={`${sideClass.includes('list') || sideClass.includes('detail-assignment') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                                     </>
                                     
                                 )}
-                                {data && data.role === 'student' &&(
+                                {isLogin && isLogin?.role === 'student' &&(
                                     <>
                                         <li ><Link to={`/detail-classroom/up-comming/${classroomId}`} className={`flex items-center mt-2 hover:text-sky-500 text-lg transition ease-in-out delay-150 ${sideClass.includes('up') || sideClass.includes('past') || sideClass.includes('compl') || sideClass.includes('send') ? "font-bold" : ''}`}><GoChecklist /><span className="ml-2">Assignment</span></Link></li>
                                         <div className={`${sideClass.includes('up') || sideClass.includes('past') || sideClass.includes('compl') || sideClass.includes('send') ? "bg-sky-500 w-[8.7rem] h-1 rounded" : ""}`}></div>
@@ -163,7 +163,7 @@ const SidebarClassroom = ({sidebar,setSidebar}) =>{
                                 <div className={`${sideClass.includes('member') ? "bg-sky-500  h-1 rounded" : ""}`}></div>
                             </div>
                         </ul>
-                        {data && data.role === 'teacher' && (
+                        {isLogin && isLogin.role !== 'student' && (
                             <div className="border-2 mx-2 rounded mt-1">
                                 <div className="flex items-center justify-between  mt-1">
                                     <div className="text-lg ml-1">Class code</div>

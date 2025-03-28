@@ -5,11 +5,12 @@ import Model_number_teacher from "./model-number-teacher";
 import axios from "axios";
 import { ImBin } from "react-icons/im";
 import { ToastContainer, toast,Slide } from 'react-toastify';
-import { use } from "react";
+import ClipLoader from "react-spinners/ClipLoader";
 const Model_data_number = ({open,OnClose}) => {
     const [number,setNumber] = useState('')
     const [search,setSearch] = useState('')
     const [openAdd,setOpenAdd] = useState(false)
+    const [loadData,setLoadData] = useState(false)
     const [dataNumber,setDataNumber] = useState([])
     const [error,setError] = useState('')
     const handleCancel = () => {
@@ -19,14 +20,17 @@ const Model_data_number = ({open,OnClose}) => {
     }
 
     const fetchData = async() => {
+        setLoadData(true)
         const response = await axios.get('data-number-teacher')
         const responseData = response.data
         setDataNumber(responseData)
+        setLoadData(false)
     }
 
     const del_num_teacher = async(id) => {
         try {
             const formData = new FormData()
+            setLoadData(true)
             formData.append('id',id)
             const response = await axios.post('/delete-number-teacher',formData,{
                 headers: {'Content-Type': 'application/json'}
@@ -34,6 +38,7 @@ const Model_data_number = ({open,OnClose}) => {
             const responData = response.data
             if(responData.status === 'success'){
                 fetchData()
+                setLoadData(false)
             }
         } catch (error) {
             console.error(error)
@@ -46,6 +51,11 @@ const Model_data_number = ({open,OnClose}) => {
     return(
         <>
             <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
+                {loadData ?
+                    <div className="bg-white flex justify-center items-center rounded-md py-5 w-[35rem]">
+                        <ClipLoader color="#1D7AE5" size={50} />
+                    </div>
+                :
                 <div className="bg-white rounded-md p-4 w-[35rem]">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
@@ -121,6 +131,7 @@ const Model_data_number = ({open,OnClose}) => {
                         </table>
                     </div>
                 </div>
+                }
             </div>
             {openAdd &&(
                 <Model_number_teacher open={openAdd} OnClose={()=>setOpenAdd(false)} fetchData={fetchData} /> 

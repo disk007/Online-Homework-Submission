@@ -17,6 +17,7 @@ import ModelEditPost from "../components/model-edit-post";
 import ModelEditComment from "../components/model-edit-comment";
 import io from "socket.io-client";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const socket = io(process.env.REACT_APP_API_URL);
 
@@ -36,6 +37,9 @@ const DetailClassroom = ({isLogin}) =>{
     const [openEdit,setOpenEdit] = useState(false)
     const [openEditComment,setOpenEditComment] = useState(false)
     const [selecteId,setSelecteId] = useState('')
+    const [loadCom,setLoadCom] = useState(false)
+    const [loadPost,setLoadPost] = useState(false)
+    const [loadPage,setLoadPage] = useState(false)
     const [openDelPost,setOpenDelPost] = useState(false)
 
     const [openFile,setOpenFile] = useState(false)
@@ -84,6 +88,7 @@ const DetailClassroom = ({isLogin}) =>{
             setErrorpost('File size is too large. Maximum 10MB.')
         }
         if(isValid){
+            setLoadPost(true)
             data.append('date',new Date())
             data.append('id_user',isLogin.id)
             data.append('id_classroom',classroomId)
@@ -93,6 +98,7 @@ const DetailClassroom = ({isLogin}) =>{
             });
             const responseData = response.data;
             if (responseData.status ==='success') {
+                setLoadPost(false)
                 setErrorpost('')
                 setValuePost('')
                 setFileNames([])
@@ -109,6 +115,7 @@ const DetailClassroom = ({isLogin}) =>{
             isValid = false
         }
         if(isValid){
+            setLoadCom(true)
             formdata.append('message',filteredvalueComment)
             formdata.append('date',new Date())
             formdata.append('id_user',isLogin.id)
@@ -118,6 +125,7 @@ const DetailClassroom = ({isLogin}) =>{
             });
             const responseData = response.data;
             if (responseData.status ==='success') {
+                setLoadCom(false)
                 setValueComment({})
                 // await fetchComment()
             }
@@ -252,6 +260,7 @@ const DetailClassroom = ({isLogin}) =>{
     const listAssignments = async() => {
         try {
             let response
+            setLoadPage(true)
             if(isLogin.role !== 'student'){
                 response = await axios.get(`/page-post-assignments/${classroomId}`)
                 
@@ -261,6 +270,7 @@ const DetailClassroom = ({isLogin}) =>{
             }
             const responseData = response.data
             setAssignment(responseData)
+            setLoadPage(false)
         } catch (error) {
             console.log("Error "+error.message)
         }
@@ -302,6 +312,7 @@ const DetailClassroom = ({isLogin}) =>{
     const handleDelPost = async() => {
         try {
             const data = new FormData()
+            setLoadPost(true)
             data.append('id', selecteId)
             const response = await axios.post('/delete-post',data,{
                 headers: {'Content-Type': 'application/json'}
@@ -309,6 +320,7 @@ const DetailClassroom = ({isLogin}) =>{
             const responseData = response.data
             if (responseData.status ==='success') {
                 // await fetchPost()
+                setLoadPost(false)
                 setOpenDelPost(false)
                 setSelecteId('')
             }
@@ -319,6 +331,7 @@ const DetailClassroom = ({isLogin}) =>{
     const handleDelComment = async(id) => {
         try {
             const data = new FormData()
+            setLoadCom(true)
             data.append('classroomId',classroomId)
             data.append('id', id)
             const response = await axios.post('/delete-comment',data,{
@@ -326,6 +339,7 @@ const DetailClassroom = ({isLogin}) =>{
             })
             const responseData = response.data
             if (responseData.status ==='success') {
+                setLoadCom(false)
                 // await fetchComment()
                 setSelecteId('')
             }
@@ -367,7 +381,7 @@ const DetailClassroom = ({isLogin}) =>{
             <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar} />
             {
                 openEdit && (
-                    <ModelEditPost open={openEdit} onClose={()=>setOpenEdit(false)} id={selecteId} fetchAllPost={fetchPost}/>
+                    <ModelEditPost open={openEdit} onClose={()=>setOpenEdit(false)} id={selecteId} />
                 )
             }
             {
@@ -395,6 +409,13 @@ const DetailClassroom = ({isLogin}) =>{
                 {
                     post ? (
                         <div className="my-4 flex flex-col lg:mx-24 md:mx-16 mx-4 border-2 p-2 rounded-lg ">
+                            {loadPost ? (
+                                <div className="flex justify-center items-center">
+                                    <ClipLoader size={20} />
+                                </div>
+                                
+                            ):
+                            <>
                             <div className="flex justify-end w-full mb-2"><div className="cursor-pointer" onClick={handleCancle}><RxCross2 className="w-6 h-6 hover:bg-gray-200" /></div></div>
                             <div className="w-full">
                                 <ReactQuill 
@@ -404,7 +425,6 @@ const DetailClassroom = ({isLogin}) =>{
                                     modules={modules} 
                                 />
                             </div>
-
                             <div className="mt-3">
                             {fileNames.length > 0 && (
                                     <div className="flex flex-wrap text-xs">
@@ -442,6 +462,8 @@ const DetailClassroom = ({isLogin}) =>{
                                 <div><button className="hover:bg-sky-600 text-white bg-sky-500 py-1 transition ease-in-out delay-150 rounded px-7" onClick={addPost}>Post</button></div>
                             </div>
                             {errorPost && <div className="mt-1 text-sm text-red-500">{errorPost}</div>}
+                            </>
+                            }
                         </div>
                         ) : (
                             <div className="flex border-2 rounded-lg mt-5 lg:mx-24 md:mx-16 mx-4 shadow py-2 items-center cursor-pointer hover:bg-gray-100" onClick={()=>setPost(!post)}>
@@ -450,7 +472,13 @@ const DetailClassroom = ({isLogin}) =>{
                             </div>
                         )
                 }
-                {sortedData.map((data, index) => {
+                {loadPage ? (
+                    <div className="flex items-center justify-center pt-5">
+                        <ClipLoader size={20} />
+                    </div>
+                    
+                ): 
+                sortedData.map((data, index) => {
                 const filteredComments = dataComment.filter((d) => d.id_post === data.id);
                 const displayedComments = showAllComments[data.id]
                     ? filteredComments
@@ -550,7 +578,7 @@ const DetailClassroom = ({isLogin}) =>{
                                                 </div>
                                                     {
                                                         editDelComment[c.id] && (
-                                                            <div className="absolute left-2 bg-white cursor-pointer comment-editDel">
+                                                            <div className={`absolute left-2 bg-white cursor-pointer comment-editDel ${loadCom ? 'pointer-events-none' : ''}`}>
                                                                 <div className="text-xs border-t-2 border-x-2 p-1 hover:bg-gray-200" onClick={()=>{chooseDataEdit(c.id);setOpenEditComment(!openEditComment)}}>Edit</div>
                                                                 <div className="text-xs border-2 p-1 hover:bg-gray-200" onClick={()=>{handleDelComment(c.id)}}>Delete</div>
                                                             </div>
@@ -570,6 +598,10 @@ const DetailClassroom = ({isLogin}) =>{
                                     {
                                         comment[data.id] ? (
                                             <>
+                                                {loadCom ?(
+                                                    <ClipLoader size={20} />
+                                                ):
+                                                <>
                                                 <div className="flex w-full">
                                                     <div className="comment w-full">
                                                         <ReactQuill 
@@ -583,6 +615,9 @@ const DetailClassroom = ({isLogin}) =>{
                                                     
                                                 </div>
                                                 <div className={` ml-2 top-2 ${!isContentValid(String(valueComment[data.id] || '')) ? 'text-gray-400': 'text-sky-500 cursor-pointer'}`} onClick={()=>addComment(data.id)}><LuSendHorizonal className="w-5 md:w-7 md:h-7 h-5  comment" /></div>
+                                                </>
+                                                }
+                                                
                                                 
                                             </>
                                         )
@@ -604,6 +639,9 @@ const DetailClassroom = ({isLogin}) =>{
             {
                 openDelPost && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        {loadPost ?(
+                            <ClipLoader size={20} />
+                        ):
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setOpenDelPost(!openDelPost)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -614,6 +652,7 @@ const DetailClassroom = ({isLogin}) =>{
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-sky-600 text-white bg-sky-500 transition ease-in-out delay-150 ml-1" onClick={handleDelPost}>Yes</button>
                         </div>
                         </div>
+                        }
                     </div>
                 )
             }

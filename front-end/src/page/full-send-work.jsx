@@ -14,6 +14,7 @@ import { LuCheck } from "react-icons/lu";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { useNavigate,useParams } from 'react-router-dom';
 import checkFullWorkAccess from "../components/check-full-work-access";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Full_send_work = ({isLogin}) => {
     const { workId } = useParams()
@@ -31,6 +32,9 @@ const Full_send_work = ({isLogin}) => {
     const [errors,setErrors] = useState({})
     const [cancleWork,setCancleWork] = useState(false)
     const [totalSizeFiles,setTotalSizeFiles] = useState(0)
+    const [loading, setLoading] = useState(false)
+    const [loadSend,setLoadSend] = useState(false)
+    const [loadFile,setLoadFile] = useState(false)
     const navigate = useNavigate();
 
 
@@ -66,9 +70,11 @@ const Full_send_work = ({isLogin}) => {
     const fetchwork = async () => {
         try {
             if(workId !== null){
+                setLoading(true);
                 const response = await axios.get(`/detail-work/${workId}/${isLogin.id}`)
                 const responseData = response.data
                 setWork(responseData)
+                setLoading(false);
             }
             
         } catch (error) {
@@ -199,6 +205,7 @@ const Full_send_work = ({isLogin}) => {
     const sendWork =  async () => {
         let sizeFiles = totalSizeFiles
         const currentDate = new Date()
+        
         currentDate.setSeconds(0,0)
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
         const data  = new FormData()
@@ -223,6 +230,7 @@ const Full_send_work = ({isLogin}) => {
         }
         if(isValid){
             try {
+                setLoadSend(true)
                 setErrors({});
                 const response = await axios.post('/send-work', data, {
                     headers: {
@@ -247,6 +255,7 @@ const Full_send_work = ({isLogin}) => {
                     setFileNames([])
                     await fetchMywork()
                     await fetchSizesFile()
+                    setLoadSend(false)
                     // await fetchwork()
                 }
                 else if(responseData.status === 'deadline'){
@@ -285,6 +294,7 @@ const Full_send_work = ({isLogin}) => {
     const handleCancelWork = async () => {
         try {
             const data = new FormData()
+            setLoadSend(true)
             data.append('id_user',isLogin.id)
             data.append('id_work',workId)
             const response = await axios.post('/cancel-work',data,{
@@ -295,6 +305,7 @@ const Full_send_work = ({isLogin}) => {
                 console.log(responseData.message)
                 console.log("fileNames "+fileNames)
                 await fetchMywork();
+                setLoadSend(false)
                 
             }
             setCancleWork(!cancleWork)
@@ -307,6 +318,7 @@ const Full_send_work = ({isLogin}) => {
     const deleteFile = async (name,id_work,id_user,id_assignment) => {
         try {
             const data = new FormData()
+            setLoadFile(true)
             data.append('id_user',id_user)
             data.append('id_work',id_work)
             data.append('fileName',name)
@@ -318,6 +330,7 @@ const Full_send_work = ({isLogin}) => {
             if (responseData.status ==='success') {
                 await fetchMywork();
                 await fetchSizesFile();
+                setLoadFile(false)
             }
         } catch (error) {
             console.log(error)
@@ -367,7 +380,12 @@ const Full_send_work = ({isLogin}) => {
                     <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><FaBook className="h-5 w-5 text-white"/></div></div>
                     <div className="px-1">Assignments</div>
                 </div>
-                {work.map((data, i)=>(
+                {loading  ? 
+                <div className={`flex justify-center items-center fixed inset-0`}>
+                <ClipLoader color="#1D7AE5"  size={50} />
+                </div>
+                : 
+                work.map((data, i)=>(
                 <div className={`py-5 px-8  flex xl:flex-row flex-col`} key={i}>
                     <div className="flex xl:flex-row flex-col xl:basis-3/4">
                         <div className="xl:basis-2/3">
@@ -445,7 +463,7 @@ const Full_send_work = ({isLogin}) => {
                             {data.work && JSON.parse(data.work).map((file) => (
                                 
                                 <div className="flex items-center mb-2 border-2" title={file}>
-                                    <div className="px-2 py-2 flex flex-1 cursor-pointer" onClick={()=>{selectFileWork(file,data.id_assignment,data.assignment_type === 'group' ? data.id_group : null);setOpen(!open)}}>
+                                    <div className={`px-2 py-2 flex flex-1 cursor-pointer ${loadFile ? 'pointer-events-none': ''}`} onClick={()=>{selectFileWork(file,data.id_assignment,data.assignment_type === 'group' ? data.id_group : null);setOpen(!open)}}>
                                         <div className=""><FaFileAlt className="w-4 h-4" /></div>
                                         <div className="">
                                             <span className="pl-1">{file.length > 30 ? file.substring(0, 25) + "..." : file}</span>
@@ -454,7 +472,7 @@ const Full_send_work = ({isLogin}) => {
                                     
                                     <div className="flex">
                                         {data.is_submitted === false ?
-                                        <button className="pr-1" onClick={()=>deleteFile(file,workId,isLogin.id,data.id_assignment)}><RxCross2 className="w-4 h-4" /></button>
+                                        <button className="pr-1" onClick={()=>deleteFile(file,workId,isLogin.id,data.id_assignment)} disabled={loadFile}><RxCross2 className="w-4 h-4" /></button>
                                         : null}
                                     </div>
                                 </div>
@@ -473,11 +491,17 @@ const Full_send_work = ({isLogin}) => {
                                         </span>
                                     </button>
                                 ): (
-                                    <button className={`${data.colses_time && checkDate(data.colses_time) === false ? 'bg-gray-200 pointer-events-none' : 'bg-sky-500 hover:bg-sky-600 text-white'}md:text-base text-sm  w-full rounded p-2 flex items-center justify-center transition ease-in-out delay-150 border-2`} onClick={sendWork}>
+                                    <button className={`${data.colses_time && checkDate(data.colses_time) === false ? 'bg-gray-200 pointer-events-none' : 'bg-sky-500 hover:bg-sky-600 text-white'}md:text-base text-sm  w-full rounded p-2 flex items-center justify-center transition ease-in-out delay-150 border-2`} onClick={sendWork} disabled={loadSend}>
+                                        {loadSend ?(
+                                            <ClipLoader size={20} color={"#fff"} />
+                                        ):
+                                        <>
                                         <IoIosSend className={` ${data.colses_time && checkDate(data.colses_time) === false ? 'text-gray-500' : 'text-white'}`} />
                                         <span className={` ${data.colses_time && checkDate(data.colses_time) === false ? 'text-gray-500' : 'text-white'}`}>
                                             Send
                                         </span>
+                                        </>
+                                        }
                                     </button>
                                 )}
                             </div>
@@ -507,6 +531,10 @@ const Full_send_work = ({isLogin}) => {
             {
                 cancleWork && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        {loadSend ? (
+                                <ClipLoader size={20} color={"sky-500"} />
+                        ):
+                        <>
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setCancleWork(!cancleWork)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -517,6 +545,8 @@ const Full_send_work = ({isLogin}) => {
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-sky-600 text-white bg-sky-500 transition ease-in-out delay-150 ml-1" onClick={handleCancelWork}>Yes</button>
                         </div>
                         </div>
+                        </>
+                        }
                     </div>
                 )
             }

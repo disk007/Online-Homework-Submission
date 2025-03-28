@@ -51,6 +51,7 @@ const ModelEditComment = ({open,onClose,id,classroomId}) => {
             isValid = false
         }
         if(isValid){
+            setLoading(true)
             data.append('message',dataComment.message)
             data.append('id',dataComment.id)
             data.append('date',new Date())
@@ -60,6 +61,7 @@ const ModelEditComment = ({open,onClose,id,classroomId}) => {
             });
             const responseData = response.data;
             if (responseData.status ==='success') {
+                setLoading(false)
                 handleCancle()
             }
             
@@ -72,17 +74,17 @@ const ModelEditComment = ({open,onClose,id,classroomId}) => {
     return(
         <>
             <div className={`fixed inset-0 flex justify-center items-center  ${open ? "visible bg-black/20 z-40" : "invisible"}`}>
+                {loading  ? 
+                    <div className="flex justify-center bg-white rounded-md w-[600px] py-5">
+                        <ClipLoader color="#1D7AE5"  size={40} />
+                    </div>
+                    
+                : 
                 <div className="bg-white rounded-md w-[600px] overflow-y-auto">
                     <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
                         <div className="flex items-center"><FaRegCommentAlt /><div className="ml-1">Edit comment </div></div>
                         <div onClick={handleCancle} className="w-6 h-6 hover:bg-gray-200 cursor-pointer"><RxCross2 className="w-6 h-6"/></div>
                     </div>
-                    {loading  ? 
-                        <div className="flex justify-center">
-                            <ClipLoader color="#1D7AE5"  size={40} />
-                        </div>
-                        
-                    : 
                     <div className="flex mx-4 my-2 ">
                         <div className="w-full">
                             <ReactQuill 
@@ -95,7 +97,6 @@ const ModelEditComment = ({open,onClose,id,classroomId}) => {
                             />
                         </div>
                     </div>
-                    }
                     {errorComment && <div className="px-4 pb-3 text-sm text-red-500">{errorComment}</div>}
                     <div className="flex justify-end mx-4 my-5 ">
                         <div className="mr-2"><div className="border-2 py-2 px-8 w-full mt-3 text-gray-400 hover:text-gray-500 mr-2 transition ease-in-out delay-150 cursor-pointer" onClick={handleCancle}>Cancel</div></div>
@@ -103,6 +104,7 @@ const ModelEditComment = ({open,onClose,id,classroomId}) => {
                         
                     </div>
                 </div>
+                }
             </div>
         </>
     )

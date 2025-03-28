@@ -14,6 +14,7 @@ import { Link,useLocation,useParams,useNavigate } from "react-router-dom";
 import "../../node_modules/flatpickr/dist/themes/dark.css";
 import ReactQuill from 'react-quill';
 import '../../node_modules/react-quill/dist/quill.snow.css';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
@@ -44,6 +45,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
     const [selectFile,setSelectFile] = useState(null)
     const [openFile,setOpenFile] = useState(false)
     const [isChecked, setIsChecked] = useState(false)
+    const [loadEdit,setLoadEdit] = useState(false)
 
     const fetchdataAssignment = async() => {
         try {
@@ -100,9 +102,11 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
         setFileNames(prevFileNames => prevFileNames.filter(file => file.name !== fileName))
     }
     const handleCancle = async() =>{
+        setLoadEdit(true)
         setFileNames([])
         await fetchdataAssignment()
         setErrors({})
+        setLoadEdit(false)
         OnClose()
 
     }
@@ -115,6 +119,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
     }
     const deleteFile = async (name,id_work) => {
         try {
+            setLoadEdit(true)
             const data = new FormData()
             data.append('id_work',id_work)
             data.append('fileName',name)
@@ -126,6 +131,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
             if (responseData.status ==='success') {
                 await fetchdataAssignment()
                 await fetchSizesFile()
+                setLoadEdit(false)
             }
         } catch (error) {
             console.log(error)
@@ -236,6 +242,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
 
         if (isValid) {
             try {
+                setLoadEdit(true)
                 setErrors({});
                 const response = await axios.post('/update-assignment', data, {
                     headers: {
@@ -245,6 +252,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
     
                 const responseData = response.data;
                 if (responseData.status === 'success') {
+                    setLoadEdit(false)
                     navigate(`/detail-classroom/list-assignments/${classroomId}`)
                 }
             } catch (error) {
@@ -287,6 +295,12 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
             }
             
             <div className={`fixed inset-0 flex justify-center items-center  ${open ? "visible bg-black/20 z-40" : "invisible"}`}>
+                {loadEdit  ? 
+                    <div className="flex justify-center bg-white rounded-md w-[600px] py-5">
+                        <ClipLoader color="#1D7AE5"  size={40} />
+                    </div>
+                        
+                :
                 <div className="bg-white rounded-md w-[600px] max-h-screen overflow-y-auto ">
                     {/* <form> */}
                     <div className="flex justify-between text-xl mb-2 border-b-2 p-4">
@@ -496,6 +510,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
                     </div>
                     {/* </form> */}
                 </div>
+                }
             </div>
         </>
     )

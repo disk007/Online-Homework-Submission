@@ -15,6 +15,7 @@ import ModelFile from "../components/model-file";
 import ModelEditAssignment from "../components/model-edit-assignment";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import ClipLoader from "react-spinners/ClipLoader";
 
 const Detali_assignment = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)
@@ -34,6 +35,7 @@ const Detali_assignment = ({isLogin}) => {
     const [search,setSearch] = useState('')
     const [state, setState] = useState('')
     const [sideClass,SetSideClass] = useState('')
+    const [loadPage,setLoadPage] = useState(false)
     const handleLinkToretrun = () =>{
         navigate(`/detail-classroom/detail-assignment/${classroomId}/${assignmentId}`);
     }
@@ -190,14 +192,11 @@ const Detali_assignment = ({isLogin}) => {
     };
     const getScores = async () => {
         try {
+            setLoadPage(true)
             const response = await axios.get(`/get-scores/${assignmentId}`)
             const responseData = response.data
-            // const formattedData = responseData.map(item => ({
-            //     name: item.name || "ไม่ระบุชื่อ", // กำหนดค่าเริ่มต้นให้ name
-            //     item.ascore: item.wscore !== null ? item.wscore : "N/A" // แปลงค่า null เป็น N/A
-            // }));
-    
             setDataExcel(responseData); 
+            setLoadPage(false)
 
         } catch (error) {
             console.log("Error "+error.message)
@@ -275,6 +274,13 @@ const Detali_assignment = ({isLogin}) => {
                     <div className="lg:mx-1 mx-0" ><div className="hidden lg:block bg-sky-600 rounded p-1"><GoChecklist  className="h-5 w-5 text-white"/></div></div>
                     <div className="px-1">Detail assignment</div>
                 </div>
+                {loadPage ? (
+                    <div className="flex items-center justify-center pt-5">
+                        <ClipLoader size={20} />
+                    </div>
+                        
+                ):
+                <>
                 <div className="py-3 px-5 mt-2 flex flex-wrap items-center justify-center lg:justify-between md:text-base text-xs">
                     <div className="flex items-center flex-wrap justify-center space-x-4 mr-2">
                         <div className="flex items-center  hover:text-sky-600 text-gray-500 cursor-pointer transition ease-in-out delay-150" onClick={() => navigate(`/detail-classroom/list-assignments/${classroomId}`)}><IoChevronBackOutline className="h-7 w-7"/>Back</div>
@@ -426,15 +432,8 @@ const Detali_assignment = ({isLogin}) => {
                         </tbody>
                     </table>
                 </div>
-
-                    {/* <DataTable
-                        columns={columns}
-                        data={data}
-                        
-                    /> */}
-                {/* <hr /> */}
-
-                
+                </>
+                }
             </div>
             {
                 Opendelete && (

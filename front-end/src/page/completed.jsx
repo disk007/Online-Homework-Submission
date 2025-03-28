@@ -7,9 +7,11 @@ import {Navigate,useNavigate,useParams } from "react-router-dom";
 import { FaCheck } from "react-icons/fa6";
 import withAuthorization from "../components/with-authorization";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 const Completed = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)
     const { classroomId } = useParams()
+    const [loadPage,setLoadPage] = useState(false)
     const [assignment,setAssignment] = useState([])
     const shownMonths = new Set();
     const navigate = useNavigate()
@@ -18,9 +20,11 @@ const Completed = ({isLogin}) => {
     }
     const upComming = async () => {
         try{
+            setLoadPage(true)
             const response = await axios.get(`/completed/${isLogin.id}/${classroomId}`)
             const responseData = response.data
             setAssignment(responseData)
+            setLoadPage(false)
         }
         catch (error) {
             console.log("Error "+error.message)
@@ -73,6 +77,11 @@ const Completed = ({isLogin}) => {
         <>
             <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar} />
             <Assignments sidebar={sidebar} setSidebar={setSidebar} />
+            {loadPage ? (
+            <div className="ml-[6rem] md:ml-[8rem] lg:ml-[26rem] flex justify-center items-center fixed inset-0">
+                    <ClipLoader color="#1D7AE5"  size={50} />
+                </div>
+            ):
             <div className={`flex justify-center ml-[6rem] md:ml-[8rem] lg:ml-[26rem] md:py-5 py-2 bg-white items-center flex-col ${sidebar ? 'opacity-10 pointer-events-none' : ''}`}>
                 {assignment.length > 0 ? (
                 assignment.map((data, index) => {
@@ -109,7 +118,7 @@ const Completed = ({isLogin}) => {
                 )}
                 
             </div>
-            
+            }
         </>
     )
 }

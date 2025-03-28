@@ -5,8 +5,10 @@ import supplies from '../picture/Supplies.jpg'
 import {useNavigate,useParams } from "react-router-dom";
 import withAuthorization from "../components/with-authorization";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 const UpComming = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)
+    const [loadPage,setLoadPage] = useState(false)
     const { classroomId } = useParams()
     const navigate = useNavigate()
     const shownMonths = new Set();
@@ -16,9 +18,11 @@ const UpComming = ({isLogin}) => {
     }
     const listAssignments = async() => {
         try {
+            setLoadPage(true)
             const response = await axios.get(`/up-comming/${isLogin.id}/${classroomId}`)
             const responseData = response.data
             setAssignment(responseData)
+            setLoadPage(false)
         } catch (error) {
             console.log("Error "+error.message)
         }
@@ -28,17 +32,6 @@ const UpComming = ({isLogin}) => {
     useEffect(() => {
         listAssignments()
     },[])
-    const formattedDate = (date) => {
-        const formatted = new Date(date).toLocaleString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hourCycle: 'h23',
-        });
-        return formatted;
-    }
     const formattedTime = (date) => {
         const formatted = new Date(date).toLocaleString('en-US', {
             hour: '2-digit',
@@ -83,6 +76,11 @@ const UpComming = ({isLogin}) => {
         <>
         <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar}/>
         <Assignments sidebar={sidebar} setSidebar={setSidebar} />
+        {loadPage ? (
+            <div className="ml-[6rem] md:ml-[8rem] lg:ml-[26rem] flex justify-center items-center fixed inset-0">
+                <ClipLoader color="#1D7AE5"  size={50} />
+            </div>
+        ):
         <div className={`ml-[6rem] md:ml-[8rem] lg:ml-[26rem] mb-4 md:py-5 py-2 bg-white  ${sidebar ? 'opacity-10 pointer-events-none' : ''}`}>
             {assignment.length > 0 ? (
             assignment.map((data,index)=>{
@@ -116,7 +114,7 @@ const UpComming = ({isLogin}) => {
             }
             
         </div>
-            
+        }
         </>
     )
 }

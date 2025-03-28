@@ -5,6 +5,7 @@ import { MdOutlineLogout } from "react-icons/md";
 import {RoomContext } from "./fetchRoom";
 import { BsThreeDots } from "react-icons/bs";
 import ModelEditRoom from "./model-edit-room";
+import ClipLoader from "react-spinners/ClipLoader";
 import axios from "axios";
 const Room = ({data}) =>{
     const navigate = useNavigate()
@@ -15,6 +16,8 @@ const Room = ({data}) =>{
     const [currentPage, setCurrentPage] = useState(1);
     const roomsPerPage = 6;
     const [selecteId,setSelecteId] = useState('')
+    const [loadLeave,setLoadLeav] =useState(false)
+    const [loadDel,setLoadDel] =useState(false)
     const [dataEdit,setDataEdit] = useState({
         id:'',
         name:''
@@ -46,17 +49,20 @@ const Room = ({data}) =>{
     const deleteClassroom = async() =>{
         try {
             const formData = new FormData()
+            setLoadDel(true)
             formData.append('classroomId',dataEdit.id)
             const response = await axios.post('/delete-classroom',formData,{
                 headers: {'Content-Type': 'application/json'}
             })
             const responData = response.data
             if (responData.status ==='success') {
+                
                 await fetchRoom()
                 setDataEdit({
                     id:'',
                     name:''
                 })
+                setLoadDel(false)
                 setOpenDel(!openDel)
             }
         } catch (error) {
@@ -91,6 +97,7 @@ const Room = ({data}) =>{
     const handelLeave = async() => {
         try {
             const forData = new FormData()
+            setLoadLeav(true)
             forData.append('id_classroom', selecteId)
             forData.append('id_user',data.id)
             const response = await axios.post('/leave-classroom',forData,{
@@ -99,6 +106,7 @@ const Room = ({data}) =>{
             const responseData = response.data
             if (responseData.status ==='success') {
                 await fetchRoom()
+                setLoadLeav(false)
                 setOpenLeave(false)
                 setSelecteId('')
             }
@@ -248,6 +256,11 @@ const Room = ({data}) =>{
             {
                 openLeave && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        {loadLeave?
+                        <div className="flex justify-center items-center bg-white rounded-md py-4 w-[30rem]">
+                            <ClipLoader size={30} color="#1D7AE5" />
+                        </div>
+                        :
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setOpenLeave(!openLeave)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -258,12 +271,16 @@ const Room = ({data}) =>{
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-sky-600 text-white bg-sky-500 transition ease-in-out delay-150 ml-1" onClick={handelLeave}>Yes</button>
                         </div>
                         </div>
+                        }
                     </div>
                 )
             }
             {
                 openDel && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        {loadDel?
+                            <ClipLoader size={50} color="#ffffff" />
+                        :
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setOpenDel(!openDel)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -274,6 +291,7 @@ const Room = ({data}) =>{
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-red-600 text-white bg-red-500 transition ease-in-out delay-150 ml-1" onClick={deleteClassroom}>Yes</button>
                         </div>
                         </div>
+                        }
                     </div>
                 )
             }

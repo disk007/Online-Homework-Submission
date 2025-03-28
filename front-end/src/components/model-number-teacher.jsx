@@ -3,9 +3,11 @@ import { RxCross2 } from "react-icons/rx";
 import { MdAddCall } from "react-icons/md";
 import axios from "axios";
 import { ToastContainer, toast,Slide } from 'react-toastify';
+import ClipLoader from "react-spinners/ClipLoader";
 const Model_number_teacher = ({fetchData,open,OnClose}) => {
     const [number,setNumber] = useState('')
     const [error,setError] = useState('')
+    const [loadAdd,setLoadAdd] = useState(false)
     const handleCancel = () => {
         setNumber('')
         setError('')
@@ -23,6 +25,7 @@ const Model_number_teacher = ({fetchData,open,OnClose}) => {
                 setError('Number teacher should contain only numbers.')
             }
             else{
+                setLoadAdd(true)
                 const response = await axios.post('/add-number-teacher',{number},{
                     headers: {'Content-Type': 'application/json'}
                 })
@@ -30,6 +33,7 @@ const Model_number_teacher = ({fetchData,open,OnClose}) => {
                 if(responseData.state = 'success'){
                     setError('')
                     fetchNumber()
+                    setLoadAdd(false)
                     handleCancel()
                 }
                 
@@ -41,6 +45,11 @@ const Model_number_teacher = ({fetchData,open,OnClose}) => {
     return(
         <>
             <div className={`fixed inset-0 flex justify-center items-center visible bg-black/20 z-50`}>
+                {loadAdd ?
+                    <div className="bg-white flex justify-center items-center rounded-md py-5 w-[30rem]">
+                        <ClipLoader color="#1D7AE5" size={40} />
+                    </div>
+                :
                 <div className="bg-white rounded-md p-4 w-[30rem]">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center">
@@ -60,6 +69,7 @@ const Model_number_teacher = ({fetchData,open,OnClose}) => {
                         </div>
                     </div>
                 </div>
+                }
             </div>
         </>
     )
