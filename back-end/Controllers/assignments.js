@@ -13,6 +13,8 @@ exports.add_assignments = async (req,res) => {
         const due_Time = new Date(dueTime)
         const create = new Date(create_at)
 
+        console.log("due_Date ",dueDate, "+ ",dueDate)
+
         const Date_create = `${create.getFullYear()}-${(create.getMonth() + 1).toString().padStart(2, '0')}-${create.getDate().toString().padStart(2, '0')} ${create.getHours().toString().padStart(2, '0')}:${create.getMinutes().toString().padStart(2, '0')}:00`
         const dueDateTime = `${due_Date.getFullYear()}-${(due_Date.getMonth() + 1).toString().padStart(2, '0')}-${due_Date.getDate().toString().padStart(2, '0')} ${due_Time.getHours().toString().padStart(2, '0')}:${due_Time.getMinutes().toString().padStart(2, '0')}:00`
         console.log("dueDateTime "+dueDateTime)
@@ -215,24 +217,40 @@ exports.add_assignments = async (req,res) => {
                     typeWork === "groups" ? obj.id_group : obj.id_user
                 }`;
     
-                await cloudinary.api.create_folder(folderPath);
-                console.log(`สร้างโฟลเดอร์: ${folderPath}`);
-    
-                // 📤 อัปโหลดไฟล์ (ถ้ามีไฟล์)
                 if (req.files && req.body) {
                     for (let i = 0; i < req.files.length; i++) {
                         const file = req.files[i];
                         const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
                         const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
-    
-                        console.log(`กำลังอัปโหลดไฟล์: ${filePath}`);
-                        const result = await cloudinary.uploader.upload(filePath, {
-                            resource_type: "auto",
-                            folder: `${folderPath}/file`,
-                            public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                        const storage = new CloudinaryStorage({
+                            cloudinary: cloudinary, // ใช้ Cloudinary ที่ได้ตั้งค่าไว้
+                            params: {
+                                folder: `${folderPath}/file`, // ระบุโฟลเดอร์ใน Cloudinary
+                                allowed_formats: ["jpg", "png", "txt", "pdf", "docx", "xlsx"], // กำหนดรูปแบบไฟล์ที่อนุญาต
+                                public_id: fileName, // ตั้งชื่อไฟล์ให้ตรงกับชื่อจริง
+                            },
                         });
+        
+                        // สร้าง instance ของ multer ที่ใช้ CloudinaryStorage
+                        const upload = multer({ storage: storage }).any();
+        
+                        // ใช้ multer เพื่ออัปโหลดไฟล์
+                        await new Promise((resolve, reject) => {
+                            upload(req, res, (err) => {
+                                if (err) {
+                                    reject(`เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ${err.message}`);
+                                } else {
+                                    resolve();
+                                }
+                            });
+                        });
+                        // const result = await cloudinary.uploader.upload(filePath, {
+                        //     resource_type: "auto",
+                        //     folder: `${folderPath}/file`,
+                        //     public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                        // });
     
-                        console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
+                        // console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
                     }
                 }
             } catch (error) {
