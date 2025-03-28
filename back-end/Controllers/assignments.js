@@ -2,6 +2,7 @@ const db = require('../Model/database')
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('../Middleware/cloudinary')
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
 exports.add_assignments = async (req,res) => {
     try{
         const {title,instructions,points,dueDate,dueTime,idClassroom,typeWork,members,dateClose,timeClose,fileName,create_at} = req.body
