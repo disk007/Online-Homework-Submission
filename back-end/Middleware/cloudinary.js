@@ -1,5 +1,5 @@
 const cloudinary = require('cloudinary').v2;
-
+require('dotenv').config();
 // ตั้งค่า API credentials
 cloudinary.config({ 
   cloud_name: process.env.YOUR_CLOUD_NAME, 
