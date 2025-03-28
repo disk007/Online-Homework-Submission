@@ -225,7 +225,7 @@ exports.add_assignments = async (req,res) => {
                         const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
                         const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
     
-                        console.log(`🚀 กำลังอัปโหลดไฟล์: ${filePath}`);
+                        console.log(`กำลังอัปโหลดไฟล์: ${filePath}`);
                         const result = await cloudinary.uploader.upload(filePath, {
                             resource_type: "auto",
                             folder: `${folderPath}/file`,
@@ -326,7 +326,7 @@ exports.add_assignments = async (req,res) => {
     }
     catch(error){
         console.log(error);
-        return res.status(500).json({ error: error.message });
+        return res.json({ status:'error',message: error.message });
     }
 }
 
