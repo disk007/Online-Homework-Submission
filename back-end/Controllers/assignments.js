@@ -1,6 +1,7 @@
 const db = require('../Model/database')
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('../Middleware/cloudinary')
 exports.add_assignments = async (req,res) => {
     try{
         const {title,instructions,points,dueDate,dueTime,idClassroom,typeWork,members,dateClose,timeClose,fileName,create_at} = req.body
@@ -170,11 +171,8 @@ exports.add_assignments = async (req,res) => {
                 const placeholders = insertData
                     .map((_, i) => `($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4})`)
                     .join(", ");
-                // ใช้ bulk insert เพื่อลดจำนวน query
                 const query = `INSERT INTO groups_remember (id_user, no_group, id_classroom, name) VALUES ${placeholders}`;
-                await db.query(query, insertData.flat());      
-                // const result = await db.query("INSERT INTO groups_remember (id_classroom) VALUES ($1)",[idRoomFilter[0]])
-                // console.log("insert into groups_remember")
+                await db.query(query, insertData.flat());
             }
             else{
                 await db.query("DELETE FROM groups_remember WHERE id_classroom = $1",[idRoomFilter[0]])
@@ -193,11 +191,9 @@ exports.add_assignments = async (req,res) => {
                     });
                 });
             
-                // ใช้ bulk insert เพื่อลดจำนวน query
                 const placeholders = insertData
                     .map((_, i) => `($${i * 4 + 1}, $${i * 4 + 2}, $${i * 4 + 3}, $${i * 4 + 4})`)
                     .join(", ");
-                // ใช้ bulk insert เพื่อลดจำนวน query
                 const query = `INSERT INTO groups_remember (id_user, no_group, id_classroom, name) VALUES ${placeholders}`;
                 await db.query(query, insertData.flat()); 
             }
@@ -211,40 +207,92 @@ exports.add_assignments = async (req,res) => {
                 })
             ) 
         }
-
-        idAssignmentWork.flatMap(sub => {
-            sub.map(obj => {
-                const Path = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),typeWork === "groups"?obj.id_group.toString():obj.id_user.toString())
-                fs.mkdirSync(Path, { recursive: true })
-                console.log('Folder created successfully!')
+        const IdsAssignments = idAssignmentWork.flatMap(sub => sub);
+        for (const obj of IdsAssignments) {
+            try {
+                // 🗂️ สร้างโฟลเดอร์สำหรับงาน
+                const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
+                    typeWork === "groups" ? obj.id_group : obj.id_user
+                }`;
+    
+                await cloudinary.api.create_folder(folderPath);
+                console.log(`สร้างโฟลเดอร์: ${folderPath}`);
+    
+                // 📤 อัปโหลดไฟล์ (ถ้ามีไฟล์)
                 if (req.files && req.body) {
-                    req.files.forEach((file, index) => {
-                        console.log("file.path "+file.path)
-                        console.log(file, fileName[index])
-                        const folderFile = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),'file');
-                        if (!fs.existsSync(folderFile)) {
-                            try {
-                                fs.mkdirSync(folderFile, { recursive: true })
-                                console.log(`Folder created: ${folderFile}`);
-                            } catch (err) {
-                                console.error('Error creating folder:', err);
-                            }
-                        }
-                        const newPath = path.join(folderFile,fileName[index]);
-                        if (fs.existsSync(file.path)) {
-                            try {
-                                fs.copyFileSync(file.path, newPath)
-                                console.log(`File copy successfully to ${newPath}`);
-                            } catch (err) {
-                                console.error('Error moving file:', err);
-                            }
-                        } else {
-                            console.error(`File not found: ${file.path}`);
-                        }
-                    });
+                    for (let i = 0; i < req.files.length; i++) {
+                        const file = req.files[i];
+                        const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
+                        const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
+    
+                        console.log(`🚀 กำลังอัปโหลดไฟล์: ${filePath}`);
+                        const result = await cloudinary.uploader.upload(filePath, {
+                            resource_type: "auto",
+                            folder: `${folderPath}/file`,
+                            public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                        });
+    
+                        console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
+                    }
                 }
-            }) 
-        })
+            } catch (error) {
+                console.error(`เกิดข้อผิดพลาดในการอัปโหลดงาน ${obj.id_assignment}`, error.message);
+            }
+        }
+        // IdsAssignments.flatMap((sub) => {
+        //     sub.map(async(obj) => {
+        //         // const Path = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),typeWork === "groups"?obj.id_group.toString():obj.id_user.toString())
+        //         // fs.mkdirSync(Path, { recursive: true })
+        //         const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
+        //             typeWork === "groups" ? obj.id_group : obj.id_user
+        //         }`;
+        //         const CfolderPath = await cloudinary.api.create_folder(folderPath);
+        //         if (req.files && req.body) {
+        //             const folderFile = `assignments/${obj.id_assignment}/${obj.id}/file`
+        //             const ColderFile = await cloudinary.api.create_folder(folderFile);
+        //             for (let i = 0; i < req.files.length; i++) {
+        //                 const file = req.files[i];
+        //                 const fileName = req.body.fileName[i]; // ใช้ชื่อไฟล์จาก req.body
+        //                 const filePath = file.path; // ตำแหน่งไฟล์บนเซิร์ฟเวอร์
+              
+        //                 console.log(`อัปโหลดไฟล์: ${filePath}`);
+              
+        //                 // 📤 อัปโหลดไปที่ Cloudinary (ไม่ต้องสร้างโฟลเดอร์ file แยก)
+        //                 const result = await cloudinary.uploader.upload(filePath, {
+        //                   resource_type: "auto",
+        //                   folder: `${folderPath}/file`, // สร้างโฟลเดอร์ file อัตโนมัติ
+        //                   public_id: fileName, // ตั้งชื่อไฟล์
+        //                 });
+        //                 console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
+        //             }
+        //             // req.files.forEach(async(file, index) => {
+        //                 // console.log("file.path "+file.path)
+        //                 // console.log(file, fileName[index])
+        //                 // const folderFile = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),'file');
+        //                 // if (!fs.existsSync(folderFile)) {
+        //                 //     try {
+        //                 //         fs.mkdirSync(folderFile, { recursive: true })
+        //                 //         console.log(`Folder created: ${folderFile}`);
+        //                 //     } catch (err) {
+        //                 //         console.error('Error creating folder:', err);
+        //                 //     }
+        //                 // }
+        //                 // const newPath = path.join(folderFile,fileName[index]);
+        //                 // if (fs.existsSync(file.path)) {
+        //                 //     try {
+        //                 //         fs.copyFileSync(file.path, newPath)
+        //                 //         console.log(`File copy successfully to ${newPath}`);
+        //                 //     } catch (err) {
+        //                 //         console.error('Error moving file:', err);
+        //                 //     }
+        //                 // } else {
+        //                 //     console.error(`File not found: ${file.path}`);
+        //                 // }
+        //             // });
+        //         }
+                
+        //     }) 
+        // })
         if (req.files) {
             req.files.forEach((file) => {
                 try {
@@ -743,14 +791,9 @@ exports.delete_sheet = async (req, res) => {
 exports.update_assignment = async(req,res) => {
     try {
         const {title,instructions,score,due_time,colses_time,assignmentId,fileName,workId} = req.body
-        // console.log(title)
-        // console.log(instructions)
-        // console.log(score)
-        // console.log(due_time)
-        // console.log(colses_time)
-        // console.log(assignmentId)
         let filterFileName = null;
         let sqlFileName = await db.query('SELECT reference_files FROM assignment WHERE id = $1',[assignmentId])
+        console.log("fileName ",fileName)
         let referenceFiles = JSON.parse(sqlFileName.rows[0].reference_files || '[]');
         if(fileName){
             if (Array.isArray(fileName)) {
@@ -760,6 +803,7 @@ exports.update_assignment = async(req,res) => {
             }
         }
         filterFileName = referenceFiles.length > 0 ? JSON.stringify(referenceFiles):null;
+        console.log("filterFileName ",filterFileName)
         const due_DateTime = new Date(due_time)
         const dueDateTime = `${due_DateTime.getFullYear()}-${(due_DateTime.getMonth() + 1).toString().padStart(2, '0')}-${due_DateTime.getDate().toString().padStart(2, '0')} ${due_DateTime.getHours().toString().padStart(2, '0')}:${due_DateTime.getMinutes().toString().padStart(2, '0')}:00`
         let closeDate_Time = null;
@@ -769,35 +813,51 @@ exports.update_assignment = async(req,res) => {
         }
         const updateAssignment = 'UPDATE assignment SET title=$1, instructions=$2, score=$3, due_time=$4, colses_time=$5, reference_files=$6 WHERE id=$7'
         await db.query(updateAssignment,[title,instructions,score,dueDateTime,closeDate_Time,filterFileName,assignmentId])
-        
-        // const Path = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),typeWork === "groups"?obj.id_group.toString():obj.id_user.toString())
-        // // fs.mkdirSync(Path, { recursive: true })
-        // console.log('Folder created successfully!')
+
         if (req.files && req.body) {
-            req.files.forEach((file, index) => {
-                console.log("file.path "+file.path)
-                console.log(file, fileName[index])
-                const folderFile = path.join(__dirname,'../assignments',assignmentId.toString(),workId.toString(),'file');
-                if (!fs.existsSync(folderFile)) {
-                    try {
-                        fs.mkdirSync(folderFile, { recursive: true })
-                        console.log(`Folder created: ${folderFile}`);
-                    } catch (err) {
-                        console.error('Error creating folder:', err);
-                    }
+            try {
+                for (let i = 0; i < req.files.length; i++) {
+                    const folderFile = `assignments/${assignmentId}/${workId}`
+                    const file = req.files[i];
+                    const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
+                    const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
+    
+                    console.log(`กำลังอัปโหลดไฟล์: ${filePath}`);
+                    const result = await cloudinary.uploader.upload(filePath, {
+                        resource_type: "auto",
+                        folder: `${folderFile}/file`,
+                        public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                    });
+    
+                    console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
                 }
-                const newPath = path.join(folderFile,fileName[index]);
-                if (fs.existsSync(file.path)) {
-                    try {
-                        fs.copyFileSync(file.path, newPath)
-                        console.log(`File copy successfully to ${newPath}`);
-                    } catch (err) {
-                        console.error('Error moving file:', err);
-                    }
-                } else {
-                    console.error(`File not found: ${file.path}`);
-                }
-            });
+            } catch (error) {
+                console.log(error)
+            }
+            // req.files.forEach((file, index) => {
+            //     console.log("file.path "+file.path)
+            //     console.log(file, fileName[index])
+            //     const folderFile = path.join(__dirname,'../assignments',assignmentId.toString(),workId.toString(),'file');
+            //     if (!fs.existsSync(folderFile)) {
+            //         try {
+            //             fs.mkdirSync(folderFile, { recursive: true })
+            //             console.log(`Folder created: ${folderFile}`);
+            //         } catch (err) {
+            //             console.error('Error creating folder:', err);
+            //         }
+            //     }
+            //     const newPath = path.join(folderFile,fileName[index]);
+            //     if (fs.existsSync(file.path)) {
+            //         try {
+            //             fs.copyFileSync(file.path, newPath)
+            //             console.log(`File copy successfully to ${newPath}`);
+            //         } catch (err) {
+            //             console.error('Error moving file:', err);
+            //         }
+            //     } else {
+            //         console.error(`File not found: ${file.path}`);
+            //     }
+            // });
         }
         if (req.files) {
             req.files.forEach((file) => {
