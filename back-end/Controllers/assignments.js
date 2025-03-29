@@ -209,38 +209,37 @@ exports.add_assignments = async (req,res) => {
                 })
             ) 
         }
-        // const IdsAssignments = idAssignmentWork.flatMap(sub => sub);
-        // for (const obj of IdsAssignments) {
-        //     try {
-        //         // 🗂️ สร้างโฟลเดอร์สำหรับงาน
-        //         const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
-        //             typeWork === "groups" ? obj.id_group : obj.id_user
-        //         }`;
-    
-        //         await cloudinary.api.create_folder(folderPath);
-        //         console.log(`สร้างโฟลเดอร์: ${folderPath}`);
-    
-        //         // 📤 อัปโหลดไฟล์ (ถ้ามีไฟล์)
-        //         if (req.files && req.body) {
-        //             for (let i = 0; i < req.files.length; i++) {
-        //                 const file = req.files[i];
-        //                 const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
-        //                 const filePath = file.path; // ตำแหน่งไฟล์ชั่วคราวบนเซิร์ฟเวอร์
-    
-        //                 console.log(`กำลังอัปโหลดไฟล์: ${filePath}`);
-        //                 const result = await cloudinary.uploader.upload(filePath, {
-        //                     resource_type: "auto",
-        //                     folder: `${folderPath}/file`,
-        //                     public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
-        //                 });
-    
-        //                 console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
-        //             }
-        //         }
-        //     } catch (error) {
-        //         console.error(`เกิดข้อผิดพลาดในการอัปโหลดงาน ${obj.id_assignment}`, error.message);
-        //     }
-        // }
+        const IdsAssignments = idAssignmentWork.flatMap(sub => sub);
+        for (const obj of IdsAssignments) {
+            try {
+                // 🗂️ สร้างโฟลเดอร์สำหรับงาน
+                const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
+                    typeWork === "groups" ? obj.id_group : obj.id_user
+                }`;
+                await cloudinary.api.create_folder(folderPath);
+                if (req.files && req.body) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        // 🗑️ ลบไฟล์ต้นฉบับออกจากโฟลเดอร์ 'files/'
+                        const file = req.files[i];
+                        console.log("file ",file)
+                        const filePath = file.path
+                        const oldPath = `files/${path.basename(file.filename)}`;
+                        const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
+                        const newPath = `${folderPath}/file/${fileName}`;
+                        console.log("old ",oldPath)
+                        console.log("newPath ",newPath)
+                        const result = await cloudinary.uploader.upload(filePath, {
+                            resource_type: "auto",
+                            folder: `${folderPath}/file`,
+                            public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                        });
+                        // await cloudinary.uploader.destroy(`${oldPath}`);
+                    }
+                }
+            } catch (error) {
+                console.error(`เกิดข้อผิดพลาดในการอัปโหลดงาน ${obj.id_assignment}`, error.message);
+            }
+        }
         // IdsAssignments.flatMap((sub) => {
         //     sub.map(async(obj) => {
         //         // const Path = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),typeWork === "groups"?obj.id_group.toString():obj.id_user.toString())
