@@ -216,6 +216,7 @@ exports.add_assignments = async (req,res) => {
                 const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
                     typeWork === "groups" ? obj.id_group : obj.id_user
                 }`;
+                const folderFile = `assignments/${obj.id_assignment}/${obj.id}/file`
                 await cloudinary.api.create_folder(folderPath);
                 if (req.files && req.body) {
                     for (let i = 0; i < req.files.length; i++) {
@@ -230,7 +231,7 @@ exports.add_assignments = async (req,res) => {
                         console.log("newPath ",newPath)
                         const result = await cloudinary.uploader.upload(filePath, {
                             resource_type: "auto",
-                            folder: `${folderPath}/file`,
+                            folder: `${folderFile}`,
                             public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
                         });
                         // await cloudinary.uploader.destroy(`${oldPath}`);
@@ -438,7 +439,7 @@ exports.all_up_comming = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP< a.due_time AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -458,7 +459,7 @@ exports.all_past_due = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP > a.due_time 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -498,7 +499,7 @@ exports.up_comming = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP < a.due_time AND a.id_classroom = $2 AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND a.id_classroom = $2 AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
@@ -538,7 +539,7 @@ exports.past_due = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP > a.due_time AND a.id_classroom = $2
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AND a.id_classroom = $2
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
@@ -721,12 +722,28 @@ exports.get_file_size = async (req, res) => {
     try {
         const { id_assignment,id} = req.params;
         console.log(id_assignment);
-        const directoryPath = path.join(__dirname, '../assignments', id_assignment,id, 'file');
-        if (!fs.existsSync(directoryPath)) {
-            console.log('Directory not found:', directoryPath);
-            return res.json({ size: 0 }); // ถ้า path ไม่พบ ให้ return 0
+        let totalSize = 0
+        // const directoryPath = path.join(__dirname, '../assignments', id_assignment,id, 'file');
+        // assignments/569/5/file
+        const directoryPath = `assignments/${id_assignment}/${id}/file`
+        console.log("directoryPath ",directoryPath)
+        const resources = await cloudinary.api.resources({
+            prefix: directoryPath,   
+            max_results: 500,     
+            type: 'upload',
+        });
+        if (resources.resources.length === 0) {
+            console.log("ไม่พบไฟล์ในโฟลเดอร์นี้");
+        } else {
+            totalSize = resources.resources.reduce((sum, file) => sum + file.bytes, 0);
         }
-        const totalSize = calculateTotalFileSize(directoryPath);
+        console.log('totalSize ',totalSize)
+        // รวมขนาดไฟล์ทั้งหมด
+        // if (!fs.existsSync(directoryPath)) {
+        //     console.log('Directory not found:', directoryPath);
+        //     return res.json({ size: 0 }); // ถ้า path ไม่พบ ให้ return 0
+        // }
+        // const totalSize = calculateTotalFileSize(directoryPath);
         // console.log('Total size:', totalSize);
         return res.json({ size: totalSize });
     } catch (error) {
@@ -737,10 +754,13 @@ exports.get_file_size = async (req, res) => {
 exports.check_type_file = async (req, res) => {
     try {
         const { id_assignment, workId, fileName } = req.params;
-        const filePath = path.join(__dirname, '../assignments', id_assignment, workId,'file', fileName);
-        // ตรวจสอบว่าไฟล์มีอยู่หรือไม่
-        console.log(filePath);
-        return res.sendFile(filePath)
+        // const filePath = path.join(__dirname, '../assignments', id_assignment, workId,'file', fileName);
+        // console.log(filePath);
+        // return res.sendFile(filePath)
+        const fileExtension = fileName.split('.').pop();
+        const fileUrl = `https://res.cloudinary.com/${process.env.YOUR_CLOUD_NAME}/${fileExtension === 'docx' || fileExtension === 'xlsx' || fileExtension === 'txt' ? 'raw' : 'image'}/upload/assignments/${id_assignment}/${workId}/file/${fileName}${fileExtension === 'docx' || fileExtension === 'xlsx' || fileExtension === 'txt' ? '' : `.${fileExtension}`}`
+        console.log(fileUrl)
+        return res.redirect(fileUrl);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: error.message });
@@ -768,7 +788,7 @@ exports.delete_sheet = async (req, res) => {
     try {
         const {id_work,fileName,id_assignment} = req.body
         console.log(id_work, fileName, id_assignment)
-        const folderFile = path.join(__dirname,'../assignments',id_assignment,id_work,'/file',fileName);
+        const folderFile = decodeURIComponent(`assignments/${id_assignment}/${id_work}/file/${fileName}`);
         const file = 'SELECT reference_files FROM assignment WHERE id = $1'
         // }
         const sqlFileName = await db.query(file,[id_assignment])
@@ -781,7 +801,19 @@ exports.delete_sheet = async (req, res) => {
         console.log(filterFileName)
         const upadteFile = 'UPDATE assignment SET reference_files = $1 WHERE id = $2'
         await db.query(upadteFile,[filterFileName,id_assignment])
-        fs.unlinkSync(folderFile)
+        const fileExtension = fileName.split('.').pop();
+        const resourceType = ["docx", "xlsx", "txt"].includes(fileExtension) ? "raw" : "image";
+        // ดึงข้อมูลไฟล์จาก Cloudinary
+        const result = await cloudinary.api.resource(folderFile, { resource_type: resourceType });
+        // ลบไฟล์จาก Cloudinary
+        await cloudinary.api.delete_resources([result.public_id], { resource_type: result.resource_type });
+        // const resources = await cloudinary.api.resources_by_ids([folderFile]);
+        // console.log('folderFile ',folderFile)
+        // for (const file of resources.resources) {
+        //     await cloudinary.api.delete_resources([file.public_id], { resource_type: file.resource_type });
+        //     console.log(`ลบไฟล์สำเร็จ: ${file.public_id} (${file.resource_type})`);
+        // }
+        // fs.unlinkSync(folderFile)
         return res.json({status: 'success'});
     } catch (error) {
         console.log(error);
@@ -792,6 +824,7 @@ exports.delete_sheet = async (req, res) => {
 exports.update_assignment = async(req,res) => {
     try {
         const {title,instructions,score,due_time,colses_time,assignmentId,fileName,workId} = req.body
+        console.log("colses_time ",colses_time)
         let filterFileName = null;
         let sqlFileName = await db.query('SELECT reference_files FROM assignment WHERE id = $1',[assignmentId])
         console.log("fileName ",fileName)
@@ -829,8 +862,6 @@ exports.update_assignment = async(req,res) => {
                         folder: `${folderFile}/file`,
                         public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
                     });
-    
-                    console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
                 }
             } catch (error) {
                 console.log(error)
@@ -859,16 +890,6 @@ exports.update_assignment = async(req,res) => {
             //         console.error(`File not found: ${file.path}`);
             //     }
             // });
-        }
-        if (req.files) {
-            req.files.forEach((file) => {
-                try {
-                    fs.unlinkSync(file.path)
-                    console.log(`File deleted successfully ${file.path}`);
-                } catch (err) {
-                    console.error(`Error deleting original file: ${file.path}`, err);
-                }
-            });
         }
         return res.json({status:'success'})
     } catch (error) {
@@ -917,14 +938,6 @@ exports.delete_assignment = async(req,res) => {
                         // console.log(group.id_group)
                     })
                 )
-                // const deleteGroupRemember = 'DELETE FROM groups_remember WHERE id_group = $1'
-                // await Promise.all(
-                //     findIdGroup.rows.map(async (group) => {
-                //         await db.query(deleteGroupRemember,[group.id_group])
-                //         // console.log(group.id_group)
-                //     })
-                // )
-                // await db.query(deleteGroup,[findIdGroup.rows[0].id_group])
             }
         }
         else{
@@ -932,8 +945,19 @@ exports.delete_assignment = async(req,res) => {
         }
         await db.query('DELETE FROM assignment WHERE assignment.id = $1',[assignmentId])
         
-        const folderPath = path.join(__dirname,'../assignments',assignmentId.toString());
-        fs.rmSync(folderPath, { recursive: true, force: true });
+        const folderPath = `assignments/${assignmentId}`
+        console.log('path ',folderPath)
+        try {
+            const resourceTypes = ['image', 'raw'];
+            for (const type of resourceTypes) {
+            await cloudinary.api.delete_resources_by_prefix(folderPath, { resource_type: type });
+            }
+            await cloudinary.api.delete_folder(folderPath ,{ resource_type: 'auto' });
+            console.log(`deleted successfully.`);
+        }
+        catch (err) {
+            console.log('Error deleting folder:', err);
+        }
         return res.json({status:'success'})
 
     } catch (error) {

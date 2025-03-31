@@ -3,6 +3,8 @@ const db = require('../Model/database')
 const crypto = require('crypto')
 const path = require("path");
 const fs = require("fs");
+const cloudinary = require('../Middleware/cloudinary')
+require('dotenv').config();
 
 function generateCode(length = 8) {
     return crypto.randomBytes(length).toString('hex').slice(0, length);
@@ -405,14 +407,26 @@ exports.delete_classroom  = async(req,res) => {
         await db.query('DELETE FROM groups_remember WHERE id_classroom = $1',[classroomId])
         await db.query('DELETE FROM classroom WHERE id = $1',[classroomId])
 
-        uniqueAids.forEach((d) =>{
-            const folderPath = path.join(__dirname,'../assignments',d.toString());
-            fs.rmSync(folderPath, { recursive: true, force: true });
-        })
-        uniquePids.forEach((d) => { 
-            const folderPath = path.join(__dirname, '../post', d.toString());
-            fs.rmSync(folderPath, { recursive: true, force: true });
-        });
+        for (const d of uniqueAids){
+            const folderPath = `assignments/${d}`
+            const resourceTypes = ['image', 'raw'];
+            for (const type of resourceTypes) {
+            await cloudinary.api.delete_resources_by_prefix(folderPath, { resource_type: type });
+            }
+            await cloudinary.api.delete_folder(folderPath ,{ resource_type: 'auto' });
+            // const folderPath = path.join(__dirname,'../assignments',d.toString());
+            // fs.rmSync(folderPath, { recursive: true, force: true });
+        }
+        for(const d of uniquePids){
+            const folderPath = `post/${d}`
+            const resourceTypes = ['image', 'raw'];
+            for (const type of resourceTypes) {
+            await cloudinary.api.delete_resources_by_prefix(folderPath, { resource_type: type });
+            }
+            await cloudinary.api.delete_folder(folderPath ,{ resource_type: 'auto' });
+            // const folderPath = path.join(__dirname, '../post', d.toString());
+            // fs.rmSync(folderPath, { recursive: true, force: true });
+        }
 
         // console.log(uniqueGids)
         // console.log(uniqueWids)

@@ -1,6 +1,8 @@
 const db = require('../Model/database')
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('../Middleware/cloudinary')
+require('dotenv').config();
 
 exports.add_post = async (req, res) =>{
     try {
@@ -19,35 +21,56 @@ exports.add_post = async (req, res) =>{
         const id_post =  await db.query('INSERT INTO post (message,file,create_at,id_user,id_classroom) VALUES ($1,$2,$3,$4,$5) RETURNING id',[message,filterFileName,convertDate,id_user,id_classroom])
         
         if (req.files && req.body) {
-            const Path = path.join(__dirname,'../post',id_post.rows[0].id.toString())
-            fs.mkdirSync(Path, { recursive: true })
-            req.files.forEach((file, index) => {
-                console.log("file.path "+file.path)
-                console.log(file, fileName[index])
-                // const folderFile = path.join(__dirname,'../post',result.rows[0].id_assignment.toString(),id_work.toString(),resultCheckType.rows[0].assignment_type === 'group' ? resultCheckType.rows[0].id_group.toString() : id_user.toString());
-                const newPath = path.join(Path,fileName[index]);
-                if (fs.existsSync(file.path)) {
-                    try {
-                        fs.copyFileSync(file.path, newPath)
-                        console.log(`File copy successfully to ${newPath}`);
-                    } catch (err) {
-                        console.error('Error moving file:', err);
+            try {
+                // 🗂️ สร้างโฟลเดอร์สำหรับงาน
+                const folderPath = `post/${id_post.rows[0].id}`;
+                await cloudinary.api.create_folder(folderPath);
+                if (req.files && req.body) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        // 🗑️ ลบไฟล์ต้นฉบับออกจากโฟลเดอร์ 'files/'
+                        const file = req.files[i];
+                        const filePath = file.path
+                        const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
+                        const result = await cloudinary.uploader.upload(filePath, {
+                            resource_type: "auto",
+                            folder: `${folderPath}`,
+                            public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                        });
+                        // await cloudinary.uploader.destroy(`${oldPath}`);
                     }
-                } else {
-                    console.error(`File not found: ${file.path}`);
                 }
-            });
+            } catch (error) {
+                console.error(error.message);
+            }
+            // const Path = path.join(__dirname,'../post',id_post.rows[0].id.toString())
+            // fs.mkdirSync(Path, { recursive: true })
+            // req.files.forEach((file, index) => {
+            //     console.log("file.path "+file.path)
+            //     console.log(file, fileName[index])
+            //     // const folderFile = path.join(__dirname,'../post',result.rows[0].id_assignment.toString(),id_work.toString(),resultCheckType.rows[0].assignment_type === 'group' ? resultCheckType.rows[0].id_group.toString() : id_user.toString());
+            //     const newPath = path.join(Path,fileName[index]);
+            //     if (fs.existsSync(file.path)) {
+            //         try {
+            //             fs.copyFileSync(file.path, newPath)
+            //             console.log(`File copy successfully to ${newPath}`);
+            //         } catch (err) {
+            //             console.error('Error moving file:', err);
+            //         }
+            //     } else {
+            //         console.error(`File not found: ${file.path}`);
+            //     }
+            // });
         }
-        if (req.files) {
-            req.files.forEach((file) => {
-                try {
-                    fs.unlinkSync(file.path)
-                    console.log(`File deleted successfully ${file.path}`);
-                } catch (err) {
-                    console.error(`Error deleting original file: ${file.path}`, err);
-                }
-            });
-        }
+        // if (req.files) {
+        //     req.files.forEach((file) => {
+        //         try {
+        //             fs.unlinkSync(file.path)
+        //             console.log(`File deleted successfully ${file.path}`);
+        //         } catch (err) {
+        //             console.error(`Error deleting original file: ${file.path}`, err);
+        //         }
+        //     });
+        // }
         const io = req.app.get("io");
         if(io){
             io.to(String(id_classroom)).emit("get-comment")
@@ -146,32 +169,52 @@ exports.edit_post = async (req, res) => {
             result = await db.query(querySql,[message,curentDate,id])
         }
         if (req.files && req.body) {
-            req.files.forEach((file, index) => {
-                console.log("file.path "+file.path)
-                console.log(file, fileName[index])
-                const newPath = path.join(__dirname,'../post',id.toString(),fileName[index]);
-                if (fs.existsSync(file.path)) {
-                    try {
-                        fs.copyFileSync(file.path, newPath)
-                        console.log(`File copy successfully to ${newPath}`);
-                    } catch (err) {
-                        console.error('Error moving file:', err);
+            try {
+                // 🗂️ สร้างโฟลเดอร์สำหรับงาน
+                const folderPath = `post/${id}`;
+                if (req.files && req.body) {
+                    for (let i = 0; i < req.files.length; i++) {
+                        // 🗑️ ลบไฟล์ต้นฉบับออกจากโฟลเดอร์ 'files/'
+                        const file = req.files[i];
+                        const filePath = file.path
+                        const fileName = req.body.fileName[i]; // ชื่อไฟล์จาก req.body
+                        const result = await cloudinary.uploader.upload(filePath, {
+                            resource_type: "auto",
+                            folder: `${folderPath}`,
+                            public_id: fileName, // ใช้ชื่อไฟล์ที่กำหนด
+                        });
+                        // await cloudinary.uploader.destroy(`${oldPath}`);
                     }
-                } else {
-                    console.error(`File not found: ${file.path}`);
                 }
-            });
+            } catch (error) {
+                console.error(error.message);
+            }
+            // req.files.forEach((file, index) => {
+            //     console.log("file.path "+file.path)
+            //     console.log(file, fileName[index])
+            //     const newPath = path.join(__dirname,'../post',id.toString(),fileName[index]);
+            //     if (fs.existsSync(file.path)) {
+            //         try {
+            //             fs.copyFileSync(file.path, newPath)
+            //             console.log(`File copy successfully to ${newPath}`);
+            //         } catch (err) {
+            //             console.error('Error moving file:', err);
+            //         }
+            //     } else {
+            //         console.error(`File not found: ${file.path}`);
+            //     }
+            // });
         }
-        if (req.files) {
-            req.files.forEach((file) => {
-                try {
-                    fs.unlinkSync(file.path)
-                    console.log(`File deleted successfully ${file.path}`);
-                } catch (err) {
-                    console.error(`Error deleting original file: ${file.path}`, err);
-                }
-            });
-        }
+        // if (req.files) {
+        //     req.files.forEach((file) => {
+        //         try {
+        //             fs.unlinkSync(file.path)
+        //             console.log(`File deleted successfully ${file.path}`);
+        //         } catch (err) {
+        //             console.error(`Error deleting original file: ${file.path}`, err);
+        //         }
+        //     });
+        // }
         const io = req.app.get("io");
         if(io){
             io.to(String(sqlFileName.rows[0].id_classroom)).emit("get-comment")
@@ -210,8 +253,21 @@ const calculateTotalFileSize = (directoryPath) => {
 exports.get_file_size = async (req, res) => {
     try {
         const { id } = req.params;
-        const directoryPath = path.join(__dirname, '../post', id);
-        const totalSize = calculateTotalFileSize(directoryPath);
+        let totalSize = 0
+        const directoryPath = `post/${id}`
+        console.log(directoryPath)
+        const resources = await cloudinary.api.resources({
+            prefix: directoryPath,   
+            max_results: 500,     
+            type: 'upload',
+        });
+        if (resources.resources.length === 0) {
+            console.log("ไม่พบไฟล์ในโฟลเดอร์นี้");
+        } else {
+            totalSize = resources.resources.reduce((sum, file) => sum + file.bytes, 0);
+        }
+        // const directoryPath = path.join(__dirname, '../post', id);
+        // const totalSize = calculateTotalFileSize(directoryPath);
         console.log('Total size:', totalSize);
         return res.json({ size: totalSize });
     } catch (error) {
@@ -222,10 +278,16 @@ exports.get_file_size = async (req, res) => {
 exports.open_file = async (req, res) => {
     try {
         const {id, fileName } = req.params;
-        const filePath = path.join(__dirname, '../post', id, fileName);
+        // const filePath = path.join(__dirname, '../post', id, fileName);
+        const n = encodeURIComponent(fileName).replace(/\(/g, "%28").replace(/\)/g, "%29");
+        console.log("n ",n)
+        const fileExtension = fileName.split('.').pop();
+        const fileUrl = `https://res.cloudinary.com/${process.env.YOUR_CLOUD_NAME}/${fileExtension === 'docx' || fileExtension === 'xlsx' || fileExtension === 'txt' ? 'raw' : 'image'}/upload/post/${id}/${n}${fileExtension === 'docx' || fileExtension === 'xlsx' || fileExtension === 'txt' ? '' : `.${fileExtension}`}`
+        console.log(fileUrl)
+        return res.redirect(fileUrl);
         // ตรวจสอบว่าไฟล์มีอยู่หรือไม่
         // console.log(filePath);
-        return res.sendFile(filePath)
+        // return res.sendFile(filePath)
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: error.message });
@@ -235,7 +297,7 @@ exports.open_file = async (req, res) => {
 exports.delete_file_post = async (req, res) => {
     try {
         const {id,fileName} = req.body
-        const folderFile = path.join(__dirname,'../post',id.toString(),fileName);
+        // const folderFile = path.join(__dirname,'../post',id.toString(),fileName);
         
         
         const selectFile = 'SELECT id_classroom,file FROM post WHERE id = $1'
@@ -249,7 +311,22 @@ exports.delete_file_post = async (req, res) => {
         const filterFileName = existingFileNames.length > 0 ? JSON.stringify(existingFileNames) : null;
         const upadtefile = 'UPDATE post SET file = $1 WHERE id = $2'
         await db.query(upadtefile,[filterFileName,id])
-        fs.unlinkSync(folderFile)
+        const folderFile =decodeURIComponent(`post/${id}/${fileName}`)
+        // fs.rmSync(folderFile, { recursive: true, force: true });
+        const fileExtension = fileName.split('.').pop();
+        const resourceType = ["docx", "xlsx", "txt"].includes(fileExtension) ? "raw" : "image";
+        // ดึงข้อมูลไฟล์จาก Cloudinary
+        const result = await cloudinary.api.resource(folderFile, { resource_type: resourceType });
+
+        // ลบไฟล์จาก Cloudinary
+        await cloudinary.api.delete_resources([result.public_id], { resource_type: result.resource_type });
+        // const resources = await cloudinary.api.resources_by_ids([folderFile]);
+        // console.log('folderFile ',folderFile)
+        // for (const file of resources.resources) {
+        //     await cloudinary.api.delete_resources([file.public_id], { resource_type: file.resource_type });
+        //     console.log(`ลบไฟล์สำเร็จ: ${file.public_id} (${file.resource_type})`);
+        // }
+        // fs.unlinkSync(folderFile)
         const io = req.app.get("io");
         if(io){
             io.to(String(sqlFileName.rows[0].id_classroom)).emit("get-comment")
@@ -297,8 +374,14 @@ exports.delete_post = async (req, res) => {
         const id_classroom = await db.query("SELECT id_classroom FROM post WHERE id = $1",[id])
         await db.query("DELETE FROM comment WHERE id_post = $1",[id])
         await db.query("DELETE FROM post WHERE id = $1",[id])
-        const folderFile = path.join(__dirname,'../post',id.toString());
-        fs.rmSync(folderFile, { recursive: true, force: true });
+        const folderFile =`/post/${id}`;
+        // fs.rmSync(folderFile, { recursive: true, force: true });
+        const resources = await cloudinary.api.resources_by_ids([folderFile]);
+        console.log('folderFile ',folderFile)
+        for (const file of resources.resources) {
+            await cloudinary.api.delete_resources([file.public_id], { resource_type: file.resource_type });
+            console.log(`ลบไฟล์สำเร็จ: ${file.public_id} (${file.resource_type})`);
+        }
         const io = req.app.get("io");
         if(io){
             io.to(String(id_classroom.rows[0].id_classroom)).emit("get-comment")
