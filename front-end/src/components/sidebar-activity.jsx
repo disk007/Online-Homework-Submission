@@ -60,11 +60,11 @@ const SidebarActivity = ({sidebar,setSidebar,isLogin,setWorkId}) =>{
             })
             const responseData = response.data
             if(responseData.status ==='success') {
-                await fetchActivity()
+                setSelectedId(id)
+                setWorkId(id)
+                await updatActivity()
+                setSidebar(false)
             }
-            setWorkId(id)
-            setSelectedId(id)
-            setSidebar(false)
         } catch (error) {
             console.error(error)
         }
@@ -86,6 +86,21 @@ const SidebarActivity = ({sidebar,setSidebar,isLogin,setWorkId}) =>{
             const responseData = response.data
             setActivities(responseData)
             setLoading(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const updatActivity = async () => {
+        try {
+            let response
+            if(isLogin.role === 'student') {
+                response = await axios.get(`/activity/${isLogin.id}`)
+            }
+            else if(isLogin.role === 'teacher') {
+                response = await axios.get(`/activity-teacher/${isLogin.id}`)
+            }
+            const responseData = response.data
+            setActivities(responseData)
         } catch (error) {
             console.log(error)
         }

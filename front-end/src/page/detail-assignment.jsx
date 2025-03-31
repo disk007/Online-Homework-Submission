@@ -46,6 +46,7 @@ const Detali_assignment = ({isLogin}) => {
     const [dataExcel, setDataExcel] = useState([])
     const [loadReturn,setLoadReturn] = useState(false)
     const [loadPage,setLoadPage] = useState(false)
+    const [loadDel,setLoadDel] = useState(false)
     
     const handleInputChange = (id, value) => {
         // อนุญาตเฉพาะตัวเลข 0-9
@@ -103,16 +104,15 @@ const Detali_assignment = ({isLogin}) => {
     const selectFileWork = async (n,workId,type,id) => {
         // setFileName(n)
         try {
-            const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
             let response
             if(type === null){
-                response = await axios.get(`/assignments/${assignmentId}/${workId}/${id}/${encodedFileName}`, { 
+                response = await axios.get(`/assignments/${assignmentId}/${workId}/${id}/${n}`, { 
                     responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
                 });
             }
             else{
-                response = await axios.get(`/assignments/${assignmentId}/${workId}/${id}/${encodedFileName}`, { 
+                response = await axios.get(`/assignments/${assignmentId}/${workId}/${id}/${n}`, { 
                     responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
                 });
             }
@@ -334,6 +334,7 @@ const Detali_assignment = ({isLogin}) => {
     const handleDeleteAssignment = async() => {
         try {
             const data = new FormData()
+            setLoadDel(true)
             data.append('assignmentId',assignmentId)
             data.append('assignment_type',assignmentType)
             const response = await axios.post('/delete-assignment',data,{
@@ -341,6 +342,8 @@ const Detali_assignment = ({isLogin}) => {
             })
             const responseData = response.data
             if (responseData.status ==='success') {
+                setLoadDel(false)
+                setOpenDelete(false)
                 navigate(`/detail-classroom/list-assignments/${classroomId}`)
             }
         } catch (error) {
@@ -392,6 +395,7 @@ const Detali_assignment = ({isLogin}) => {
                         onClose={() => setOpenFile(false)}
                         file={selectFile?.url} // ใช้ URL ที่สร้างไว้
                         type={selectFile?.type}
+                        setSelectFile={() => setSelectFile(null)}
                         download={selectFile?.name}
                     />
                 )
@@ -630,6 +634,9 @@ const Detali_assignment = ({isLogin}) => {
             {
                 Opendelete && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        {loadDel ?
+                            <ClipLoader size={50} />
+                        :
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setOpenDelete(!Opendelete)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -639,7 +646,7 @@ const Detali_assignment = ({isLogin}) => {
                                 <button className=" px-7 py-2  text-gray-400 hover:text-gray-500 border-2 transition ease-in-out delay-150 mr-1" onClick={()=>{setOpenDelete(!Opendelete)}}>Cancel</button>
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-sky-600 text-white bg-sky-500 transition ease-in-out delay-150 ml-1" onClick={handleDeleteAssignment}>Yes</button>
                         </div>
-                        </div>
+                        </div>}
                     </div>
                 )
             }

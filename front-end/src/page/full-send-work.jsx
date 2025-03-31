@@ -149,18 +149,8 @@ const Full_send_work = ({isLogin}) => {
         
             const mimeType = response.headers['content-type'];
             const blob = new Blob([response.data], { type: mimeType });
-            // const objectURL = URL.createObjectURL(blob);
-            // const fileWithName = new File([blob], n, { type: mimeType });
             const blobWithName = { blob, name: n};
             handleSelectFileWork(blobWithName,mimeType)
-            // setFileNameBackEnd({
-            //     url: blob,
-            //     type: mimeType,
-            // });
-            // // const fileContent = "Hello, world!";
-            // // const file = new Blob([fileContent], { type: "text/plain" });
-            // setFileName(new File([pathFile],n,{ type: "application/pdf" }));
-            // setMimeType("application/pdf")
           } catch (error) {
             console.error('Error fetching file:', error);
           }
@@ -318,7 +308,6 @@ const Full_send_work = ({isLogin}) => {
     const deleteFile = async (name,id_work,id_user,id_assignment) => {
         try {
             const data = new FormData()
-            setLoadFile(true)
             data.append('id_user',id_user)
             data.append('id_work',id_work)
             data.append('fileName',name)
@@ -330,7 +319,7 @@ const Full_send_work = ({isLogin}) => {
             if (responseData.status ==='success') {
                 await fetchMywork();
                 await fetchSizesFile();
-                setLoadFile(false)
+                
             }
         } catch (error) {
             console.log(error)
@@ -338,12 +327,13 @@ const Full_send_work = ({isLogin}) => {
     }
     const fetchSizesFile = async() => {
         try {
+            setLoadFile(true)
             if(myWork.length > 0) {
-                let dataId = myWork.filter(f => f.id == workId)
-                const response = await axios.get(`/size-files-work/${dataId[0]?.id_assignment}/${workId}/${dataId[0]?.assignment_type === 'group' ? dataId[0]?.id_group : isLogin.id}`)
+                const response = await axios.get(`/size-files-work/${workId}`)
                 const responseData = response.data
                 setTotalSizeFiles(responseData.size)
             }
+            setLoadFile(false)
             
         } catch (error) {
             console.error(error)
@@ -367,6 +357,7 @@ const Full_send_work = ({isLogin}) => {
                         onClose={() => setOpen(false)}
                         file={selectFile?.url} // ใช้ URL ที่สร้างไว้
                         type={selectFile?.type}
+                        setSelectFile={() => setSelectFile(null)}
                         download={selectFile?.name}
                     />
                 )

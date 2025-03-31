@@ -170,6 +170,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
     }
     const handleEditAssignment = async (e) => {
         e.preventDefault()
+        const data = new FormData()
         const checkDate = new Date()
         const dueDate = new Date(dataAssignment.due_time)
         const dueTime = new Date(dataAssignment.due_time)
@@ -218,14 +219,16 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
                 isValid = false;
                 validation.timeClose = 'Close time must not be before the due time.'
             }
+            data.append('colses_time',dataAssignment.colses_time)
 
         }
-        const data = new FormData()
+        else{
+            data.append('colses_time',null)
+        }
         data.append('title',dataAssignment.title)
         data.append('instructions',dataAssignment.instructions)
         data.append('score',dataAssignment.score)
         data.append('due_time',dataAssignment.due_time)
-        data.append('colses_time',dataAssignment.colses_time)
         data.append('assignmentId',assignmentId)
         data.append('workId',dataAssignment.id)
         if(fileNames.length > 0){
@@ -280,6 +283,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
     useEffect(()=>{
         fetchSizesFile()
     },[dataAssignment.id])
+    console.log("isChecked ",isChecked)
     return(
         <>
             {/* <ToastContainer /> */}
@@ -288,7 +292,8 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
                 <ModelFile
                     open={openFile}
                     onClose={() => setOpenFile(false)}
-                    file={selectFile?.url} // ใช้ URL ที่สร้างไว้
+                    file={selectFile?.url}
+                    setSelectFile={() => setSelectFile(null)}
                     type={selectFile?.type}
                 />
             )

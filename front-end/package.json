@@ -2,7 +2,7 @@
   "name": "front-end",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://online-homework-submission.onrender.com/",
+  "proxy": "http://localhost:4444",
   "dependencies": {
     "@cyntler/react-doc-viewer": "^1.16.6",
     "@tanstack/react-table": "^8.20.6",
@@ -13,6 +13,7 @@
     "axios": "^1.7.7",
     "datatables.net-dt": "^2.2.1",
     "datatables.net-react": "^1.0.0",
+    "dayjs": "^1.11.13",
     "docx-preview": "^0.3.3",
     "docx-templates": "^4.13.0",
     "file-saver": "^2.0.5",

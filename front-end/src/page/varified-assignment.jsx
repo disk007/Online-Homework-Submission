@@ -36,6 +36,8 @@ const Detali_assignment = ({isLogin}) => {
     const [state, setState] = useState('')
     const [sideClass,SetSideClass] = useState('')
     const [loadPage,setLoadPage] = useState(false)
+    const [loadDel,setLoadDel] = useState(false)
+
     const handleLinkToretrun = () =>{
         navigate(`/detail-classroom/detail-assignment/${classroomId}/${assignmentId}`);
     }
@@ -208,6 +210,7 @@ const Detali_assignment = ({isLogin}) => {
     const handleDeleteAssignment = async() => {
         try {
             const data = new FormData()
+            setLoadDel(true)
             data.append('assignmentId',assignmentId)
             data.append('assignment_type',assignmentType)
             const response = await axios.post('/delete-assignment',data,{
@@ -215,6 +218,8 @@ const Detali_assignment = ({isLogin}) => {
             })
             const responseData = response.data
             if (responseData.status ==='success') {
+                setLoadDel(false)
+                setOpenDelete(false)
                 navigate(`/detail-classroom/list-assignments/${classroomId}`)
             }
         } catch (error) {
@@ -264,6 +269,7 @@ const Detali_assignment = ({isLogin}) => {
                         onClose={() => setOpenFile(false)}
                         file={selectFile?.url} // ใช้ URL ที่สร้างไว้
                         type={selectFile?.type}
+                        setSelectFile={() => setSelectFile(null)}
                         download={selectFile?.name}
                     />
                 )
@@ -438,6 +444,9 @@ const Detali_assignment = ({isLogin}) => {
             {
                 Opendelete && (
                     <div className="fixed inset-0 z-[51] flex justify-center items-center bg-black/20">
+                        {loadDel ?
+                            <ClipLoader size={50} color={"#fff"} />
+                        :
                         <div className="bg-white rounded-md p-4 w-[30rem] ">
                             <div className="flex justify-end">
                                 <button onClick={()=>{setOpenDelete(!Opendelete)}} className="w-6 h-6 hover:bg-gray-200"><RxCross2 className="w-6 h-6"/></button>
@@ -448,6 +457,7 @@ const Detali_assignment = ({isLogin}) => {
                                 <button className=" px-7 py-2 cursor-pointer hover:bg-sky-600 text-white bg-sky-500 transition ease-in-out delay-150 ml-1" onClick={handleDeleteAssignment}>Yes</button>
                         </div>
                         </div>
+                        }
                     </div>
                 )
             }

@@ -359,12 +359,24 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                     handleFetchData()
                     handleCancle();
                 }
+                else if(responseData.status === 'error'){
+                    toast.error(responseData.message, {
+                        containerId:"addassignment",
+                        position: "bottom-right",
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Slide,
+                    });
+                }
             } catch (error) {
                 console.error('Error submitting assignment:', error);
-                toast.error("An error occurred while submitting the assignment. Please try again.", {
+                toast.error(error, {
                     containerId:"addassignment",
                     position: "bottom-right",
-                    autoClose: 3000,
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: true,
@@ -378,7 +390,6 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
             setErrors(validation);
         }
     }
-    // console.log("selectFile "+selectFile?.url)
     const propIndividual = {
         open: individual,
         OnClose: () => setIndividual(false),
@@ -400,7 +411,8 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                 <ModelFile
                     open={openFile}
                     onClose={() => setOpenFile(false)}
-                    file={selectFile?.url} // ใช้ URL ที่สร้างไว้
+                    file={selectFile?.url} 
+                    setSelectFile={() => setSelectFile(null)}
                     type={selectFile?.type}
                 />
             )

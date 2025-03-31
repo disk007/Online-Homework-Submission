@@ -291,9 +291,9 @@ const DetailClassroom = ({isLogin}) =>{
     const selectFileName = async (n,id) => {
         // setFileName(n)
         try {
-            const encodedFileName = encodeURIComponent(n);
+            // const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
-            const response = await axios.get(`/post/${id}/${encodedFileName}`, { 
+            const response = await axios.get(`/post/${id}/${n}`, { 
               responseType: 'arraybuffer'
             });
         
@@ -396,6 +396,8 @@ const DetailClassroom = ({isLogin}) =>{
                     onClose={() => setOpenFile(false)}
                     file={selectFile?.url} // ใช้ URL ที่สร้างไว้
                     type={selectFile?.type}
+                    setSelectFile={() => setSelectFile(null)}
+                    download={selectFile?.name}
                 />
             )
             }
@@ -494,7 +496,7 @@ const DetailClassroom = ({isLogin}) =>{
                                     <div>
                                         {data.title}
                                     </div>
-                                    <div className="md:text-sm text-xs flex flex-wrap text-gray-500">Due: {formattedDate(data.create_at)}</div>
+                                    <div className="md:text-sm text-xs flex flex-wrap text-gray-500">Due: {formattedDate(data.due_time)}</div>
                                 </div>
                             </div>
                         </div>
@@ -508,7 +510,7 @@ const DetailClassroom = ({isLogin}) =>{
                                     <div className="text-sm md:text-base">{data.name}<span className="text-red-500 md:text-sm text-xs text-gray-500">{` (${data.role})`}</span></div>
                                     <div className="md:text-sm text-xs text-gray-500">{data.update_create ? formattedDate(data.update_create) : formattedDate(data.create_at)}</div>
                                 </div>
-                                {isLogin.id === data.id_user &&
+                                {isLogin.role !== 'student' &&
                                 <div className="relative">
                                     <div className=" cursor-pointer hover:bg-gray-200 p-1 rounded-full " onClick={()=>toggleEditDel(data.id)}>
                                         <BsThreeDotsVertical className="w-5 h-5  " />

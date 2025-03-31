@@ -21,16 +21,12 @@ const Controls = () => {
   )
 }
 
-const ModelFile = ({ open, onClose, file, type,download }) => {
+const ModelFile = ({ open, onClose, file, type,setSelectFile,download }) => {
   const [fileUrl, setFileUrl] = useState(null);
   const [cols,setCols] = useState([])
   const [header,setHeader] = useState([])
   const [textContent, setTextContent] = useState("");
-  
-//   for (const key in fileUrl) {
-//         console.log(`Key: ${key}, Value: ${file[key]}`);
-// }
-  // Ref function to manage the rendering of docx content
+
   const panelSectionRef = (node) => {
     if (node) {
       console.log("panelSectionRef node is set:", node);
@@ -109,6 +105,7 @@ const ModelFile = ({ open, onClose, file, type,download }) => {
     }
     setTextContent(""); // Clear text content for .txt files
     setFileUrl(null); // Reset fileUrl
+    setSelectFile()
     onClose();
   };
   useEffect(() => {

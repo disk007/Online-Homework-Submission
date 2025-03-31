@@ -11,6 +11,13 @@ import { LuCheck } from "react-icons/lu";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 import ClipLoader from "react-spinners/ClipLoader";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+// ลงทะเบียน plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     const [fileNames,setFileNames] = useState([])
@@ -77,12 +84,10 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     const fetchwork = async () => {
         try {
             if(workId !== null){
-                setLoading(true);
                 const response = await axios.get(`/detail-work/${workId}/${isLogin.id}`)
                 const responseData = response.data
                 setWork(responseData)
             }
-            setLoading(false);
         } catch (error) {
             console.log(error)
         }
@@ -93,11 +98,12 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     const fetchMywork = async () => {
         try {
             if(workId!==null){
+                setLoading(true);
                 const response = await axios.get(`/my-work/${workId}/${isLogin.id}`)
                 const responseData = response.data
                 setMyWork(responseData)
             }
-            
+            setLoading(false);
         } catch (error) {
             console.log(error)
         }
@@ -148,26 +154,16 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     const selectFileName = async (n,id_assignment) => {
         // setFileName(n)
         try {
-            const encodedFileName = encodeURIComponent(n);
+            // const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
-            const response = await axios.get(`/assignments/${id_assignment}/${workId}/file/${encodedFileName}`, { 
+            const response = await axios.get(`/assignments/${id_assignment}/${workId}/file/${n}`, { 
               responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
             });
         
             const mimeType = response.headers['content-type'];
             const blob = new Blob([response.data], { type: mimeType });
-            // const objectURL = URL.createObjectURL(blob);
-            // const fileWithName = new File([blob], n, { type: mimeType });
             const blobWithName = { blob, name: n};
             handleSelectFileWork(blobWithName,mimeType)
-            // setFileNameBackEnd({
-            //     url: blob,
-            //     type: mimeType,
-            // });
-            // // const fileContent = "Hello, world!";
-            // // const file = new Blob([fileContent], { type: "text/plain" });
-            // setFileName(new File([pathFile],n,{ type: "application/pdf" }));
-            // setMimeType("application/pdf")
           } catch (error) {
             console.error('Error fetching file:', error);
           }
@@ -175,16 +171,16 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     const selectFileWork = async (n,id_assignment,type) => {
         // setFileName(n)
         try {
-            const encodedFileName = encodeURIComponent(n);
+            // const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
             let response
             if(type === null){
-                response = await axios.get(`/assignments/${id_assignment}/${workId}/${isLogin.id}/${encodedFileName}`, { 
+                response = await axios.get(`/assignments/${id_assignment}/${workId}/${isLogin.id}/${n}`, { 
                     responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
                 });
             }
             else{
-                response = await axios.get(`/assignments/${id_assignment}/${workId}/${type}/${encodedFileName}`, { 
+                response = await axios.get(`/assignments/${id_assignment}/${workId}/${type}/${n}`, { 
                     responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
                 });
             }
@@ -192,6 +188,7 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
         
             const mimeType = response.headers['content-type'];
             const blob = new Blob([response.data], { type: mimeType });
+            
             const blobWithName = { blob, name: n};
             handleSelectFileWork(blobWithName,mimeType)
           } catch (error) {
@@ -211,8 +208,11 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     }
     const sendWork =  async () => {
         let sizeFiles = totalSizeFiles
-        const currentDate = new Date()
-        currentDate.setSeconds(0,0)
+        const currentDateString = dayjs().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
+        
+        // แปลงจาก string เป็น Date object
+        const currentDate = new Date(currentDateString);
+        currentDate.setSeconds(0, 0)
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
         const data  = new FormData()
         data.append('id_user',isLogin.id)
@@ -345,8 +345,7 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
     const fetchSizesFile = async() => {
         try {
             if(myWork.length > 0) {
-                let dataId = myWork.filter(f => f.id == workId)
-                const response = await axios.get(`/size-files-work/${dataId[0]?.id_assignment}/${workId}/${dataId[0]?.assignment_type === 'group' ? dataId[0]?.id_group : isLogin.id}`)
+                const response = await axios.get(`/size-files-work/${workId}`)
                 const responseData = response.data
                 setTotalSizeFiles(responseData.size)
             }
@@ -356,6 +355,7 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
             
         }
     }
+
     useEffect(() => {
         setFileNames([]);
     }, [workId]);
@@ -373,6 +373,7 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
                         onClose={() => setOpen(false)}
                         file={selectFile?.url} // ใช้ URL ที่สร้างไว้
                         type={selectFile?.type}
+                        setSelectFile={() => setSelectFile(null)}
                         download={selectFile?.name}
                     />
                 )
