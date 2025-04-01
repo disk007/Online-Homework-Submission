@@ -22,10 +22,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-echo "back-end/assignments/519" >> .gitignore
-echo "back-end/assignments/520" >> .gitignore
-echo "back-end/node_modules/" >> .gitignore
+echo "../back-end/assignments" >> .gitignore
+echo "../back-end/assignments" >> .gitignore
+echo "../back-end/node_modules/" >> .gitignore
 echo "front-end/node_modules/" >> .gitignore
-echo "back-end/.env" >> .gitignore
+echo "../back-end/.env" >> .gitignore
 echo "front-end/.env" >> .gitignore
 echo ".history" >> .gitignore
