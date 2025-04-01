@@ -13,6 +13,7 @@ const server = http.createServer(app); // ใช้ http server
 app.use(cors({
   origin: "https://online-homework-submission.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
 
