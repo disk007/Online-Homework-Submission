@@ -36,7 +36,7 @@ const Login = () => {
         }
         if(isValid){
             setLoadingLog(true)
-            const response = await axios.post('/login', formData)
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, formData)
             const responseData = response.data;
             if(responseData.status === 'success'){
                 window.location.href = '/';
