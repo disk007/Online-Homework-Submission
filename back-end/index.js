@@ -9,6 +9,13 @@ const socketHandler  = require('./Middleware/socket')
 // const { config } = require('dotenv')
 
 const server = http.createServer(app); // ใช้ http server
+
+app.use(cors({
+  origin: "https://online-homework-submission.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
 const io = new Server(server, {
     cors: {
         origin: "https://online-homework-submission.vercel.app", // อนุญาตทุกโดเมน (ปรับตามความเหมาะสม)
