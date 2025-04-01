@@ -2,7 +2,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require("cookie-parser")
 const app = express()
-
+const cors = require("cors")
 const http = require("http");
 const { Server } = require("socket.io");
 const socketHandler  = require('./Middleware/socket')
@@ -11,7 +11,7 @@ const socketHandler  = require('./Middleware/socket')
 const server = http.createServer(app); // ใช้ http server
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", // อนุญาตทุกโดเมน (ปรับตามความเหมาะสม)
+        origin: "https://online-homework-submission.vercel.app", // อนุญาตทุกโดเมน (ปรับตามความเหมาะสม)
         credentials: true,
     },
 });
@@ -23,14 +23,13 @@ const classroom = require('./Routes/classroom')
 const assignment = require('./Routes/assignments')
 const work = require('./Routes/works')
 const post = require('./Routes/post')
-const cors = require("cors")
 
 app.use(cookieParser())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
 app.get('/', function (req, res) {
-  res.send('Hello Express!')
+  res.send('Hello')
 })
 
 app.use(auth)
