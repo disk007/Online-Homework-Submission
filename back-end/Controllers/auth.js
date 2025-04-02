@@ -71,9 +71,9 @@ exports.login = async (req, res) => {
         if(!match){
             return res.json({status: 'error', message: "Invalid email or password" });
         }
-        const token = jwt.sign({email}, secret, { expiresIn: "2m" });
+        const token = jwt.sign({email}, secret, { expiresIn: "1d" });
         res.cookie("token", token, {
-            maxAge: 2 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000,
             secure: true,
             httpOnly: true,
             sameSite: "none",
@@ -170,7 +170,7 @@ exports.forgot_password = async(req, res) => {
     
                 <p style="color: #555;">We received a request to reset your password.</p>
     
-                <a href="${process.env.FRONTEND_PORT}/${token}" 
+                <a href="${process.env.FRONTEND_PORT}/reset-password/${token}" 
                    style="display: inline-block; padding: 12px 20px; 
                           background-color: #007bff; color: white; 
                           text-decoration: none; border-radius: 5px; 

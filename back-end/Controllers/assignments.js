@@ -6,6 +6,13 @@ const jwt = require("jsonwebtoken")
 exports.add_assignments = async (req,res) => {
     try{
         const {title,instructions,points,dueDate,dueTime,idClassroom,typeWork,members,dateClose,timeClose,fileName,create_at} = req.body
+        const token = req.cookies.token
+        console.log(token)
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(role.role)
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         let filterFileName = null;
         if(fileName){
             filterFileName = JSON.stringify(fileName);
@@ -338,7 +345,7 @@ exports.list_assignments = async (req, res) => {
         const { id } = req.params;
         const token = req.cookies.token
         console.log(token)
-        const role = jwt.verify(token, secret);
+        const role = jwt.verify(token, process.env.JWT_SECRET);
         console.log(role.role)
         if(role.role === 'studens'){
             return res.sendStatus(403);
@@ -384,6 +391,11 @@ exports.page_post_assignments = async (req, res) => {
 exports.detail_assignment = async (req, res) => {
     try {
         const {assignmentId} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         let querySql
         const queryCheckIdwork = `SELECT a.assignment_type FROM assignment AS a WHERE a.id = $1`
         const resultCheckIdwork = await db.query(queryCheckIdwork, [assignmentId])
@@ -412,6 +424,11 @@ exports.detail_assignment = async (req, res) => {
 exports.verified_assignment = async (req, res) => {
     try {
         const {assignmentId} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         let querySql
         const queryCheckIdwork = `SELECT a.assignment_type FROM assignment AS a WHERE a.id = $1`
         const resultCheckIdwork = await db.query(queryCheckIdwork, [assignmentId])
@@ -441,6 +458,11 @@ exports.verified_assignment = async (req, res) => {
 exports.all_up_comming = async (req, res) => {
     try{
         const {id} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.id_user FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -461,6 +483,11 @@ exports.all_up_comming = async (req, res) => {
 exports.all_past_due = async (req, res) => {
     try{
         const {id} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.is_submitted,a.colses_time FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -481,6 +508,11 @@ exports.all_past_due = async (req, res) => {
 exports.all_completed = async (req, res) => {
     try{
         const {id} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.sent_date FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -501,6 +533,11 @@ exports.all_completed = async (req, res) => {
 exports.up_comming = async (req, res) => {
     try{
         const {id,id_classroom} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title,a.due_time,w.id,c.name FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -521,6 +558,11 @@ exports.up_comming = async (req, res) => {
 exports.completed = async (req, res) => {
     try{
         const {id,id_classroom} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.sent_date FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -541,6 +583,11 @@ exports.completed = async (req, res) => {
 exports.past_due = async (req, res) => {
     try{
         const {id,id_classroom} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.is_submitted,a.colses_time FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -560,6 +607,11 @@ exports.past_due = async (req, res) => {
 exports.activity = async (req,res,io) => {
     try{
         const {id} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
         // console.log("Socket IO instance:", io);
         const io = req.app.get("io");
         const querySql = `SELECT 
@@ -604,7 +656,12 @@ exports.activity = async (req,res,io) => {
 exports.activity_group = async (req,res) => {
     try{
         const {id} = req.params
-        console.log(id)
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role !== 'teacher' || role.role !== 'admin'){
+            return res.sendStatus(403);
+        }
+        // console.log(id)
         const querySql = `SELECT 
                 a.title,
                 w.id,
@@ -647,23 +704,13 @@ exports.activity_group = async (req,res) => {
 exports.activity_teacher = async (req,res) => {
     try{
         const {id} = req.params
-        // const querySql = `SELECT 
-        //     w.id_assignment,
-        //     a.id_classroom,
-        //     COUNT(*) AS submissionCount,
-        //     a.assignment_type,
-        //     w.id,
-        //     c.name,
-        //     a.title,
-        //     w.activity,
-        //     MAX(w.sent_date) AS latest_sent_date
-        // FROM work AS w
-        // INNER JOIN assignment AS a ON a.id = w.id_assignment
-        // INNER JOIN classroom AS c ON c.id = a.id_classroom
-        // WHERE c.id_user = $1 AND w.is_submitted = true
-        // GROUP BY w.id_assignment, a.id_classroom, a.assignment_type, c.name, a.title,w.id,w.activity
-        // ORDER BY latest_sent_date DESC
-        // `
+        const token = req.cookies.token
+        console.log(token)
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(role.role)
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         const querySql  = `SELECT 
             w.id_assignment,
             a.id_classroom,
@@ -832,6 +879,11 @@ exports.delete_sheet = async (req, res) => {
 exports.update_assignment = async(req,res) => {
     try {
         const {title,instructions,score,due_time,colses_time,assignmentId,fileName,workId} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         console.log("colses_time ",colses_time)
         let filterFileName = null;
         let sqlFileName = await db.query('SELECT reference_files FROM assignment WHERE id = $1',[assignmentId])
@@ -909,6 +961,11 @@ exports.update_assignment = async(req,res) => {
 exports.remember_groups = async(req,res) => {
     try {
         const {classroomId} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT gr.id_user,gr.no_group,gr.name FROM groups_remember AS gr
         WHERE gr.id_classroom = $1`
         const result = await db.query(querySql,[classroomId])
@@ -923,6 +980,11 @@ exports.remember_groups = async(req,res) => {
 exports.delete_assignment = async(req,res) => {
     try {
         const {assignmentId,assignment_type} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         console.log(assignmentId, assignment_type)
         if(assignment_type === 'group'){
 
