@@ -23,7 +23,7 @@ router.post('/update-assignment',token,upload.any(),assignments.update_assignmen
 router.get('/assignments/:id_assignment/:workId/file/:fileName',assignments.check_type_file)
 router.get('/size-files-assignments/:id_assignment/:id',assignments.get_file_size)
 router.get('/data-assignment/:id_assignment',token,assignments.data_assignment)
-router.post('/delete-sheet',assignments.delete_sheet)
+router.post('/delete-sheet',token,assignments.delete_sheet)
 router.get('/remember-groups/:classroomId',token,assignments.remember_groups)
 module.exports = router
 

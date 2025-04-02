@@ -67,11 +67,12 @@ exports.login = async (req, res) => {
             return res.json({status: 'error', message: "Invalid email or password" });
         }
         const user = check_user.rows[0];
+        const role = check_user.rows[0].role
         const match = await bcrypt.compare(password, user.password);
         if(!match){
             return res.json({status: 'error', message: "Invalid email or password" });
         }
-        const token = jwt.sign({email}, secret, { expiresIn: "1d" });
+        const token = jwt.sign({email,role}, secret, { expiresIn: "1d" });
         res.cookie("token", token, {
             maxAge: 24 * 60 * 60 * 1000,
             secure: true,

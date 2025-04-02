@@ -11,7 +11,7 @@ const socketHandler  = require('./Middleware/socket')
 const server = http.createServer(app); // ใช้ http server
 
 app.use(cors({
-  origin: "https://online-homework-submission.vercel.app",
+  origin: process.env.FRONTEND_PORT,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type"],
   credentials: true
@@ -19,7 +19,7 @@ app.use(cors({
 
 const io = new Server(server, {
     cors: {
-        origin: "https://online-homework-submission.vercel.app", // อนุญาตทุกโดเมน (ปรับตามความเหมาะสม)
+        origin: process.env.FRONTEND_PORT, // อนุญาตทุกโดเมน (ปรับตามความเหมาะสม)
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     },
@@ -47,22 +47,6 @@ app.use(assignment)
 app.use(work)
 app.use(post)
 
-// io.on("connection", (socket) => {
-//   console.log(`User connected: ${socket.id}`);
-
-//   socket.on("joinRoom", (id) => {
-//     socket.join(id);
-//     console.log(`User joined room: ${id}`);
-    
-//     // ส่งข้อมูลไปยังห้องที่ user อยู่
-//     // io.to(id).emit("activity-student", data);
-// });
-
-
-//   socket.on("disconnect", () => {
-//       console.log("User disconnected");
-//   });
-// });
 
 // ใช้ server.listen แทน app.listen
 server.listen(4444, () => {

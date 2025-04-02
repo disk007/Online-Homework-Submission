@@ -2,50 +2,18 @@ const db = require('../Model/database')
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('../Middleware/cloudinary')
-require('dotenv').config();
+const jwt = require("jsonwebtoken")
+require('dotenv').config()
 exports.detail_work = async(req,res)=>{
     try {
+        
         const {work_id,user_id} = req.params
-        // console.log("detail_work",work_id,user_id)
-        // const querySql = `SELECT 
-        //     a.id AS id_assignment,
-        //     a.title,
-        //     w.id,
-        //     a.due_time,
-        //     a.colses_time,
-        //     a.instructions,
-        //     a.reference_files,
-        //     c.name ,
-        //     STRING_AGG(u.fname || ' ' || u.lname, ', ') AS group_members
-        // FROM 
-        //     assignment AS a
-        // INNER JOIN 
-        //     work AS w ON w.id_assignment = a.id
-        // INNER JOIN 
-        //     classroom AS c ON c.id = a.id_classroom
-        // LEFT JOIN 
-        //     groups_member AS gm ON gm.id_group = w.id_group
-        // LEFT JOIN 
-        //     users AS u ON u.id = gm.id_user
-        // WHERE 
-        //     w.id_user = $1
-        //     OR gm.id_group IN (
-        //         SELECT gm_sub.id_group
-        //         FROM groups_member AS gm_sub
-        //         WHERE gm_sub.id_user = $1
-        //     )
-        // GROUP BY 
-        //     a.id,
-        //     a.title,
-        //     a.due_time,
-        //     a.colses_time,
-        //     a.instructions,
-        //     a.reference_files,
-        //     c.name,
-        //     w.id_group,
-        //     w.id
-        // ORDER BY 
-        //     a.id DESC`
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
+
         const querySql = `SELECT 
             a.id AS id_assignment,
             a.title,
@@ -96,13 +64,11 @@ exports.detail_work = async(req,res)=>{
 exports.my_work = async(req,res) => {
     try {
         const {work_id,user_id} = req.params
-        // console.log("my_work ",work_id,user_id)
-        // const querySql = `SELECT a.assignment_type,a.id AS id_assignment,a.due_time,a.colses_time,w.work,w.verify,w.feedback,w.id,w.is_submitted,w.sent_date,w.id_group,(a.score) AS Ascore,(w.score) AS Wscore FROM assignment AS a
-        //     INNER JOIN work AS w ON w.id_assignment = a.id
-        //     INNER JOIN classroom AS c ON c.id = a.id_classroom
-		// 	LEFT JOIN 
-        //         groups_member AS gm ON gm.id_group = w.id_group
-        //     WHERE w.id_user = $1 OR gm.id_user = $1`
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.assignment_type,a.id AS id_assignment,a.due_time,a.colses_time,w.work,w.verify,w.feedback,w.id,w.is_submitted,w.sent_date,w.id_group,(a.score) AS Ascore,(w.score) AS Wscore FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -120,6 +86,11 @@ exports.my_work = async(req,res) => {
 exports.count_activity = async(req, res) => {
     try {
         const {user_id} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT SUM(CASE WHEN w.activity = 'Initial' THEN 1 ELSE 0 END) AS count FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -138,6 +109,11 @@ exports.count_activity = async(req, res) => {
 exports.count_teacher_activity = async(req,res) => {
     try{
         const {user_id} = req.params
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'student'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT a.title, w.id_assignment,w.id FROM work AS w
             INNER JOIN assignment AS a ON a.id = w.id_assignment
             INNER JOIN classroom AS c ON c.id = a.id_classroom
@@ -155,6 +131,11 @@ exports.count_teacher_activity = async(req,res) => {
 exports.update_activity = async(req, res) => {
     try {
         const {id_user,id_work,type} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         let querySql 
         if(type === 'group'){
             const sql_id = `SELECT w.id_group FROM assignment AS a
@@ -181,6 +162,11 @@ exports.update_activity = async(req, res) => {
 exports.update_teacher_activity = async(req,res) => {
     try {
         const {id_assignment,id_classroom} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'student'){
+            return res.sendStatus(403);
+        }
         // console.log(id_assignment,id_classroom)
         const querySql = `UPDATE work
             SET activity = 'ViewedT'
@@ -200,6 +186,11 @@ exports.update_teacher_activity = async(req,res) => {
 exports.update_state_activity = async(req, res) => {
     try {
         const {id_user} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         const querySql = `UPDATE work SET activity = 'No' WHERE id_user = $1 AND activity = 'Initial'`
         await db.query(querySql,[id_user])
         const queryIdGroup = `SELECT g.id FROM groups AS g
@@ -225,6 +216,11 @@ exports.update_state_activity = async(req, res) => {
 exports.update_state_teacher_activity = async(req, res) => {
     try {
         const {id_user} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'student'){
+            return res.sendStatus(403);
+        }
         const querySql = `UPDATE work
             SET activity = 'NoT'
             FROM assignment
@@ -257,6 +253,11 @@ exports.update_state_teacher_activity = async(req, res) => {
 exports.send_work = async(req, res) => {
     try {
         const {id_user,id_work,fileName,send_date} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         const sendDate = new Date(send_date)
         const formatDate = `${sendDate.getFullYear()}-${(sendDate.getMonth() + 1).toString().padStart(2, '0')}-${sendDate.getDate().toString().padStart(2, '0')} ${sendDate.getHours().toString().padStart(2, '0')}:${sendDate.getMinutes().toString().padStart(2, '0')}:00`
         const queryCheckType = `SELECT a.assignment_type,w.id_group,a.id_classroom,a.colses_time FROM assignment AS a
@@ -400,6 +401,11 @@ exports.send_work = async(req, res) => {
 exports.cancel_work = async (req, res) => {
     try {
         const {id_user,id_work} = req.body;
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         const queryCheckType = `SELECT a.assignment_type,w.id_group FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             WHERE w.id = $1
@@ -429,6 +435,11 @@ exports.cancel_work = async (req, res) => {
 exports.delete_work = async (req, res) => {
     try {
         const {id_user,id_work,fileName,id_assignment} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         const queryCheckType = `SELECT a.assignment_type,w.id_group FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             WHERE w.id = $1

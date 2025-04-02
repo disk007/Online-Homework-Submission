@@ -4,7 +4,8 @@ const crypto = require('crypto')
 const path = require("path");
 const fs = require("fs");
 const cloudinary = require('../Middleware/cloudinary')
-require('dotenv').config();
+const jwt = require("jsonwebtoken")
+require('dotenv').config()
 
 function generateCode(length = 8) {
     return crypto.randomBytes(length).toString('hex').slice(0, length);
@@ -13,6 +14,11 @@ function generateCode(length = 8) {
 exports.add_classroom = async (req, res) => {
     try{
         const {name,id} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         let uniqueCode;
         let isUnique = false;
         while (!isUnique) {
@@ -117,6 +123,11 @@ exports.check_detail_assignment = async(req, res) => {
 exports.re_code = async(req,res) => {
     try{
         const {classroom_id} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         console.log("classroom_id "+classroom_id)
         let uniqueCode
         let isUnique = false;
@@ -187,6 +198,11 @@ exports.check_full_work_access = async(req,res) => {
 exports.display_classroom = async (req, res) => {
     try{
         const { id } = req.params;
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         const results = await db.query('SELECT * FROM classroom WHERE id_user = $1 ORDER BY id', [id]);
         return res.json(results.rows);
     }
@@ -199,6 +215,11 @@ exports.display_classroom = async (req, res) => {
 exports.joined_classroom = async (req, res) => {
     try{
         const { id } = req.params;
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         const queryText = `
             SELECT classroom.name,classroom.id
             FROM classroom
@@ -231,6 +252,11 @@ exports.detail_classroom = async (req, res) => {
 exports.join_classroom = async (req, res) => {
     try{
         const { code, id_student } = req.body;
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher' || role.role === 'admin'){
+            return res.sendStatus(403);
+        }
         console.log(code,id_student)
         const check_code = await db.query('SELECT * FROM classroom WHERE code = $1',[code])
         
@@ -302,6 +328,11 @@ exports.members = async (req, res) => {
 exports.delete_member = async (req, res) => {
     try{
         const members = req.body.members; // members จะเป็น array
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         members.forEach(async member => {
             const { id_classroom, id_user } = member;
             await db.query('DELETE FROM members WHERE id_classroom = $1 AND id_user = $2',[id_classroom,id_user])
@@ -317,6 +348,11 @@ exports.delete_member = async (req, res) => {
 exports.leave_classroom = async (req, res) => {
     try {
         const {id_classroom,id_user} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         console.log(id_classroom,id_user)
         await db.query('DELETE FROM members WHERE id_classroom = $1 AND id_user = $2',[id_classroom,id_user])
         return res.json({status:'success'})
@@ -329,6 +365,11 @@ exports.leave_classroom = async (req, res) => {
 exports.update_classroom = async (req, res) => {
     try {
         const {id,name} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         console.log(id,name)
         await db.query('UPDATE classroom SET name = $1 WHERE id = $2',[name,id])
         return res.json({status:'success'})
@@ -343,6 +384,11 @@ exports.update_classroom = async (req, res) => {
 
 exports.all_members = async (req,res) => {
     try {
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens' || role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         const user = await db.query(`SELECT fname,lname,role,email FROM users 
         ORDER BY 
         CASE 
@@ -360,6 +406,10 @@ exports.all_members = async (req,res) => {
 exports.all_classroom = async(req,res) => {
     try {
         const result = await db.query('SELECT * FROM classroom ORDER BY id')
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens' || role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         return res.json(result.rows)
     } catch (error) {
         console.log(error);
@@ -370,6 +420,10 @@ exports.all_classroom = async(req,res) => {
 exports.delete_classroom  = async(req,res) => {
     try {
         const {classroomId} = req.body
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens' ){
+            return res.sendStatus(403);
+        }
         console.log(classroomId)
         const queryGAW = `SELECT g.id AS gId,w.id AS wId,a.id AS aId FROM assignment AS a
         INNER JOIN work AS w ON w.id_assignment = a.id
@@ -439,6 +493,11 @@ exports.delete_classroom  = async(req,res) => {
 
 exports.data_number_teacher = async(req,res) => {
     try {
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens' || role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         const result = await db.query('SELECT * FROM number_teacher')
         const checkIdNum = await db.query('SELECT id_number_teacher FROM users WHERE id_number_teacher IS NOT NULL')
         const takenNumbers = checkIdNum.rows.map(row => row.id_number_teacher);
@@ -457,6 +516,11 @@ exports.data_number_teacher = async(req,res) => {
 exports.add_teacher = async(req , res) => {
     try {
         const {number} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens' || role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         await db.query('INSERT INTO number_teacher (number) VALUES ($1)',[number])
         return res.json({status:'success',message:'Added success'})
     } catch (error) {
@@ -468,6 +532,11 @@ exports.add_teacher = async(req , res) => {
 exports.delete_number_teacher = async(req,res) => {
     try {
         const {id} = req.body
+        const token = req.cookies.token
+        const role = jwt.verify(token, process.env.JWT_SECRET);
+        if(role.role === 'studens' || role.role === 'teacher'){
+            return res.sendStatus(403);
+        }
         await db.query('DELETE FROM number_teacher WHERE id = $1',[id])
         return res.json({status:'success'})
     } catch (error) {
