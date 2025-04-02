@@ -5,9 +5,11 @@ import { MdOutlineArrowDropDown,MdArrowDropUp  } from "react-icons/md";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import '../../node_modules/react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 const RegisterTeacher = () => {
+    const [loadRe,setLoadRe] = useState(false)
     const navigate = useNavigate();
     const [formData,setFormData] = useState({
         fname: '',
@@ -76,9 +78,11 @@ const RegisterTeacher = () => {
             isValid = false
         }
         if(isValid){
+            setLoadRe(true)
             const response = await axios.post('/register-teacher', formData)
             const responseData = response.data;
             if(responseData.status === 'success'){
+                setLoadRe(false)
                 toast.success('Register successfully!', {
                     position: "bottom-right",
                     autoClose: 2000,
@@ -93,6 +97,7 @@ const RegisterTeacher = () => {
                 })
             }
             else if(responseData.status === 'error'){
+                setLoadRe(false)
                 toast.warning(responseData.message, {
                     position: "bottom-right",
                     autoClose: false,
@@ -106,6 +111,7 @@ const RegisterTeacher = () => {
                 })
             }
             else if(responseData.status === 'duplicate'){
+                setLoadRe(false)
                 toast.warning(responseData.message, {
                     position: "bottom-right",
                     autoClose: false,

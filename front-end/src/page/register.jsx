@@ -5,10 +5,12 @@ import { MdOutlineArrowDropDown,MdArrowDropUp  } from "react-icons/md";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import '../../node_modules/react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import ClipLoader from "react-spinners/ClipLoader";
 
 
 const Register = () => {
     const navigate = useNavigate();
+    const [loadRe,setLoadRe] = useState(false)
     const [formData,setFormData] = useState({
         fname: '',
         lname: '',
@@ -69,9 +71,11 @@ const Register = () => {
             isValid = false
         }
         if(isValid){
+            setLoadRe(true)
             const response = await axios.post('/register-student', formData)
             const responseData = response.data;
             if(responseData.status === 'success'){
+                setLoadRe(false)
                 toast.success('Register successfully!', {
                     position: "bottom-right",
                     autoClose: 2000,
@@ -86,6 +90,7 @@ const Register = () => {
                 })
             }
             else if(responseData.status === 'error'){
+                setLoadRe(false)
                 toast.warning(responseData.message, {
                     position: "bottom-right",
                     autoClose: false,
@@ -99,6 +104,7 @@ const Register = () => {
                 })
             }
             else if(responseData.status === 'duplicate'){
+                setLoadRe(false)
                 toast.warning(responseData.message, {
                     position: "bottom-right",
                     autoClose: 5000,
@@ -187,7 +193,11 @@ const Register = () => {
                                 <div className={`h-2 ${errors.confirmPassword && "text-red-500 text-xs"} `}>{errors.confirmPassword}</div>
                             </div>  
                         </div>
-                        <div className="w-full mb-3"><button className="py-2 bg-sky-500 w-full text-white hover:bg-sky-600 text-lg transition ease-in-out delay-150">Register</button></div>
+                        <div className="w-full mb-3">
+                            <button className="py-2 bg-sky-500 w-full text-white hover:bg-sky-600 text-lg transition ease-in-out delay-150" disabled={loadRe}>
+                                {loadRe ? <ClipLoader size={20} color={"#fff"} /> : "Register"}
+                            </button>
+                        </div>
                         <div className="w-full text-center">Already have an account? <Link to={'/login'} className="font-semibold hover:text-sky-600 transition ease-in-out delay-150">Login</Link></div>
                     </form>
                 </div>

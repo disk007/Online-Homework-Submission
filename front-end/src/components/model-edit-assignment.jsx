@@ -153,7 +153,8 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
             const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
             const response = await axios.get(`/assignments/${assignmentId}/${workId}/file/${encodedFileName}`, { 
-              responseType: 'arraybuffer'
+              responseType: 'arraybuffer',
+              withCredentials: false, 
             });
         
             const mimeType = response.headers['content-type'];

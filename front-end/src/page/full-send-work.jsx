@@ -144,7 +144,8 @@ const Full_send_work = ({isLogin}) => {
             const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
             const response = await axios.get(`/assignments/${id_assignment}/${workId}/file/${encodedFileName}`, { 
-              responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+              responseType: 'arraybuffer',
+              withCredentials: false, 
             });
         
             const mimeType = response.headers['content-type'];
@@ -163,12 +164,14 @@ const Full_send_work = ({isLogin}) => {
             let response
             if(type === null){
                 response = await axios.get(`/assignments//${id_assignment}/${workId}/${isLogin.id}/${encodedFileName}`, { 
-                    responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+                    responseType: 'arraybuffer',
+                    withCredentials: false, 
                 });
             }
             else{
                 response = await axios.get(`/assignments/${id_assignment}/${workId}/${type}/${encodedFileName}`, { 
-                    responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+                    responseType: 'arraybuffer',
+                    withCredentials: false, 
                 });
             }
             

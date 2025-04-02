@@ -108,12 +108,14 @@ const Detali_assignment = ({isLogin}) => {
             let response
             if(type === null){
                 response = await axios.get(`/assignments/${assignmentId}/${workId}/${id}/${n}`, { 
-                    responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+                    responseType: 'arraybuffer',
+                    withCredentials: false, 
                 });
             }
             else{
                 response = await axios.get(`/assignments/${assignmentId}/${workId}/${id}/${n}`, { 
-                    responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+                    responseType: 'arraybuffer',
+                    withCredentials: false, 
                 });
             }
             
