@@ -5,9 +5,9 @@ import {RoomProvider} from "../components/fetchRoom";
 import ModelJoin from "../components/model-join";
 const Classroom = ({isLogin}) =>{
     console.log('isLogin',isLogin)
-    // if(!isLogin){
-    //     return <Navigate to="/login" />;
-    // }
+    if(!isLogin){
+        return <Navigate to="/login" />;
+    }
     return(
         <>
             <Room data={isLogin}  />
