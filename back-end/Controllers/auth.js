@@ -93,7 +93,7 @@ exports.profile = async (req, res) => {
         console.log('email ',email)
         const results = await db.query("SELECT * FROM users WHERE email = $1", [email])
         if(results){
-            console.log('fname:results.rows[0].fname,lname ',results.rows[0].fname,lname)
+            console.log('fname:results.rows[0].fname,lname ',results.rows[0].fname)
             return res.json({status:'success',id: results.rows[0].id, fname:results.rows[0].fname,lname:results.rows[0].lname, role:results.rows[0].role}); 
         }
         else{
