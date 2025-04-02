@@ -10,12 +10,15 @@ const socketHandler  = require('./Middleware/socket')
 
 const server = http.createServer(app); // ใช้ http server
 
-app.use(cors({
+const corsOptions = {
   origin: "https://online-homework-submission.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type"],
-  credentials: true
-}));
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 const io = new Server(server, {
     cors: {

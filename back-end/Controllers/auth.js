@@ -71,9 +71,9 @@ exports.login = async (req, res) => {
         if(!match){
             return res.json({status: 'error', message: "Invalid email or password" });
         }
-        const token = jwt.sign({email}, secret, { expiresIn: "1d" });
+        const token = jwt.sign({email}, secret, { expiresIn: "2m" });
         res.cookie("token", token, {
-            maxAge: 24 * 60 * 60 * 1000,
+            maxAge: 2 * 60 * 1000,
             secure: true,
             httpOnly: true,
             sameSite: "none",
@@ -90,8 +90,10 @@ exports.profile = async (req, res) => {
     try {
       // Get the users
         const email = req.user.email;
+        console.log('email ',email)
         const results = await db.query("SELECT * FROM users WHERE email = $1", [email])
         if(results){
+            console.log('fname:results.rows[0].fname,lname ',results.rows[0].fname,lname)
             return res.json({status:'success',id: results.rows[0].id, fname:results.rows[0].fname,lname:results.rows[0].lname, role:results.rows[0].role}); 
         }
         else{
