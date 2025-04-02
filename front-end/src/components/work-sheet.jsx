@@ -157,7 +157,8 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
             // const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
             const response = await axios.get(`/assignments/${id_assignment}/${workId}/file/${n}`, { 
-              responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+              responseType: 'arraybuffer',
+              withCredentials: false, 
             });
         
             const mimeType = response.headers['content-type'];
@@ -176,12 +177,14 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
             let response
             if(type === null){
                 response = await axios.get(`/assignments/${id_assignment}/${workId}/${isLogin.id}/${n}`, { 
-                    responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+                    responseType: 'arraybuffer',
+                    withCredentials: false, 
                 });
             }
             else{
                 response = await axios.get(`/assignments/${id_assignment}/${workId}/${type}/${n}`, { 
-                    responseType: 'arraybuffer' // ต้องตั้ง responseType เพื่อให้สามารถตรวจสอบ Content-Type ได้
+                    responseType: 'arraybuffer',
+                    withCredentials: false, 
                 });
             }
             
