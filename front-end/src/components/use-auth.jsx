@@ -10,7 +10,7 @@ const useAuth = () => {
   const fetchLogin = async () => {
     try {
       setLoading(true)
-      const response = await axios.get('/profile', {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/profile`, {
         withCredentials: true, // ส่ง cookies ในคำขอ
       });
       const responseData = response.data
