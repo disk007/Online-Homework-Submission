@@ -1,6 +1,6 @@
 // src/hooks/useAuth.js
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from './axios-instance';
 import { Navigate } from 'react-router-dom';
 
 const useAuth = () => {
@@ -10,7 +10,7 @@ const useAuth = () => {
   const fetchLogin = async () => {
     try {
       setLoading(true)
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/profile`, {
+      const response = await axios.get('/profile', {
         withCredentials: true, // ส่ง cookies ในคำขอ
       });
       const responseData = response.data

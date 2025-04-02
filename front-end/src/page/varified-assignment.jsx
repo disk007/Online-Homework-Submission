@@ -10,7 +10,7 @@ import { FaRegUserCircle,FaFileAlt} from "react-icons/fa";
 import { FaSortUp,FaSortDown  } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import { useParams,useNavigate,useLocation} from "react-router-dom";
-import axios from "axios";
+import axios from '../components/axios-instance';
 import ModelFile from "../components/model-file";
 import ModelEditAssignment from "../components/model-edit-assignment";
 import * as XLSX from "xlsx";

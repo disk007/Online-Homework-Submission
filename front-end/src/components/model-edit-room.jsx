@@ -4,7 +4,7 @@ import {RoomContext } from "./fetchRoom";
 import { SiGoogleclassroom } from "react-icons/si";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import ClipLoader from "react-spinners/ClipLoader";
-import axios from "axios";
+import axios from './axios-instance';
 const ModelEditRoom = ({open,onClose,dataEdit}) => {
     const {fetchRoom} = useContext(RoomContext);
     const [loadEdit,setLoadEdit] = useState(false)

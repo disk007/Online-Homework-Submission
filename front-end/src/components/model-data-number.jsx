@@ -2,7 +2,7 @@ import React, { useState,useEffect } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { MdAddCall } from "react-icons/md";
 import Model_number_teacher from "./model-number-teacher";
-import axios from "axios";
+import axios from './axios-instance';
 import { ImBin } from "react-icons/im";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import ClipLoader from "react-spinners/ClipLoader";

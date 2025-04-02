@@ -5,7 +5,7 @@ import { Link,useLocation,useParams } from "react-router-dom";
 import { IoChevronBack } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { LuRefreshCw } from "react-icons/lu";
-import axios from "axios";
+import axios from './axios-instance';
 import useAuth from "./use-auth";
 const SidebarClassroom = ({sidebar,setSidebar}) =>{
     const {isLogin} = useAuth()

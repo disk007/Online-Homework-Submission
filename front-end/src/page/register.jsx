@@ -1,6 +1,6 @@
 import React,{useState} from "react";
 import { Link } from "react-router-dom";
-import axios from 'axios';
+import axios from '../components/axios-instance';
 import { MdOutlineArrowDropDown,MdArrowDropUp  } from "react-icons/md";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import '../../node_modules/react-toastify/dist/ReactToastify.css';

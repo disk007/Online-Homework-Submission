@@ -4,7 +4,7 @@ import SidebarClassroom from "../components/sidebar-classroom";
 import supplies from '../picture/Supplies.jpg'
 import {useNavigate,useParams } from "react-router-dom";
 import withAuthorization from "../components/with-authorization";
-import axios from "axios";
+import axios from '../components/axios-instance';
 import ClipLoader from "react-spinners/ClipLoader";
 const UpComming = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)

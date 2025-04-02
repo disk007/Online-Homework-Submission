@@ -2,7 +2,7 @@ import React,{useEffect,useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import '../../node_modules/react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import axios from '../components/axios-instance';
 import useAuth from "../components/use-auth";
 import { Navigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -36,10 +36,7 @@ const Login = () => {
         }
         if(isValid){
             setLoadingLog(true)
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/login`, formData,{
-                headers: {'Content-Type': 'application/json'},
-                withCredentials: true,
-            })
+            const response = await axios.post(`/login`, formData)
             const responseData = response.data;
             if(responseData.status === 'success'){
                 window.location.href = '/';

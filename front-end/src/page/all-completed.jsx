@@ -4,7 +4,7 @@ import supplies from '../picture/Supplies.jpg'
 import { FaCheck } from "react-icons/fa6";
 import {Navigate,useNavigate,useParams } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import axios from "axios";
+import axios from '../components/axios-instance';
 const All_completed = ({isLogin}) => {
     const [assignment,setAssignment] = useState([])
     const [loadPage,setLoadPage] = useState(false)

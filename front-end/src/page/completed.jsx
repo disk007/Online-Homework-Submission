@@ -6,7 +6,7 @@ import CreateAssignments from "../components/create-assignments";
 import {Navigate,useNavigate,useParams } from "react-router-dom";
 import { FaCheck } from "react-icons/fa6";
 import withAuthorization from "../components/with-authorization";
-import axios from "axios";
+import axios from '../components/axios-instance';
 import ClipLoader from "react-spinners/ClipLoader";
 const Completed = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)

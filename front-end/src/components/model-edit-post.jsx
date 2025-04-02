@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill from 'react-quill';
 import ModelFile from "../components/model-file";
 import { MdOutlineFileUpload } from "react-icons/md";
-import axios from "axios";
+import axios from './axios-instance';
 import ClipLoader from "react-spinners/ClipLoader";
 const ModelEditPost = ({open,onClose,id}) => {
     const [loading, setLoading] = useState(false)

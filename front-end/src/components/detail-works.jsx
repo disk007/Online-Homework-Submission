@@ -10,7 +10,7 @@ import { BsChatRightText } from "react-icons/bs";
 import { FaRegUserCircle,FaFileAlt} from "react-icons/fa";
 import { FaSortUp,FaSortDown  } from "react-icons/fa6";
 import { useParams,useNavigate,useLocation} from "react-router-dom";
-import axios from "axios";
+import axios from './axios-instance';
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import { RxCross2 } from "react-icons/rx";
 import ModelFile from "../components/model-file";

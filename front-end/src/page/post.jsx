@@ -16,7 +16,7 @@ import ModelFile from "../components/model-file";
 import ModelEditPost from "../components/model-edit-post";
 import ModelEditComment from "../components/model-edit-comment";
 import io from "socket.io-client";
-import axios from "axios";
+import axios from '../components/axios-instance';
 import ClipLoader from "react-spinners/ClipLoader";
 
 const socket = io(process.env.REACT_APP_API_URL);

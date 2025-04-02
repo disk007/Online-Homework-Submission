@@ -1,7 +1,6 @@
 import './App.css';
 import './font.css'
-import React,{ useState,useEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { BrowserRouter , Routes, Route,Navigate} from "react-router-dom";
 import Classroom from './page/classroom';
 import All_upComming from './page/all-upComming';

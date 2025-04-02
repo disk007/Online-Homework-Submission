@@ -1,6 +1,6 @@
 import React,{useState,useContext} from "react";
 import { RxCross2 } from "react-icons/rx";
-import axios from 'axios';
+import axios from './axios-instance';
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import {RoomContext } from "./fetchRoom";
 import ClipLoader from "react-spinners/ClipLoader";

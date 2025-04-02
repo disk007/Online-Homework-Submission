@@ -5,7 +5,7 @@ import DisplayGroup from "./display-group";
 import Edit_group from "./edit-group";
 import MenuGroup from "./menu-group";
 import Select_students_group from "./select-students-group";
-import axios from "axios";
+import axios from './axios-instance';
 import {useParams } from "react-router-dom";
 const GroupStudents = ({open,OnClose,setDataGroup,state,setStatus,setOpen}) => {
     const [currentPage, setCurrentPage] = useState(1)

@@ -6,7 +6,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { GoChecklist } from "react-icons/go";
 import { useParams,useNavigate } from "react-router-dom";
 import ClipLoader from "react-spinners/ClipLoader";
-import axios from "axios";
+import axios from '../components/axios-instance';
 const List_assignments = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)
     const [loadPage,setLoadPage] = useState(false)

@@ -6,7 +6,7 @@ import CreateAssignments from "../components/create-assignments";
 import {Navigate,useParams,useNavigate } from "react-router-dom";
 import withAuthorization from "../components/with-authorization";
 import { AiOutlineStop } from "react-icons/ai";
-import axios from "axios";
+import axios from '../components/axios-instance';
 import ClipLoader from "react-spinners/ClipLoader";
 const Past_due = ({isLogin}) => {
     const [sidebar,setSidebar] = useState(false)

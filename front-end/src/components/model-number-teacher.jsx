@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { MdAddCall } from "react-icons/md";
-import axios from "axios";
+import axios from './axios-instance';
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import ClipLoader from "react-spinners/ClipLoader";
 const Model_number_teacher = ({fetchData,open,OnClose}) => {

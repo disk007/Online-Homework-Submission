@@ -6,7 +6,7 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import ModelFile from "./model-file";
 import clipboard from "../picture/clipboard.jpg"
 import { ToastContainer, toast,Slide } from 'react-toastify';
-import axios from "axios";
+import axios from './axios-instance';
 import { LuCheck } from "react-icons/lu";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';

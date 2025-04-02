@@ -2,7 +2,7 @@ import React,{useState,useEffect} from "react";
 import Assignments from "../components/assignments";
 import supplies from '../picture/Supplies.jpg'
 import {Navigate,useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from '../components/axios-instance';
 import { AiOutlineStop } from "react-icons/ai";
 import ClipLoader from "react-spinners/ClipLoader";
 const All_past_due = ({isLogin}) => {

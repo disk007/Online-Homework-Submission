@@ -1,7 +1,7 @@
 import React,{useState,useEffect} from "react";
 import { FaUser } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
-import axios from "axios";
+import axios from './axios-instance';
 import {useParams } from "react-router-dom";
 
 const IndividualStudent = ({individual}) => {

@@ -8,7 +8,7 @@ import { MdOutlineFileUpload } from "react-icons/md";
 import {FaFileAlt,FaUserPlus } from "react-icons/fa";
 import { SiGoogleclassroom } from "react-icons/si";
 import { ToastContainer, toast,Slide } from 'react-toastify';
-import axios from "axios";
+import axios from './axios-instance';
 import Flatpickr from "react-flatpickr";
 import { Link,useLocation,useParams } from "react-router-dom";
 import "../../node_modules/flatpickr/dist/themes/dark.css";

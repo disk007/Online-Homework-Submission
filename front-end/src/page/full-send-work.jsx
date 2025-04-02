@@ -9,7 +9,7 @@ import '../css/react_quill.css'
 import ModelFile from "../components/model-file";
 import clipboard from "../picture/clipboard.jpg"
 import { ToastContainer, toast,Slide } from 'react-toastify';
-import axios from "axios";
+import axios from '../components/axios-instance';
 import { LuCheck } from "react-icons/lu";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { useNavigate,useParams } from 'react-router-dom';

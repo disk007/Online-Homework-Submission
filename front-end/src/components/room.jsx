@@ -6,7 +6,7 @@ import {RoomContext } from "./fetchRoom";
 import { BsThreeDots } from "react-icons/bs";
 import ModelEditRoom from "./model-edit-room";
 import ClipLoader from "react-spinners/ClipLoader";
-import axios from "axios";
+import axios from './axios-instance';
 const Room = ({data}) =>{
     const navigate = useNavigate()
     const [openEdit,setOpenEdit] = useState(false)
@@ -51,7 +51,7 @@ const Room = ({data}) =>{
             const formData = new FormData()
             setLoadDel(true)
             formData.append('classroomId',dataEdit.id)
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/delete-classroom`,formData,{
+            const response = await axios.post(`/delete-classroom`,formData,{
                 headers: {'Content-Type': 'application/json'}
             })
             const responData = response.data
@@ -81,7 +81,7 @@ const Room = ({data}) =>{
     }, []);
 
     const handleLinkClick = (classroomId) =>{
-        navigate(`${process.env.REACT_APP_API_URL}/detail-classroom/post/${classroomId}`);
+        navigate(`/detail-classroom/post/${classroomId}`);
     }
     const extractFirstChars = (name) => {
         let firstEncounter = true;
@@ -100,7 +100,7 @@ const Room = ({data}) =>{
             setLoadLeav(true)
             forData.append('id_classroom', selecteId)
             forData.append('id_user',data.id)
-            const response = await axios.post(`${process.env.REACT_APP_API_URL}/leave-classroom`,forData,{
+            const response = await axios.post('/leave-classroom',forData,{
                 headers: {'Content-Type': 'application/json'}
             })
             const responseData = response.data

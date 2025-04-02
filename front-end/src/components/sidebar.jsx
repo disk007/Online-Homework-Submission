@@ -5,7 +5,7 @@ import { SiGoogleclassroom } from "react-icons/si";
 import { FaUsersLine } from "react-icons/fa6";
 import { GoChecklist } from "react-icons/go";
 import {RoomContext} from "./fetchRoom";
-import axios from "axios";
+import axios from './axios-instance';
 import io from "socket.io-client";
 
 const socket = io(process.env.REACT_APP_API_URL);

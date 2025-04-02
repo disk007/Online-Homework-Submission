@@ -6,7 +6,7 @@ import { FaPlus,FaUserFriends,FaUserEdit,FaLock} from "react-icons/fa";
 import ModelJoin from "./model-join";
 import ModelCreat from "./model-creat";
 import Model_data_number from "./model-data-number";
-import axios from "axios";
+import axios from './axios-instance';
 import { useLocation} from "react-router-dom";
 import {Navigate } from "react-router-dom";
 import { MdAddCall } from "react-icons/md";

@@ -8,7 +8,7 @@ import {FaUserFriends,FaUser} from "react-icons/fa";
 import { ToastContainer, toast,Slide } from 'react-toastify';
 import withAuthorization from "../components/with-authorization";
 import ClipLoader from "react-spinners/ClipLoader";
-import axios from "axios";
+import axios from '../components/axios-instance';
 const Member = ({isLogin}) => {
     const { classroomId } = useParams()
     const [sidebar,setSidebar] = useState(false)

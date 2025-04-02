@@ -4,7 +4,7 @@ import { FaBook } from "react-icons/fa6";
 import { RxCross2 } from "react-icons/rx";
 import folder from '../picture//folder.jpg'
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from './axios-instance';
 import io from "socket.io-client";
 import ClipLoader from "react-spinners/ClipLoader";
 

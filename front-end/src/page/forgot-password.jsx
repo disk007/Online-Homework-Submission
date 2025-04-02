@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '../components/axios-instance';
 import React,{useState,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast,Slide } from 'react-toastify';
