@@ -1,10 +1,10 @@
 const router = require('express').Router()
 const assignments = require('../Controllers/assignments')
-const express = require('express')
 const path = require('path');
 const upload = require('../Middleware/uploadFile')
+const token = require('../Middleware/token')
 
-router.get('/list-assignments/:id',assignments.list_assignments)
+router.get('/list-assignments/:id',token,assignments.list_assignments)
 router.get('/page-post-assignments/:id',assignments.page_post_assignments)
 router.get('/detail-assignment/:assignmentId',assignments.detail_assignment)
 router.get('/verified-assignment/:assignmentId',assignments.verified_assignment)
