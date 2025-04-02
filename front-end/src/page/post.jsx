@@ -291,10 +291,9 @@ const DetailClassroom = ({isLogin}) =>{
     const selectFileName = async (n,id) => {
         // setFileName(n)
         try {
-            // const encodedFileName = encodeURIComponent(n);
-            // setFileName(pathFile)
             const response = await axios.get(`/post/${id}/${n}`, { 
-              responseType: 'arraybuffer'
+              responseType: 'arraybuffer',
+              withCredentials: false, 
             });
         
             const mimeType = response.headers['content-type'];

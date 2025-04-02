@@ -20,7 +20,7 @@ const useAuth = () => {
       setLoading(false) 
       // 
     } catch (error) {
-      console.error("Error fetching login data:", error);
+      console.error("Error fetching login data:");
       setIsLogin(null); // จัดการกรณีเกิดข้อผิดพลาด
       setLoading(false)
     }

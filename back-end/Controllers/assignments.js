@@ -348,7 +348,7 @@ exports.list_assignments = async (req, res) => {
         console.log(token)
         const role = jwt.verify(token, process.env.JWT_SECRET);
         console.log(role.role)
-        if(role.role === 'studens'){
+        if(role.role == 'studens'){
             return res.sendStatus(403);
         }
         const querySql = `SELECT 

@@ -294,8 +294,9 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
                     open={openFile}
                     onClose={() => setOpenFile(false)}
                     file={selectFile?.url}
-                    setSelectFile={() => setSelectFile(null)}
                     type={selectFile?.type}
+                    setSelectFile={() => setSelectFile(null)}
+                    download={selectFile?.name}
                 />
             )
             }
