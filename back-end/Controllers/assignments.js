@@ -2,6 +2,7 @@ const db = require('../Model/database')
 const fs = require('fs');
 const path = require('path');
 const cloudinary = require('../Middleware/cloudinary')
+const jwt = require("jsonwebtoken")
 exports.add_assignments = async (req,res) => {
     try{
         const {title,instructions,points,dueDate,dueTime,idClassroom,typeWork,members,dateClose,timeClose,fileName,create_at} = req.body
@@ -335,6 +336,13 @@ exports.add_assignments = async (req,res) => {
 exports.list_assignments = async (req, res) => {
     try {
         const { id } = req.params;
+        const token = req.cookies.token
+        console.log(token)
+        const role = jwt.verify(token, secret);
+        console.log(role.role)
+        if(role.role === 'studens'){
+            return res.sendStatus(403);
+        }
         const querySql = `SELECT 
                 a.title,
                 a.due_time,
