@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken")
 require('dotenv').config()
 exports.add_assignments = async (req,res) => {
     try{
-        const {title,instructions,points,dueDate,dueTime,idClassroom,typeWork,members,dateClose,timeClose,fileName,create_at} = req.body
+        const {title,instructions,points,dueDate,idClassroom,typeWork,members,dateClose,fileName,create_at} = req.body
         const token = req.cookies.token
         console.log(token)
         const role = jwt.verify(token, process.env.JWT_SECRET);
@@ -19,21 +19,17 @@ exports.add_assignments = async (req,res) => {
             filterFileName = JSON.stringify(fileName);
         }
         const due_Date = new Date(dueDate)
-        const due_Time = new Date(dueTime)
         const create = new Date(create_at)
 
         console.log("due_Date ",dueDate, "+ ",dueDate)
 
         const Date_create = `${create.getFullYear()}-${(create.getMonth() + 1).toString().padStart(2, '0')}-${create.getDate().toString().padStart(2, '0')} ${create.getHours().toString().padStart(2, '0')}:${create.getMinutes().toString().padStart(2, '0')}:00`
-        const dueDateTime = `${due_Date.getFullYear()}-${(due_Date.getMonth() + 1).toString().padStart(2, '0')}-${due_Date.getDate().toString().padStart(2, '0')} ${due_Time.getHours().toString().padStart(2, '0')}:${due_Time.getMinutes().toString().padStart(2, '0')}:00`
+        const dueDateTime = `${due_Date.getFullYear()}-${(due_Date.getMonth() + 1).toString().padStart(2, '0')}-${due_Date.getDate().toString().padStart(2, '0')} ${due_Date.getHours().toString().padStart(2, '0')}:${due_Date.getMinutes().toString().padStart(2, '0')}:00`
         console.log("dueDateTime "+dueDateTime)
         let closeDateTime = null;
         if(dateClose !== "" && timeClose !== ""){
             const closeDate = new Date(dateClose);
-            const closeTime = new Date(timeClose);
-            const close_Date = `${closeDate.getFullYear()}-${(closeDate.getMonth() + 1).toString().padStart(2, '0')}-${closeDate.getDate().toString().padStart(2, '0')}`;
-            const close_Time = `${closeTime.getHours().toString().padStart(2, '0')}:${closeTime.getMinutes().toString().padStart(2, '0')}:00`;
-            closeDateTime = `${close_Date} ${close_Time}`
+            closeDateTime = `${dateClose.getFullYear()}-${(dateClose.getMonth() + 1).toString().padStart(2, '0')}-${dateClose.getDate().toString().padStart(2, '0')} ${dateClose.getHours().toString().padStart(2, '0')}:${dateClose.getMinutes().toString().padStart(2, '0')}:00`
         }
         const idRoomArray = idClassroom.split(",").map(Number);
         const idRoom = await Promise.all(
