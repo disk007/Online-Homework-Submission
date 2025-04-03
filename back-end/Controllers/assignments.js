@@ -27,9 +27,9 @@ exports.add_assignments = async (req,res) => {
         const dueDateTime = `${due_Date.getFullYear()}-${(due_Date.getMonth() + 1).toString().padStart(2, '0')}-${due_Date.getDate().toString().padStart(2, '0')} ${due_Date.getHours().toString().padStart(2, '0')}:${due_Date.getMinutes().toString().padStart(2, '0')}:00`
         console.log("dueDateTime "+dueDateTime)
         let closeDateTime = null;
-        if(dateClose !== "" && timeClose !== ""){
+        if(dateClose !== ""){
             const closeDate = new Date(dateClose);
-            closeDateTime = `${dateClose.getFullYear()}-${(dateClose.getMonth() + 1).toString().padStart(2, '0')}-${dateClose.getDate().toString().padStart(2, '0')} ${dateClose.getHours().toString().padStart(2, '0')}:${dateClose.getMinutes().toString().padStart(2, '0')}:00`
+            closeDateTime = `${closeDate.getFullYear()}-${(closeDate.getMonth() + 1).toString().padStart(2, '0')}-${closeDate.getDate().toString().padStart(2, '0')} ${closeDate.getHours().toString().padStart(2, '0')}:${closeDate.getMinutes().toString().padStart(2, '0')}:00`
         }
         const idRoomArray = idClassroom.split(",").map(Number);
         const idRoom = await Promise.all(
