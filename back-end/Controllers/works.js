@@ -262,13 +262,13 @@ exports.send_work = async(req, res) => {
         console.log('sendDate ',sendDate)
         const sendDateInBangkok = new Date(sendDate.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
         const formatDate = `${sendDate.getFullYear()}-${(sendDate.getMonth() + 1).toString().padStart(2, '0')}-${sendDate.getDate().toString().padStart(2, '0')} ${sendDate.getHours().toString().padStart(2, '0')}:${sendDate.getMinutes().toString().padStart(2, '0')}:00`
-        const queryCheckType = `SELECT a.assignment_type,w.id_group,a.id_classroom,a.colses_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' FROM assignment AS a
+        const queryCheckType = `SELECT a.assignment_type,w.id_group,a.id_classroom,a.colses_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS colses_time FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             WHERE w.id = $1
             GROUP BY a.id,w.id_group`
         const resultCheckType = await db.query(queryCheckType,[id_work])
         const date_closes = new Date(resultCheckType.rows[0].colses_time)
-        console.log("date1 ",sendDateInBangkok.getTime()," date2 ",date_closes.getTime())
+        console.log("date1 ",sendDateInBangkok," date2 ",date_closes)
         if(date_closes.getTime() !== 0){
         if(sendDateInBangkok.getTime() > date_closes.getTime()){
             if (req.files) {
