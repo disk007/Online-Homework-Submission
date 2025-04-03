@@ -279,6 +279,7 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
                         theme: "light",
                         transition: Slide,
                     })
+                    setLoadSend(false)
                 }
             } catch (error) {
                 console.error('Error submitting assignment:', error);
