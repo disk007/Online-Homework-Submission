@@ -236,12 +236,12 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
         e.preventDefault()
         const dueDate = new Date(formData.dueDate);
         const checkDate = new Date()
-        // const dueTime = new Date(formData.dueDate);
+        const dueTime = new Date(formData.dueDate);
         // const hours = formData.dueTime.getHours()
         // const minutes = formData.dueTime.getMinutes()
         // dueTime.setHours(hours, minutes,0,0)
 
-        // const timeClose = new Date(formData.dateClose)
+        const timeClose = new Date(formData.dateClose)
         // const hoursClose = formData.timeClose.getHours()
         // const minutesClose = formData.timeClose.getMinutes()
         // timeClose.setHours(hoursClose, minutesClose,0,0)
