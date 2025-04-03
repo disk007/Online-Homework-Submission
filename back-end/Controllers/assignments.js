@@ -250,70 +250,6 @@ exports.add_assignments = async (req,res) => {
                 console.error(`เกิดข้อผิดพลาดในการอัปโหลดงาน ${obj.id_assignment}`, error.message);
             }
         }
-        // IdsAssignments.flatMap((sub) => {
-        //     sub.map(async(obj) => {
-        //         // const Path = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),typeWork === "groups"?obj.id_group.toString():obj.id_user.toString())
-        //         // fs.mkdirSync(Path, { recursive: true })
-        //         const folderPath = `assignments/${obj.id_assignment}/${obj.id}/${
-        //             typeWork === "groups" ? obj.id_group : obj.id_user
-        //         }`;
-        //         const CfolderPath = await cloudinary.api.create_folder(folderPath);
-        //         if (req.files && req.body) {
-        //             const folderFile = `assignments/${obj.id_assignment}/${obj.id}/file`
-        //             const ColderFile = await cloudinary.api.create_folder(folderFile);
-        //             for (let i = 0; i < req.files.length; i++) {
-        //                 const file = req.files[i];
-        //                 const fileName = req.body.fileName[i]; // ใช้ชื่อไฟล์จาก req.body
-        //                 const filePath = file.path; // ตำแหน่งไฟล์บนเซิร์ฟเวอร์
-              
-        //                 console.log(`อัปโหลดไฟล์: ${filePath}`);
-              
-        //                 // 📤 อัปโหลดไปที่ Cloudinary (ไม่ต้องสร้างโฟลเดอร์ file แยก)
-        //                 const result = await cloudinary.uploader.upload(filePath, {
-        //                   resource_type: "auto",
-        //                   folder: `${folderPath}/file`, // สร้างโฟลเดอร์ file อัตโนมัติ
-        //                   public_id: fileName, // ตั้งชื่อไฟล์
-        //                 });
-        //                 console.log(`อัปโหลดสำเร็จ: ${result.secure_url}`);
-        //             }
-        //             // req.files.forEach(async(file, index) => {
-        //                 // console.log("file.path "+file.path)
-        //                 // console.log(file, fileName[index])
-        //                 // const folderFile = path.join(__dirname,'../assignments',obj.id_assignment.toString(),obj.id.toString(),'file');
-        //                 // if (!fs.existsSync(folderFile)) {
-        //                 //     try {
-        //                 //         fs.mkdirSync(folderFile, { recursive: true })
-        //                 //         console.log(`Folder created: ${folderFile}`);
-        //                 //     } catch (err) {
-        //                 //         console.error('Error creating folder:', err);
-        //                 //     }
-        //                 // }
-        //                 // const newPath = path.join(folderFile,fileName[index]);
-        //                 // if (fs.existsSync(file.path)) {
-        //                 //     try {
-        //                 //         fs.copyFileSync(file.path, newPath)
-        //                 //         console.log(`File copy successfully to ${newPath}`);
-        //                 //     } catch (err) {
-        //                 //         console.error('Error moving file:', err);
-        //                 //     }
-        //                 // } else {
-        //                 //     console.error(`File not found: ${file.path}`);
-        //                 // }
-        //             // });
-        //         }
-                
-        //     }) 
-        // })
-        // if (req.files) {
-        //     req.files.forEach((file) => {
-        //         try {
-        //             fs.unlinkSync(file.path)
-        //             console.log(`File deleted successfully ${file.path}`);
-        //         } catch (err) {
-        //             console.error(`Error deleting original file: ${file.path}`, err);
-        //         }
-        //     });
-        // }
         const io = req.app.get("io");
         if (io && Array.isArray(idRoomArray)) {
             io.sockets.sockets.forEach((socket) => {
@@ -330,9 +266,6 @@ exports.add_assignments = async (req,res) => {
                 }
             });
         }
-        // else if (io && idRoomArray) {
-        //     io.to(String(idRoomArray)).emit("activityStudent");
-        // }
         return res.json({status: 'success', message:'Assignment saved!'});
     }
     catch(error){
@@ -464,13 +397,13 @@ exports.all_up_comming = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.id_user FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name,w.id_user FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -489,13 +422,13 @@ exports.all_past_due = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.is_submitted,a.colses_time FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name,w.is_submitted,a.colses_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS colses_time FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -539,13 +472,13 @@ exports.up_comming = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time,w.id,c.name FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND a.id_classroom = $2 AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AND a.id_classroom = $2 AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
@@ -589,13 +522,13 @@ exports.past_due = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.is_submitted,a.colses_time FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name,w.is_submitted,a.colses_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS colses FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AND a.id_classroom = $2
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AND a.id_classroom = $2
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
