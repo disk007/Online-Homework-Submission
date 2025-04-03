@@ -4,7 +4,6 @@ import {Navigate } from "react-router-dom";
 import {RoomProvider} from "../components/fetchRoom";
 import ModelJoin from "../components/model-join";
 const Classroom = ({isLogin}) =>{
-    console.log('isLogin',isLogin)
     if(!isLogin){
         return <Navigate to="/login" />;
     }

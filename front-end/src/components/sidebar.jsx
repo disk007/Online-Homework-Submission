@@ -31,10 +31,9 @@ const Sidebar = ({isLogin}) =>{
             const responData = response.data
             setCountActivity(responData.data)
         } catch (error) {
-            console.log(error)
+            console.log("error")
         }
     }
-    console.log('activity ',countActivity)
     useEffect(()=>{
         fetchCountActivity()
     },[])
@@ -52,7 +51,7 @@ const Sidebar = ({isLogin}) =>{
                 socket.on("activityStudent", handleActivityUpdate);
             }
             return () => {
-                console.log("Leaving room:", isLogin.id);
+                console.log("Leaving room:");
                 socket.off("activityStudent");
             };
         }
@@ -68,7 +67,7 @@ const Sidebar = ({isLogin}) =>{
                 socket.on("activity-teacher", handleActivityUpdate);
             }
             return () => {
-                console.log("Leaving room:", isLogin.id);
+                console.log("Leaving room:");
                 socket.off("activity-teacher");
             };
         }

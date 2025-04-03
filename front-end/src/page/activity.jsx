@@ -14,7 +14,6 @@ const Activity = ({isLogin}) =>{
     if(!isLogin){
         return <Navigate to="/login" />;
     }
-    console.log("workId ",workId)
     return(
         <>
             {/* <Navbar />

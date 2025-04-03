@@ -327,7 +327,7 @@ exports.members = async (req, res) => {
 
 exports.delete_member = async (req, res) => {
     try{
-        const members = req.body.members; // members จะเป็น array
+        const members = req.body.members; 
         const token = req.cookies.token
         const role = jwt.verify(token, process.env.JWT_SECRET);
         if(role.role === 'studens'){
@@ -406,6 +406,7 @@ exports.all_members = async (req,res) => {
 exports.all_classroom = async(req,res) => {
     try {
         const result = await db.query('SELECT * FROM classroom ORDER BY id')
+        const token = req.cookies.token
         const role = jwt.verify(token, process.env.JWT_SECRET);
         if(role.role === 'studens' || role.role === 'teacher'){
             return res.sendStatus(403);
@@ -420,6 +421,7 @@ exports.all_classroom = async(req,res) => {
 exports.delete_classroom  = async(req,res) => {
     try {
         const {classroomId} = req.body
+        const token = req.cookies.token
         const role = jwt.verify(token, process.env.JWT_SECRET);
         if(role.role === 'studens' ){
             return res.sendStatus(403);

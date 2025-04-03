@@ -399,7 +399,7 @@ const Full_send_work = ({isLogin}) => {
                                 <div className="mt-2">
                                     {data.reference_files ? (
                                     JSON.parse(data.reference_files).map((file) => (
-                                    <div className="cursor-pointer text-sm border-[2px] rounded-sm flex w-[350px] items-center p-1 mb-2" title={file} onClick={()=>{selectFileName(file,data.id_assignment);setOpen(!open)}}>
+                                    <div className="cursor-pointer text-sm border-[2px] rounded-sm flex md:w-[350px] items-center p-1 mb-2" title={file} onClick={()=>{selectFileName(file,data.id_assignment);setOpen(!open)}}>
                                         <FaFileAlt className="w-4 h-4 text-sky-500" />
                                         <div className="ml-2 ">{file.length > 30  ? file.substring(0, 25) + '...' : file}</div>
                                     </div>
