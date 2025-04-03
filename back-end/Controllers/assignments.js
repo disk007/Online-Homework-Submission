@@ -403,7 +403,7 @@ exports.all_up_comming = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP < a.due_time AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -428,7 +428,7 @@ exports.all_past_due = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP > a.due_time 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -478,7 +478,7 @@ exports.up_comming = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND a.id_classroom = $2 AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP < a.due_time AND a.id_classroom = $2 AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
@@ -528,7 +528,7 @@ exports.past_due = async (req, res) => {
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AND a.id_classroom = $2
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP > a.due_time AND a.id_classroom = $2
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
