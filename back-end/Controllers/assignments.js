@@ -48,7 +48,7 @@ exports.add_assignments = async (req,res) => {
             insertedIds = await Promise.all(
                 idRoomFilter.map(async (d, i) => {
                     const result = await db.query(
-                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9) RETURNING id',
+                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4, $5 AT TIME ZONE \'Asia/Bangkok\', $6 AT TIME ZONE \'Asia/Bangkok\', $7,$8,AT TIME ZONE \'Asia/Bangkok\') RETURNING id',
                         [title, instructions, points, filterFileName, dueDateTime, closeDateTime, d,'All students',Date_create]
                     );
                     return result.rows[0].id; // ดึง id ที่พึ่ง insert
@@ -59,7 +59,7 @@ exports.add_assignments = async (req,res) => {
             insertedIds = await Promise.all(
                 idRoomFilter.map(async (d, i) => {
                     const result = await db.query(
-                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9) RETURNING id',
+                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4,$5 AT TIME ZONE \'Asia/Bangkok\', $6 AT TIME ZONE \'Asia/Bangkok\', $7,$8,$9 AT TIME ZONE \'Asia/Bangkok\') RETURNING id',
                         [title, instructions, points, filterFileName, dueDateTime, closeDateTime, d,'Individual students',Date_create]
                     );
                     return result.rows[0].id; // ดึง id ที่พึ่ง insert
@@ -70,7 +70,7 @@ exports.add_assignments = async (req,res) => {
             insertedIds = await Promise.all(
                 idRoomFilter.map(async (d, i) => {
                     const result = await db.query(
-                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9) RETURNING id',
+                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4,$5 AT TIME ZONE \'Asia/Bangkok\', $6 AT TIME ZONE \'Asia/Bangkok\', $7,$8,$9 AT TIME ZONE \'Asia/Bangkok\') RETURNING id',
                         [title, instructions, points, filterFileName, dueDateTime, closeDateTime, d,'group',Date_create]
                     );
                     return result.rows[0].id; // ดึง id ที่พึ่ง insert
@@ -397,13 +397,13 @@ exports.all_up_comming = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name,w.id_user FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.id_user FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -422,13 +422,13 @@ exports.all_past_due = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name,w.is_submitted,a.colses_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS colses_time FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.is_submitted,a.colses_time FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id])
         return res.json(result.rows)
@@ -472,13 +472,13 @@ exports.up_comming = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time,w.id,c.name FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AND a.id_classroom = $2 AND w.is_submitted = false 
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' < a.due_time AND a.id_classroom = $2 AND w.is_submitted = false 
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
@@ -522,13 +522,13 @@ exports.past_due = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const querySql = `SELECT a.title,a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS due_time,w.id,c.name,w.is_submitted,a.colses_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AS colses FROM assignment AS a
+        const querySql = `SELECT a.title,a.due_time,w.id,c.name,w.is_submitted,a.colses_time FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             INNER JOIN classroom AS c ON c.id = a.id_classroom
 			INNER JOIN users AS u ON u.id = c.id_user
 			LEFT JOIN groups_member AS gm ON gm.id_group = w.id_group
 			INNER JOIN members AS m ON m.id_classroom = a.id_classroom
-            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Bangkok' AND a.id_classroom = $2
+            WHERE (w.id_user = $1 OR gm.id_user= $1) AND m.id_user = $1 AND w.is_submitted = false AND CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Bangkok' > a.due_time AND a.id_classroom = $2
             ORDER BY a.due_time DESC`
         const result = await db.query(querySql,[id,id_classroom])
         return res.json(result.rows)
