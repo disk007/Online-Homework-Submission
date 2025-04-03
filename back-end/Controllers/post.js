@@ -376,11 +376,18 @@ exports.delete_post = async (req, res) => {
         await db.query("DELETE FROM post WHERE id = $1",[id])
         const folderFile =`/post/${id}`;
         // fs.rmSync(folderFile, { recursive: true, force: true });
-        const resources = await cloudinary.api.resources_by_ids([folderFile]);
-        console.log('folderFile ',folderFile)
-        for (const file of resources.resources) {
-            await cloudinary.api.delete_resources([file.public_id], { resource_type: file.resource_type });
-            console.log(`ลบไฟล์สำเร็จ: ${file.public_id} (${file.resource_type})`);
+        const folderPath = `post/${id}`
+        console.log('path ',folderPath)
+        try {
+            const resourceTypes = ['image', 'raw'];
+            for (const type of resourceTypes) {
+            await cloudinary.api.delete_resources_by_prefix(folderPath, { resource_type: type });
+            }
+            await cloudinary.api.delete_folder(folderPath ,{ resource_type: 'auto' });
+            console.log(`deleted successfully.`);
+        }
+        catch (err) {
+            console.log('Error deleting folder:', err);
         }
         const io = req.app.get("io");
         if(io){
