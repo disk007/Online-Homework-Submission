@@ -48,7 +48,7 @@ exports.add_assignments = async (req,res) => {
             insertedIds = await Promise.all(
                 idRoomFilter.map(async (d, i) => {
                     const result = await db.query(
-                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4, $5 AT TIME ZONE \'Asia/Bangkok\', $6 AT TIME ZONE \'Asia/Bangkok\', $7,$8,AT TIME ZONE \'Asia/Bangkok\') RETURNING id',
+                        'INSERT INTO assignment (title, instructions, score, reference_files, due_time, colses_time, id_classroom,assignment_type,create_at) VALUES ($1, $2, $3, $4, $5 AT TIME ZONE \'Asia/Bangkok\', $6 AT TIME ZONE \'Asia/Bangkok\', $7,$8,$9 AT TIME ZONE \'Asia/Bangkok\') RETURNING id',
                         [title, instructions, points, filterFileName, dueDateTime, closeDateTime, d,'All students',Date_create]
                     );
                     return result.rows[0].id; // ดึง id ที่พึ่ง insert
