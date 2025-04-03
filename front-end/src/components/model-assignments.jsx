@@ -236,15 +236,15 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
         e.preventDefault()
         const dueDate = new Date(formData.dueDate);
         const checkDate = new Date()
-        const dueTime = new Date(formData.dueDate);
-        const hours = formData.dueTime.getHours()
-        const minutes = formData.dueTime.getMinutes()
-        dueTime.setHours(hours, minutes,0,0)
+        // const dueTime = new Date(formData.dueDate);
+        // const hours = formData.dueTime.getHours()
+        // const minutes = formData.dueTime.getMinutes()
+        // dueTime.setHours(hours, minutes,0,0)
 
-        const timeClose = new Date(formData.dateClose)
-        const hoursClose = formData.timeClose.getHours()
-        const minutesClose = formData.timeClose.getMinutes()
-        timeClose.setHours(hoursClose, minutesClose,0,0)
+        // const timeClose = new Date(formData.dateClose)
+        // const hoursClose = formData.timeClose.getHours()
+        // const minutesClose = formData.timeClose.getMinutes()
+        // timeClose.setHours(hoursClose, minutesClose,0,0)
         const dateClose = new Date(formData.dateClose)
         let sizeFiles = 0
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -301,7 +301,6 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
         data.append('instructions', formData.instructions);
         data.append('points', formData.points);
         data.append('dueDate', formData.dueDate);
-        data.append('dueTime', formData.dueTime);
         data.append('idClassroom', selectStudy);
         data.append('create_at',new Date())
         data.append('typeWork', typeWork.includes('students') && !typeWork.includes('All students')
@@ -318,7 +317,6 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
             : []
         )
         data.append('dateClose', isChecked ? formData.dateClose : '')
-        data.append('timeClose', isChecked ? formData.timeClose : '')
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
                 data.append(`file[${index}]`,f.file)
@@ -615,10 +613,10 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                             <div className="w-full ml-1">
                                 <div>Due time:</div>
                                 <Flatpickr
-                                    value={formData.dueTime}
+                                    value={formData.dueDate}
                                     className="border-2 w-full py-2 px-2 mt-1"
                                     onChange={(selectedDates) => {
-                                        setFormData({ ...formData, dueTime: selectedDates[0] });
+                                        setFormData({ ...formData, dueDate: selectedDates[0] });
                                     }}
                                     options={{
                                         enableTime: true,
@@ -658,10 +656,10 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                                 <div className="w-full ml-1">
                                     <div>Close time:</div>
                                     <Flatpickr
-                                        value={formData.timeClose}
+                                        value={formData.dateClose}
                                         className="border-2 w-full py-2 px-2 mt-1"
                                         onChange={(selectedDates)=>{
-                                            setFormData({...formData, timeClose: selectedDates[0]})
+                                            setFormData({...formData, dateClose: selectedDates[0]})
                                         }}
                                         options={{
                                             enableTime: true,
