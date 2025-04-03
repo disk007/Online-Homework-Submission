@@ -263,6 +263,7 @@ const Full_send_work = ({isLogin}) => {
                         theme: "light",
                         transition: Slide,
                     })
+                    setLoadSend(false)
                 }
             } catch (error) {
                 console.error('Error submitting assignment:', error);
