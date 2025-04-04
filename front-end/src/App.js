@@ -1,6 +1,6 @@
 import './App.css';
 import './font.css'
-import React from 'react';
+import React,{useEffect} from 'react';
 import { BrowserRouter , Routes, Route,Navigate} from "react-router-dom";
 import Classroom from './page/classroom';
 import All_upComming from './page/all-upComming';
@@ -46,7 +46,9 @@ function NotFound() {
   );
 }
 function App() {
-  
+  useEffect(() => {
+    document.title = 'Project'
+  },[])
   const {isLogin} = useAuth();
   return (
     <>

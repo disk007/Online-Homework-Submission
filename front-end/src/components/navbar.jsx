@@ -218,7 +218,7 @@ const Navbar = ({isLogin}) =>{
             <ToastContainer containerId="navbar"/>
             <div className="sticky top-0 bg-white z-[27]">
                 <div className="flex justify-between border-2 text-xl font-light leading-loose md:text-2xl md:leading-loose md:font-normal bg-white">
-                    <div className="p-2 px-4"><Link>DP classroom</Link></div>
+                    <div className="p-2 px-4"><Link>Submit assignment</Link></div>
                     <div className="p-2 px-4 flex items-center justify-center">
                         {isLogin?.role !== 'admin' &&(
                             <button className={`${btnPlus == true ? "text-sky-500 border-sky-500":""} py-[10px] hover:text-sky-500 transition ease-in-out delay-150 mx-1 toggle-plus`} onClick={()=> {setBtnPlus(!btnPlus);  }} ><FaPlus className="w-10 w-10" /></button>
