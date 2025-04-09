@@ -171,6 +171,14 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
     }
     const handleEditAssignment = async (e) => {
         e.preventDefault()
+        const allowedTypes = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "image/png",
+            "image/jpeg"
+        ];
         const data = new FormData()
         const checkDate = new Date()
         const dueDate = new Date(dataAssignment.due_time)
@@ -234,6 +242,11 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
         data.append('workId',dataAssignment.id)
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
+                const fileType = f.file.type
+                if(!allowedTypes.includes(fileType)){
+                    isValid = false
+                    validation.file = 'This file type is not allowed.'
+                }
                 data.append(`file[${index}]`,f.file)
                 data.append(`fileName[${index}]`,f.name)
                 sizeFiles += f.file.size
@@ -258,6 +271,20 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
                 if (responseData.status === 'success') {
                     setLoadEdit(false)
                     navigate(`/detail-classroom/list-assignments/${classroomId}`)
+                }
+                else if(responseData.status === 'errors'){
+                    toast.warning(responseData.message, {
+                        position: "bottom-right",
+                        autoClose: false,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Slide,
+                    })
+                    setLoadEdit(false)
                 }
             } catch (error) {
                 console.error('Error submitting assignment:', error);
@@ -333,7 +360,7 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
                             />
                             {/* <input type="text" className="border-2 w-full py-2 px-2 mt-1" name="instructions" value={formData.instructions} onChange={handleChange} /> */}
                             <div className=" inline-block p-1 hover:bg-gray-200 mt-2">
-                                <input type="file" className="hidden" id="file" multiple onChange={handleFileChange} accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,image/png,image/jpeg"  />
+                            <input type="file" className="hidden" id="file" multiple onChange={handleFileChange} accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,image/png,image/jpeg"  />
                                 <label htmlFor="file" className="cursor-pointer flex items-center"><MdOutlineFileUpload className="w-6 h-6" /><div className="ml-1">Upload files</div></label>
                             </div>
                             <div className="mt-2 ">

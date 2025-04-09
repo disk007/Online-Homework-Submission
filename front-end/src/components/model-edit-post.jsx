@@ -59,6 +59,14 @@ const ModelEditPost = ({open,onClose,id}) => {
         
     };
     const updatePost = async() => {
+        const allowedTypes = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "image/png",
+            "image/jpeg"
+        ];
         let isValid = true
         let sizeFiles = totalSizeFiles
         const data = new FormData()
@@ -69,6 +77,11 @@ const ModelEditPost = ({open,onClose,id}) => {
         }
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
+                const fileType = f.file.type
+                if(!allowedTypes.includes(fileType)){
+                    isValid = false
+                    setErrorpost('This file type is not allowed.')
+                }
                 data.append(`file[${index}]`,f.file)
                 data.append(`fileName[${index}]`,f.name)
                 sizeFiles += f.file.size

@@ -234,17 +234,19 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
     };
     const handleAssignment = async (e) => {
         e.preventDefault()
+        const allowedTypes = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "image/png",
+            "image/jpeg"
+        ];
         const dueDate = new Date(formData.dueDate);
         const checkDate = new Date()
         const dueTime = new Date(formData.dueDate);
-        // const hours = formData.dueTime.getHours()
-        // const minutes = formData.dueTime.getMinutes()
-        // dueTime.setHours(hours, minutes,0,0)
 
         const timeClose = new Date(formData.dateClose)
-        // const hoursClose = formData.timeClose.getHours()
-        // const minutesClose = formData.timeClose.getMinutes()
-        // timeClose.setHours(hoursClose, minutesClose,0,0)
         const dateClose = new Date(formData.dateClose)
         let sizeFiles = 0
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -319,6 +321,11 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
         data.append('dateClose', isChecked ? formData.dateClose : '')
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
+                const fileType = f.file.type
+                if(!allowedTypes.includes(fileType)){
+                    isValid = false
+                    validation.file = 'This file type is not allowed.'
+                }
                 data.append(`file[${index}]`,f.file)
                 data.append(`fileName[${index}]`,f.name)
                 sizeFiles += f.file.size
@@ -357,6 +364,7 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                     handleFetchData()
                     handleCancle();
                 }
+                
                 else if(responseData.status === 'error'){
                     toast.error(responseData.message, {
                         containerId:"addassignment",

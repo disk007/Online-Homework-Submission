@@ -13,6 +13,7 @@ import { useParams,useNavigate,useLocation} from "react-router-dom";
 import axios from '../components/axios-instance';
 import ModelFile from "../components/model-file";
 import ModelEditAssignment from "../components/model-edit-assignment";
+import { ToastContainer, toast,Slide } from 'react-toastify';
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import ClipLoader from "react-spinners/ClipLoader";
@@ -230,6 +231,7 @@ const Detali_assignment = ({isLogin}) => {
     }
     const handleExport = () => {
         // สร้าง Worksheet จากข้อมูล
+        const sheetTitle = dataExcel[0].title.replace(/[\\/:?*[\]]/g, "");
         const header = [["Name", `Score = ${dataExcel[0].ascore!== '' ? dataExcel[0].ascore : 'N/A'}`]];
 
     // แปลงข้อมูลเป็นรูปแบบ Array of Arrays (AOA)
@@ -247,7 +249,10 @@ const Detali_assignment = ({isLogin}) => {
         // สร้าง Workbook
         const workbook = XLSX.utils.book_new();
         worksheet["!cols"] = [{ wpx: 150 }, { wpx: 100 }];
-        XLSX.utils.book_append_sheet(workbook, worksheet, dataExcel[0].title);
+        const sheetName = sheetTitle.length > 31 
+        ? `${sheetTitle.slice(0, 25)}...`
+        : sheetTitle;
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
     
         // แปลง Workbook เป็นไฟล์ Excel
         const excelBuffer = XLSX.write(workbook, {
@@ -262,6 +267,7 @@ const Detali_assignment = ({isLogin}) => {
     
     return (
         <>
+            <ToastContainer />
             <SidebarClassroom sidebar={sidebar} setSidebar={setSidebar}/>
             <ModelEditAssignment assignmentId={assignmentId}  isLogin={isLogin} open={openEdit} OnClose={()=>setOpenEdit(false)} />
             { selectFile && 

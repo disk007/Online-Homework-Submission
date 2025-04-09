@@ -14,6 +14,16 @@ exports.add_assignments = async (req,res) => {
         if(role.role === 'studens'){
             return res.sendStatus(403);
         }
+        if(fileName !== 'null'){
+            for(let i=0 ;i < fileName.length;i++){
+                const curentFile = fileName[i]
+                console.log("curentFile ",curentFile.length)
+                if(curentFile.length > 200){
+                    return res.json({status:'error', message:'File name is longer than 200 characters.'});
+                }
+            }
+            
+        }
         let filterFileName = null;
         if(fileName){
             filterFileName = JSON.stringify(fileName);
@@ -793,9 +803,8 @@ exports.delete_sheet = async (req, res) => {
         await db.query(upadteFile,[filterFileName,id_assignment])
         const fileExtension = fileName.split('.').pop();
         const resourceType = ["docx", "xlsx", "txt"].includes(fileExtension) ? "raw" : "image";
-        // ดึงข้อมูลไฟล์จาก Cloudinary
         const result = await cloudinary.api.resource(folderFile, { resource_type: resourceType });
-        // ลบไฟล์จาก Cloudinary
+        
         await cloudinary.api.delete_resources([result.public_id], { resource_type: result.resource_type });
         // const resources = await cloudinary.api.resources_by_ids([folderFile]);
         // console.log('folderFile ',folderFile)
@@ -818,6 +827,16 @@ exports.update_assignment = async(req,res) => {
         const role = jwt.verify(token, process.env.JWT_SECRET);
         if(role.role === 'studens'){
             return res.sendStatus(403);
+        }
+        if(fileName !== 'null'){
+            for(let i=0 ;i < fileName.length;i++){
+                const curentFile = fileName[i]
+                console.log("curentFile ",curentFile.length)
+                if(curentFile.length > 200){
+                    return res.json({status:'errors', message:'File name is longer than 200 characters.'});
+                }
+            }
+            
         }
         console.log("colses_time ",colses_time)
         let filterFileName = null;
@@ -861,30 +880,6 @@ exports.update_assignment = async(req,res) => {
             } catch (error) {
                 console.log(error)
             }
-            // req.files.forEach((file, index) => {
-            //     console.log("file.path "+file.path)
-            //     console.log(file, fileName[index])
-            //     const folderFile = path.join(__dirname,'../assignments',assignmentId.toString(),workId.toString(),'file');
-            //     if (!fs.existsSync(folderFile)) {
-            //         try {
-            //             fs.mkdirSync(folderFile, { recursive: true })
-            //             console.log(`Folder created: ${folderFile}`);
-            //         } catch (err) {
-            //             console.error('Error creating folder:', err);
-            //         }
-            //     }
-            //     const newPath = path.join(folderFile,fileName[index]);
-            //     if (fs.existsSync(file.path)) {
-            //         try {
-            //             fs.copyFileSync(file.path, newPath)
-            //             console.log(`File copy successfully to ${newPath}`);
-            //         } catch (err) {
-            //             console.error('Error moving file:', err);
-            //         }
-            //     } else {
-            //         console.error(`File not found: ${file.path}`);
-            //     }
-            // });
         }
         return res.json({status:'success'})
     } catch (error) {

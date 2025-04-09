@@ -143,7 +143,7 @@ const Full_send_work = ({isLogin}) => {
         try {
             const encodedFileName = encodeURIComponent(n);
             // setFileName(pathFile)
-            const response = await axios.get(`/assignments/${id_assignment}/${workId}/file/${encodedFileName}`, { 
+            const response = await axios.get(`/assignments/${id_assignment}/${workId}/file/${n}`, { 
               responseType: 'arraybuffer',
               withCredentials: false, 
             });
@@ -163,13 +163,13 @@ const Full_send_work = ({isLogin}) => {
             // setFileName(pathFile)
             let response
             if(type === null){
-                response = await axios.get(`/assignments//${id_assignment}/${workId}/${isLogin.id}/${encodedFileName}`, { 
+                response = await axios.get(`/assignments/${id_assignment}/${workId}/${isLogin.id}/${n}`, { 
                     responseType: 'arraybuffer',
                     withCredentials: false, 
                 });
             }
             else{
-                response = await axios.get(`/assignments/${id_assignment}/${workId}/${type}/${encodedFileName}`, { 
+                response = await axios.get(`/assignments/${id_assignment}/${workId}/${type}/${n}`, { 
                     responseType: 'arraybuffer',
                     withCredentials: false, 
                 });
@@ -196,6 +196,14 @@ const Full_send_work = ({isLogin}) => {
         return compare;
     }
     const sendWork =  async () => {
+        const allowedTypes = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "image/png",
+            "image/jpeg"
+        ];
         let sizeFiles = totalSizeFiles
         const currentDate = new Date()
         
@@ -209,6 +217,11 @@ const Full_send_work = ({isLogin}) => {
         let validation = {}
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
+                const fileType = f.file.type
+                if(!allowedTypes.includes(fileType)){
+                    isValid = false
+                    validation.file = 'This file type is not allowed.'
+                }
                 data.append(`file[${index}]`,f.file)
                 data.append(`fileName[${index}]`,f.name)
                 sizeFiles += f.file.size
@@ -251,7 +264,7 @@ const Full_send_work = ({isLogin}) => {
                     setLoadSend(false)
                     // await fetchwork()
                 }
-                else if(responseData.status === 'deadline'){
+                else if(responseData.status === 'errors'){
                     toast.warning(responseData.message, {
                         position: "bottom-right",
                         autoClose: false,

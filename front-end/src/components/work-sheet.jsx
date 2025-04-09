@@ -210,6 +210,14 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
         return compare;
     }
     const sendWork =  async () => {
+        const allowedTypes = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "image/png",
+            "image/jpeg"
+        ];
         let sizeFiles = totalSizeFiles
         const currentDateString = dayjs().tz('Asia/Bangkok').format('YYYY-MM-DD HH:mm:ss');
         
@@ -225,6 +233,11 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
         let validation = {}
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
+                const fileType = f.file.type
+                if(!allowedTypes.includes(fileType)){
+                    isValid = false
+                    validation.file = 'This file type is not allowed.'
+                }
                 data.append(`file[${index}]`,f.file)
                 data.append(`fileName[${index}]`,f.name)
                 sizeFiles += f.file.size
@@ -267,7 +280,7 @@ const Work_sheet = ({isLogin,workId,sidebar,setSidebar}) =>{
                     setLoadSend(false)
                     // await fetchwork()
                 }
-                else if(responseData.status === 'deadline'){
+                else if(responseData.status === 'errors'){
                     toast.warning(responseData.message, {
                         position: "bottom-right",
                         autoClose: false,

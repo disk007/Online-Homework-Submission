@@ -65,6 +65,14 @@ const DetailClassroom = ({isLogin}) =>{
         setSelecteId(id)
     }
     const addPost = async() => {
+        const allowedTypes = [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "text/plain",
+            "image/png",
+            "image/jpeg"
+        ];
         let sizeFiles = 0
         let isValid = true
         const data = new FormData()
@@ -75,6 +83,11 @@ const DetailClassroom = ({isLogin}) =>{
         }
         if(fileNames.length > 0){
             fileNames.forEach((f,index)=>{
+                const fileType = f.file.type
+                if(!allowedTypes.includes(fileType)){
+                    isValid = false
+                     setErrorpost('This file type is not allowed.')
+                }
                 data.append(`file[${index}]`,f.file)
                 data.append(`fileName[${index}]`,f.name)
                 sizeFiles += f.file.size

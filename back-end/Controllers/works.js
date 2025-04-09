@@ -230,19 +230,6 @@ exports.update_state_teacher_activity = async(req, res) => {
             AND work.activity = 'InitialT'
             `
         await db.query(querySql,[id_user])
-        // const queryIdGroup = `SELECT g.id FROM groups AS g
-        //     INNER JOIN groups_member AS gm ON gm.id_group = g.id
-        //     WHERE gm.id_user = $1`
-        // const id_group = await db.query(queryIdGroup,[id_user])
-        // if(id_group.rows.length > 0){
-        //     id_group.rows.map(async(data) =>{
-        //         console.log("data ",data.id)
-        //         const queryUpdateGroup = `UPDATE work SET activity = 'No' WHERE id_group = $1 AND activity = 'Initial'`
-        //         await db.query(queryUpdateGroup,[data.id])
-        //     })
-        //     // const queryUpdateGroup = `UPDATE work SET activity = 'Viewed' WHERE id_group = $1 AND activity = 'Initial'`
-        //     // await db.query(queryUpdateGroup,[id_group.rows[0].id])
-        // }
         return res.json({status:'success'})
     } catch (error) {
         console.log(error);
@@ -253,10 +240,21 @@ exports.update_state_teacher_activity = async(req, res) => {
 exports.send_work = async(req, res) => {
     try {
         const {id_user,id_work,fileName,send_date} = req.body
+        
         const token = req.cookies.token
         const role = jwt.verify(token, process.env.JWT_SECRET);
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
+        }
+        if(fileName !== 'null'){
+            for(let i=0 ;i < fileName.length;i++){
+                const curentFile = fileName[i]
+                console.log("curentFile ",curentFile.length)
+                if(curentFile.length > 200){
+                    return res.json({status:'errors', message:'File name is longer than 200 characters.'});
+                }
+            }
+            
         }
         const sendDate = new Date(send_date)
         console.log('sendDate ',sendDate)
@@ -281,7 +279,7 @@ exports.send_work = async(req, res) => {
                     }
                 });
             }
-            return res.json({status:'deadline', message:'Submission deadline has passed.'});
+            return res.json({status:'errors', message:'Submission deadline has passed.'});
         }
         }
         let sqlFileName
@@ -416,14 +414,14 @@ exports.cancel_work = async (req, res) => {
         console.log(id_user,id_work)
         let querySql
         if(resultCheckType.rows[0].assignment_type === 'group'){
-            querySql = `UPDATE work SET is_submitted = $1 ,sent_date = $2,verify = $3,activity = 'Viewed' FROM groups_member AS gm
+            querySql = `UPDATE work SET is_submitted = $1 ,sent_date = $2,verify = $3,activity = 'Viewed', score=null FROM groups_member AS gm
                 WHERE 
                     gm.id_group = work.id_group
                     AND gm.id_user = $4
                     AND work.id = $5`
         }
         else{
-            querySql = `UPDATE work SET is_submitted = $1,sent_date = $2,verify = $3,activity = 'Viewed' WHERE id_user = $4 AND id = $5 `
+            querySql = `UPDATE work SET is_submitted = $1,sent_date = $2,verify = $3,activity = 'Viewed', score=null WHERE id_user = $4 AND id = $5 `
         }
         
         await db.query(querySql,[false,null,false,id_user,id_work])
@@ -442,21 +440,21 @@ exports.delete_work = async (req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        const queryCheckType = `SELECT a.assignment_type,w.id_group FROM assignment AS a
+        const queryCheckType = `SELECT a.assignment_type FROM assignment AS a
             INNER JOIN work AS w ON w.id_assignment = a.id
             WHERE w.id = $1
-            GROUP BY a.id,w.id_group`
+            GROUP BY a.id`
         const resultCheckType = await db.query(queryCheckType,[id_work])
         // const folderFile = path.join(__dirname,'../assignments',id_assignment,id_work,resultCheckType.rows[0].assignment_type === 'group' ? resultCheckType.rows[0].id_group.toString() : id_user.toString(),fileName);
-        const folderFile = decodeURIComponent(`assignments/${id_assignment}/${id_work}/${resultCheckType.rows[0].assignment_type === 'group' ? resultCheckType.rows[0].id_group : id_user}/${fileName}`)
         let selectWork
         if(resultCheckType.rows[0].assignment_type === 'group'){
-            selectWork = `SELECT work FROM work INNER JOIN groups_member AS gm ON gm.id_group = work.id_group WHERE id = $1 AND gm.id_user = $2`
+            selectWork = `SELECT work,work.id_group FROM work INNER JOIN groups_member AS gm ON gm.id_group = work.id_group WHERE id = $1 AND gm.id_user = $2`
         }
         else{
             selectWork = 'SELECT work FROM work WHERE id = $1 AND id_user = $2'
         }
         const sqlFileName = await db.query(selectWork,[id_work,id_user])
+        const folderFile = decodeURIComponent(`assignments/${id_assignment}/${id_work}/${resultCheckType.rows[0].assignment_type === 'group' ? sqlFileName.rows[0].id_group : id_user}/${fileName}`)
         let existingFileNames = [];
         if (sqlFileName.rows[0].work) {
             existingFileNames = JSON.parse(sqlFileName.rows[0].work);

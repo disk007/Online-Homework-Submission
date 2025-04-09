@@ -112,7 +112,7 @@ const Sidebar = ({isLogin}) =>{
             <div className="md:w-32 border-x-2 h-screen w-24 fixed">
                 <ul className="">
                     {isLogin.role !== 'admin' &&(
-                        <li className={`py-4  ${activeLink.includes('/activity') ? "border-l-4 border-sky-600 text-sky-600 font-medium" : ""} transition ease-in-out delay-150 hover:bg-gray-100 hover:text-sky-600"`}>
+                        <li className={`py-4  ${activeLink.includes('/activity') ? "border-l-4 border-sky-600 text-sky-600 font-medium" : ""} transition ease-in-out delay-150 hover:bg-gray-100 "`}>
                             <Link to={'/activity'} className="flex flex-col items-center relative" onClick={update_activity}>
                                 {countActivity !== null && countActivity !== '0' && countActivity !== 0 &&
                                     <div className="absolute right-3 p-1 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 text-white text-lg">
@@ -124,14 +124,14 @@ const Sidebar = ({isLogin}) =>{
                             </Link>
                         </li>
                     )}
-                    <li className={`py-4  ${activeLink === '/' || activeLink.includes('/detail-classroom') ? "border-l-4 border-sky-600 text-sky-600 font-medium transition-none" : ""} transition ease-in-out delay-150 hover:bg-gray-100 hover:text-sky-600"`}>
+                    <li className={`py-4  ${activeLink === '/' || activeLink.includes('/detail-classroom') ? "border-l-4 border-sky-600 text-sky-600 font-medium transition-none" : ""} transition ease-in-out delay-150 hover:bg-gray-100 "`}>
                         <Link to={'/'} className="flex flex-col items-center">
                             <SiGoogleclassroom className=" md:w-10 md:h-14 w-8 h-10" /> 
                             <span className="text-xs md:text-base">Classroom</span>
                         </Link>
                     </li>
                     {isLogin.role === 'admin' && (
-                        <li className={`py-4  ${activeLink === '/all-members' ? "border-l-4 border-sky-600 text-sky-600 font-medium transition-none" : ""} transition ease-in-out delay-150 hover:bg-gray-100 hover:text-sky-600"`}>
+                        <li className={`py-4  ${activeLink === '/all-members' ? "border-l-4 border-sky-600 text-sky-600 font-medium transition-none" : ""} transition ease-in-out delay-150 hover:bg-gray-100 "`}>
                             <Link to={'/all-members'} className="flex flex-col items-center">
                                 <FaUsersLine className=" md:w-10 md:h-14 w-8 h-10" /> 
                                 <span className="text-xs md:text-base">Members</span>
@@ -139,7 +139,7 @@ const Sidebar = ({isLogin}) =>{
                         </li>
                     )}
                     {isLogin.role === 'student' && (
-                        <li className={`py-4 ${activeLink.includes('/assignments')  ? "border-l-4 border-sky-600 text-sky-600 font-medium transition-none": ""} transition ease-in-out delay-150 hover:bg-gray-100 hover:text-sky-600`}>
+                        <li className={`py-4 ${activeLink.includes('/assignments')  ? "border-l-4 border-sky-600 text-sky-600 font-medium transition-none": ""} transition ease-in-out delay-150 hover:bg-gray-100 `}>
                             <Link to={'/assignments/all-upcomming'} className="flex flex-col items-center">
                                 <GoChecklist className=" md:w-10 md:h-14 w-8 h-10" />
                                 <span className="text-xs md:text-base">Assignments</span>

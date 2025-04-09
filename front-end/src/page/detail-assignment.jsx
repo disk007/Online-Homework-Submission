@@ -372,7 +372,12 @@ const Detali_assignment = ({isLogin}) => {
         // สร้าง Workbook
         const workbook = XLSX.utils.book_new();
         worksheet["!cols"] = [{ wpx: 150 }, { wpx: 100 }];
-        XLSX.utils.book_append_sheet(workbook, worksheet, sheetTitle);
+        worksheet["!cols"] = [{ wpx: 150 }, { wpx: 100 }];
+        const sheetName = sheetTitle.length > 31 
+        ? `${sheetTitle.slice(0, 25)}...`
+        : sheetTitle;
+
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
     
         // แปลง Workbook เป็นไฟล์ Excel
         const excelBuffer = XLSX.write(workbook, {
