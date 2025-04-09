@@ -552,7 +552,6 @@ exports.activity = async (req,res,io) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        // console.log("Socket IO instance:", io);
         const io = req.app.get("io");
         const querySql = `SELECT 
                 a.id,
