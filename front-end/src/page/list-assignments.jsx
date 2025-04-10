@@ -61,7 +61,7 @@ const List_assignments = ({isLogin}) => {
             assignment.map((data,i)=>(
                 <div key={i} className="flex flex-wrap border-2 rounded mt-5 lg:mx-18 md:mx-10 mx-8 shadow py-2 items-center cursor-pointer hover:bg-gray-100 text-sm" onClick={()=>handleLinkClick(classroomId,data.id_assignment)}>
                     <div className="flex-col mx-4 my-1 grow">
-                        <div>{data.title} </div>
+                        <div>{data.title} {data.assignment_type === 'group' ? '(Groups)' : data.assignment_type === 'Individual students' ? '(Individual)':'(All student)'}</div>
                         <div className="text-gray-500 md:text-sm text-xs">Due {formattedDate(data.due_time)}</div>
                     </div>
                     <div className="mx-4 text-gray-500 md:text-sm text-xs">{data.true_count+' / '+data.all_count }  turned in</div>

@@ -258,6 +258,10 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
             isValid = false
             validation.title = 'Title is required.'
         }
+        else if (/[!@#$%^&*(),.?":{}|<>[\]\\\/+=~`'_;]/.test(formData.title)) {
+            isValid = false;
+            validation.title = 'Title must not contain special characters.';
+        }
         if (formData.points !== '' && !/^[0-9]+$/.test(formData.points)) {
             isValid = false;
             validation.points = "Points must be a positive number.";

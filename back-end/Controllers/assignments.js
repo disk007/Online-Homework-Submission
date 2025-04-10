@@ -292,6 +292,7 @@ exports.list_assignments = async (req, res) => {
         }
         const querySql = `SELECT 
                 a.title,
+                a.assignment_type,
                 a.due_time,
                 w.id_assignment,
                 SUM(CASE WHEN w.is_submitted = TRUE THEN 1 ELSE 0 END) AS true_count,

@@ -193,6 +193,10 @@ const ModelEditAssignment = ({assignmentId,isLogin,open,OnClose}) => {
             isValid = false
             validation.title = 'Title is required.'
         }
+        else if (/[!@#$%^&*(),.?":{}|<>[\]\\\/+=~`'_;]/.test(dataAssignment.title)) {
+            isValid = false;
+            validation.title = 'Title must not contain special characters.';
+        }
         if (dataAssignment.score !== '' && !/^[0-9]+$/.test(dataAssignment.score)) {
             isValid = false;
             validation.score = "Points must be a positive number.";
