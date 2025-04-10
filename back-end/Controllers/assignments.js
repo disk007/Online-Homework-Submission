@@ -14,7 +14,8 @@ exports.add_assignments = async (req,res) => {
         if(role.role === 'studens'){
             return res.sendStatus(403);
         }
-        if(req.files && req.body){
+        console.log('filename ' ,fileName)
+        if(fileName){
             for(let i=0 ;i < fileName.length;i++){
                 const curentFile = fileName[i]
                 console.log("curentFile ",curentFile.length)
@@ -828,7 +829,7 @@ exports.update_assignment = async(req,res) => {
         if(role.role === 'studens'){
             return res.sendStatus(403);
         }
-        if(req.files && req.body){
+        if(fileName){
             for(let i=0 ;i < fileName.length;i++){
                 const curentFile = fileName[i]
                 console.log("curentFile ",curentFile.length)

@@ -370,7 +370,8 @@ const ModelAssignmen = ({isLogin,open,OnClose,listAssignments}) => {
                 }
                 
                 else if(responseData.status === 'error'){
-                    toast.error(responseData.message, {
+                    setLoadAdd(false)
+                    toast.warning(responseData.message, {
                         containerId:"addassignment",
                         position: "bottom-right",
                         hideProgressBar: false,

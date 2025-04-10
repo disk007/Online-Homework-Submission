@@ -246,7 +246,7 @@ exports.send_work = async(req, res) => {
         if(role.role === 'teacher' || role.role === 'admin'){
             return res.sendStatus(403);
         }
-        if(fileName !== 'null'){
+        if(fileName){
             for(let i=0 ;i < fileName.length;i++){
                 const curentFile = fileName[i]
                 console.log("curentFile ",curentFile.length)
