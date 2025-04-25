@@ -430,8 +430,15 @@ const Full_send_work = ({isLogin}) => {
                                 </div>
                                 )}
                         </div> 
+                        {/* {myWork.map((data,i) => (
+                            data.sent_date !== null && (
+                            <div className="flex md:justify-center text-sm text-gray-500 xl:basis-1/3">
+                                <div className="flex"><LuCheck className="w-5 h-5" /><div className="ml-1">{formattedDate(data.sent_date)}</div></div>
+                            </div>
+                            )
+                        ))} */}
                         {myWork.map((data,i) => (
-                            <div className="text-sm text-gray-500 xl:basis-1/3">
+                            <div className="flex md:justify-center text-sm text-gray-500 xl:basis-1/3">
                                 <div>
                                     {data.sent_date !== null && (
                                         <div className="flex"><LuCheck className="w-5 h-5" /><div className="ml-1">{formattedDate(data.sent_date)}</div></div>
@@ -455,6 +462,7 @@ const Full_send_work = ({isLogin}) => {
                                 
                             </div>
                         ))}
+                        
                     </div>
                         
                 <div className={`xl:basis-1/4 xl:mt-0 mt-3 `}>
