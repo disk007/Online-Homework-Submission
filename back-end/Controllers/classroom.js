@@ -396,7 +396,9 @@ exports.all_members = async (req,res) => {
             WHEN role = 'teacher' THEN 2
             WHEN role = 'student' THEN 3
             ELSE 4 
-        END,id`)
+        END,
+        id
+        `)
         return res.json(user.rows)
     } catch (error) {
         
