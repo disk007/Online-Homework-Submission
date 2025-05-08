@@ -72,7 +72,8 @@ const Login = () => {
             <   ClipLoader color="#1D7AE5"  size={50} />
             </div>
             :
-            <div className="fixed inset-0 flex justify-center items-center">
+            <div className="fixed inset-0 flex-col flex justify-center items-center">
+            <div className="mb-3 text-xl">Submit Assignment</div>
             <ToastContainer/>
                 <div className="bg-white border-2 px-8 py-12 shadow rounded-md w-[25rem]">
                     <form onSubmit={handleSubmit}>

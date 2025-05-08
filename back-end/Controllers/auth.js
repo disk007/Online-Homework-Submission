@@ -10,6 +10,11 @@ const secretPassword = process.env.JWT_PASSWORD
 exports.register_teacher = async (req, res) => {
     try{
         const {fname,lname,email,password,number_teacher} = req.body;
+        const emailLowwer = email.toLowerCase()
+        const check_email = await db.query('SELECT email FROM users WHERE lower(email) = $1',[emailLowwer]);
+        if(check_email.rows.length>0){
+            return res.json({ status:'duplicate',message: 'The email already exists.' });
+        }
         const number = await db.query('SELECT id FROM number_teacher WHERE number = $1',[number_teacher])
         if(number.rows.length>0){
             const check_number = await db.query('SELECT id_number_teacher FROM users WHERE id_number_teacher = $1',[number.rows[0].id]);
@@ -17,10 +22,6 @@ exports.register_teacher = async (req, res) => {
             if(check_number.rows.length>0){
                 return res.json({ status:'duplicate',message: 'Number already registered as teacher' });
             }
-            // const userInsert = await db.query('INSERT INTO users (role,email,password) VALUES ($1,$2,$3) RETURNING id', ['teacher',email,hash]);
-
-            // // Get the id of the inserted user
-            // const id_user = userInsert.rows[0].id;
             const result = await db.query('INSERT INTO users (fname,lname,email,password,role,id_number_teacher) VALUES ($1,$2,$3,$4,$5,$6)',[fname,lname,email,hash,'teacher',number.rows[0].id]);
             if(!result){
                 return res.status(500).json({status:'error', message: 'Failed to register' });
@@ -40,7 +41,8 @@ exports.register_teacher = async (req, res) => {
 exports.register_student = async (req, res) => {
     try{
         const {fname,lname,email,password} = req.body;
-        const check_email = await db.query('SELECT email FROM users WHERE email = $1',[email]);
+        const emailLowwer = email.toLowerCase()
+        const check_email = await db.query('SELECT email FROM users WHERE lower(email) = $1',[emailLowwer]);
         const hash = await bcrypt.hash(password, 10);
         if(check_email.rows.length>0){
             return res.json({ status:'duplicate',message: 'The email already exists.' });

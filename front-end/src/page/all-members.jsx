@@ -68,22 +68,22 @@ const All_members = () => {
                         <thead>
                             <tr class="border-t-2 border-b-2 text-sm">
                                 <th class="px-4 py-2 text-center">
-                                    <div className="flex items-center justify-center">
+                                    <div className="flex items-center">
                                         <span className="mx-1">No</span> <div className="flex cursor-pointer " ></div>
                                     </div>
                                 </th>
                                 <th class="px-4 py-2 text-center">
-                                    <div className="flex items-center justify-center">
+                                    <div className="flex items-center ">
                                         <span className="mx-1">Name</span> <div className="flex cursor-pointer " ></div>
                                     </div>
                                 </th>
                                 <th class="px-4 py-2 text-center">
-                                    <div className="flex items-center justify-center">
+                                    <div className="flex items-center">
                                         <span className="mx-1">Email</span> <div className="flex cursor-pointer " ></div>
                                     </div>
                                 </th>
                                 <th class="px-4 py-2 text-center">
-                                    <div className="flex items-center justify-center">
+                                    <div className="flex items-center">
                                         <span className="mx-1">Role</span> <div className="flex cursor-pointer " ></div>
                                     </div>
                                 </th>
@@ -93,17 +93,17 @@ const All_members = () => {
                             {currentUsers.map((data,i)=>(
                                 
                                 <tr class="border-t-2 border-b-2 text-sm" key={i}>
-                                    <td class="px-4 py-2 text-center">
-                                        <div>{i+1}</div>
+                                    <td class="px-4 py-2 text-left">
+                                        <div>{(currentPage - 1) * usersPerPage + i + 1}</div>
                                     </td>
-                                    <td class="px-4 py-2 text-center">
+                                    <td class="px-4 py-2 text-left">
                                         <span className="mr-1">{data.fname}</span>
                                         <span className="ml-1">{data.lname}</span>
                                     </td>
-                                    <td class="px-4 py-2 text-center">
+                                    <td class="px-4 py-2 text-left">
                                         <div>{data.email}</div>
                                     </td>
-                                    <td class="px-4 py-2 text-center">
+                                    <td class="px-4 py-2 text-left">
                                         <div>{data.role}</div>
                                     </td>
                                 </tr>
