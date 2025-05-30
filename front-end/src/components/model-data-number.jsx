@@ -103,6 +103,11 @@ const Model_data_number = ({open,OnClose}) => {
                                     </th>
                                     <th class="px-4 py-2 text-center">
                                         <div className="flex items-center justify-center">
+                                            <span className="mx-1">Name</span> <div className="flex cursor-pointer " ></div>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-2 text-center">
+                                        <div className="flex items-center justify-center">
                                             <span className="mx-1">Number</span> <div className="flex cursor-pointer " ></div>
                                         </div>
                                     </th>
@@ -119,7 +124,10 @@ const Model_data_number = ({open,OnClose}) => {
                                         <td class="px-4 py-2 text-center">
                                             <div>{i+1}</div>
                                         </td>
-                                        <td class="px-4 py-2 text-center">
+                                        <td class="px-4 py-2 text-left">
+                                            <div>{data.full_name == null ? <span className="text-green-500">Available</span> :data.full_name}</div>
+                                        </td>
+                                        <td class="px-4 py-2 text-left">
                                             <div className={`${data.status === 'Available' ? 'text-green-500':'text-red-500'}`}>{data.number}</div>
                                         </td>
                                         <td class={`px-4 py-2 flex justify-center ${data.status === 'Unavailable'? 'text-gray-200 pointer-events-none':'cursor-pointer'}`}  onClick={()=>del_num_teacher(data.id)}>

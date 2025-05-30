@@ -502,11 +502,21 @@ exports.data_number_teacher = async(req,res) => {
         if(role.role === 'studens' || role.role === 'teacher'){
             return res.sendStatus(403);
         }
-        const result = await db.query('SELECT * FROM number_teacher')
+        const result = await db.query(`SELECT 
+        number_teacher.id,
+        number_teacher.number,
+        CASE 
+            WHEN u.fname IS NULL OR u.lname IS NULL OR u.fname = '' OR u.lname = ''
+            THEN NULL
+            ELSE CONCAT(u.fname, ' ', u.lname)
+        END AS full_name
+        FROM number_teacher
+        LEFT JOIN users AS u ON u.id_number_teacher = number_teacher.id;`)
         const checkIdNum = await db.query('SELECT id_number_teacher FROM users WHERE id_number_teacher IS NOT NULL')
         const takenNumbers = checkIdNum.rows.map(row => row.id_number_teacher);
         const statusList = result.rows.map((data,i)=>({
             id:data.id,
+            full_name:data.full_name,
             number:data.number,
             status:takenNumbers.includes(Number(data.id)) ? "Unavailable" : "Available"
         }))
